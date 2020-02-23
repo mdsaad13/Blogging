@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Blogging.Models.AccountModel
+@{
     Layout = null;
 }
 
@@ -14,6 +15,8 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
     @Styles.Render("~/css/main")
+    @Styles.Render("~/css/icheck")
+    @Styles.Render("~/css/daterangepicker")
 
     <!-- Ionicons -->
     @*<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">*@
@@ -21,111 +24,374 @@
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 
+    <style>
+        #pswd_info {
+            z-index: 1000;
+            position: absolute;
+            left: 0;
+            top: -215px;
+            width: 250px;
+            padding: 15px;
+            background: #fefefe;
+            font-size: .875em;
+            border-radius: 5px;
+            border: 2px solid #adb5bd;
+        }
+
+            #pswd_info p {
+                margin: 0 0 10px 0;
+                padding: 0;
+                font-weight: normal;
+                font-size: 1rem;
+            }
+
+            #pswd_info::before {
+                position: absolute;
+                top: -215px;
+                left: 0;
+                font-size: 14px;
+                line-height: 14px;
+                color: #ddd;
+                text-shadow: none;
+                display: block;
+            }
+
+            #pswd_info .invalid {
+                line-height: 24px;
+                color: red;
+            }
+
+            #pswd_info .valid {
+                line-height: 24px;
+                color: green;
+                text-decoration: line-through;
+            }
+
+        #pswd_info {
+            display: none;
+        }
+
+        .invisible{
+            display:none;
+        }
+    </style>
+
 </head>
-<body class="hold-transition register-page" style="font-family:'Product Sans'">
-
-    <div class="register-box" style="width:1000px">
-        <div class="register-logo">
-            <a href="">@ViewBag.SoftwareName</a>
-        </div>
-
-        <div class="card">
-            <div class="card-body register-card-body">
-                <p class="login-box-msg">Register to become a creator at @ViewBag.SoftwareName</p>
-
-                <div class="row">
-                    <div class="col-12 col-lg-6">
-                        <div class="text-center">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSdadxzPMLa3Fwu77BKWGxuCJTABpGWVp5FHvrBa_kKvnsZPkar" class="img-bordered img-circle img-fluid" />
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-6">
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Full name">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-user"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="input-group mb-3">
-                            <input type="email" class="form-control" placeholder="Email">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-envelope"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="input-group mb-3">
-                            <input type="email" class="form-control" placeholder="Mobile">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-envelope"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="input-group mb-3">
-                            <input type="email" class="form-control" placeholder="User Name">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-envelope"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group clearfix">
-                                <div class="icheck-info d-inline">
-                                    <input type="radio" id="radioPrimary1" name="r1">
-                                    <label for="radioPrimary1">
-                                        Male
-                                    </label>
-                                </div>
-                                <div class="icheck-info d-inline">
-                                    <input type="radio" id="radioPrimary2" name="r1">
-                                    <label for="radioPrimary2">
-                                        Female
-                                    </label>
-                                </div>
-                        </div>
-                        <div class="input-group mb-3">
-                            <input type="password" class="form-control" placeholder="Password">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-lock"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="input-group mb-3">
-                            <input type="password" class="form-control" placeholder="Retype password">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-lock"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-8">
-                                <div class="icheck-primary">
-                                    <a href="@Url.Action("Login")" class="text-center">I have already registered</a>
-                                </div>
-                            </div>
-                            <!-- /.col -->
-                            <div class="col-4">
-                                <button type="submit" class="btn btn-primary btn-block">Register</button>
-                            </div>
-                            <!-- /.col -->
-                        </div>
-                    </div>
-
-                </div>
-
-
+<body style="background-color:#e0f7fa">
+   
+        <div class="container" style="margin-top:20px">
+            <div class="register-logo">
+                <img src="~/Images/logo-transparent.png" class="img-fluid" style="height: 42px;
+        vertical-align: text-bottom" />
+                <a href="">@ViewBag.SoftwareName</a>
             </div>
-            <!-- /.form-box -->
-        </div><!-- /.card -->
-    </div>
-    <!-- /.register-box -->
+            @using (Html.BeginForm("RegisterAjax", "Account", FormMethod.Post, new { enctype = "multipart/form-data", @id = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="card" style="border-radius: .25rem;">
+                    <div class="card-body register-card-body">
+                        <p class="login-box-msg">Register to become a creator at @ViewBag.SoftwareName</p>
+                        @Html.ValidationSummary(true, "", new { @class = "form-error" })
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <div class="text-center">
+                                    <label for="customFile" style="cursor:pointer" title="upload image">
+                                        <img src="~/Images/default_user.png" class="img-bordered img-circle img-fluid" id="outputImg" style="height:225px;width:225px" />
+                                    </label>
+                                </div>
+                                <br />
+                                <label>Upload Profile Picture</label>
+                                <div class="custom-file col-md-12">
+                                    @Html.TextBoxFor(model => model.Image, new { type = "file", @class = "custom-file-input", @accept = "image/*", @id = "customFile" })
+                                    <label class="custom-file-label" for="customFile">Choose file</label>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.Image, "", new { @class = "form-error" })
+
+                                <div class="m-4 d-sm-block d-lg-none">
+                                    <hr />
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-lg-6">
+                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "form-error" })
+                                <div class="input-group mb-3">
+                                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your name" } })
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "form-error" })
+                                <div class="input-group mb-3">
+                                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your email" } })
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <span class="fas fa-envelope"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @Html.ValidationMessageFor(model => model.Mobile, "", new { @class = "form-error" })
+                                <span class="form-error" id="error_mobile"></span>
+                                <div class="input-group mb-3" id="Mobile-div">
+                                    @Html.EditorFor(model => model.Mobile, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your mobile number" } })
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <span class="fas fa-phone"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "form-error" })
+                                <span class="form-error" id="error_username"></span>
+                                <div class="input-group mb-3" id="UserName-div">
+                                    @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your username" } })
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <span class="fas fa-key"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @Html.ValidationMessageFor(model => model.DOB, "", new { @class = "form-error" })
+                                <div class="input-group mb-3">
+                                    @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your birthdate" } })
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <span class="fas fa-birthday-cake"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "form-error" })
+                                <div class="form-group clearfix">
+                                    <div class="icheck-info d-inline">
+                                        @Html.RadioButtonFor(model => model.Gender, "Male", new { @id = "Male" })
+                                        <label for="Male">
+                                            Male
+                                        </label>
+                                    </div>
+                                    <div class="icheck-info d-inline">
+                                        @Html.RadioButtonFor(model => model.Gender, "Female", new { @id = "Female" })
+                                        <label for="Female">
+                                            Female
+                                        </label>
+                                    </div>
+                                </div>
+
+                                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "form-error" })
+
+                                <div class="input-group mb-3">
+                                    @Html.PasswordFor(model => model.Password, new { @class = "form-control", @placeholder = "Enter your password" })
+                                    <div id="pswd_info" class="elevation-3">
+                                        <p><b>Password must meet the following requirements:</b></p>
+                                        <ul>
+                                            <li id="letter" class="invalid">At least <strong>one small letter</strong></li>
+                                            <li id="capital" class="invalid">At least <strong>one capital letter</strong></li>
+                                            <li id="number" class="invalid">At least <strong>one number</strong></li>
+                                            <li id="length" class="invalid">Be at least <strong>6 characters</strong></li>
+                                        </ul>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <span class="fas fa-lock"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @Html.ValidationMessageFor(model => model.ConfirmPass, "", new { @class = "form-error" })
+                                <div class="input-group mb-3">
+                                    @Html.PasswordFor(model => model.ConfirmPass, new { @class = "form-control", @placeholder = "Re-Enter your password" })
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <span class="fas fa-lock"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" id="footer">
+                                    <div class="col-8">
+                                        <div class="icheck-primary">
+                                            <a href="@Url.Action("Login")" class="text-center">I have already registered</a>
+                                        </div>
+                                    </div>
+                                    <!-- /.col -->
+                                    <div class="col-4 text-center">
+                                        <input type="submit" class="btn btn-info btn-block" id="btn-register" value="Register" />
+                                        <div class="spinner-border text-info invisible" role="status" id="spinner">
+                                            Please Wait...
+                                        </div>
+                                    </div>
+                                    <!-- /.col -->
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                    <!-- /.form-box -->
+                </div>
+            }
+            <!-- /.card -->
+
+        </div>
+    
 
     @Scripts.Render("~/js/main")
+    @Scripts.Render("~/js/jqueryval")
+    @Scripts.Render("~/js/daterangepicker")
+    @Scripts.Render("~/js/sweetalert2")
+    @Scripts.Render("~/js/jquery-ui")
+
+    <script>
+        $(document).ready(function () {
+
+            $('#btn-register').click(function () {
+                //$.validate.unobtrusive.parse(form);
+                var form = $('#form')[0];
+                var formData = new FormData(form);
+                //var formData = form.serialize();
+                if ($(form).valid()) {
+                    $.ajax({
+                        type: 'post',
+                        enctype: 'multipart/form-data',
+                        url: form.action,
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        cache: false,
+                        beforeSend: function () {
+                            $("#form :input").prop("disabled", true);
+                            $('#btn-register').addClass('invisible');
+                            $('#spinner').removeClass('invisible');
+                            $('#error_mobile').text('');
+                            $('#error_username').text('');
+                        },
+                        success: function (data) {
+                            $("#form :input").prop("disabled", false);
+                            $('#spinner').addClass('invisible');
+                            $('#btn-register').removeClass('invisible');
+
+                            if (data.errorCode == 1) {
+                                // mobile number exists!
+                                $('#error_mobile').text('Mobile number already exist! Kindly try a different number');
+                                 $("#Mobile-div").effect( "shake", {times:4}, 800 );
+                            } else if (data.errorCode == 2) {
+                                // username exists!
+                                $('#error_username').text('username already exist! Kindly try a different username');
+                                $("#UserName-div").effect( "shake", {times:4}, 800 );
+                            } else if (data.errorCode == 3) {
+                                // unknown error
+                                Swal.fire({
+                                    position: 'top-end',
+                                    icon: 'error',
+                                    title: '',
+                                    text: 'An unknown error has occured. Please try again later!',
+                                    showConfirmButton: false,
+                                });
+                            } else if (data.errorCode == 4) {
+                                // All Good!
+                                $("#form :input").prop("disabled", true);
+                                $('#footer').html('');
+                                $('#footer').addClass('text-success text-center');
+                                $('#footer').html('Account successfully created!<br>Logging you in please wait...');
+
+                                setTimeout(SuccessRedirect(), 500);
+                                function SuccessRedirect() {
+                                     window.location.replace('/Home/Index/');
+                                }
+                               
+                            } else {
+                                // unknown error
+                                Swal.fire({
+                                    position: 'top-end',
+                                    icon: 'error',
+                                    title: '',
+                                    text: 'An unknown error has occured. Please try again later!',
+                                    showConfirmButton: false,
+                                });
+                            }
+                            return false;
+                        }
+                    });
+                    return false;
+                }
+                return false;
+            });
+
+            // Display the image to upload
+            var loadFile = function (event) {
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var output = document.getElementById('outputImg');
+                    output.src = reader.result;
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            };
+
+            // Label name change on file select
+            $('.custom-file-input').on("change", function () {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).next('.custom-file-label').html(fileName);
+                loadFile(event);
+            });
+
+            // Initializing Date picker
+            $(function () {
+                $('input[name="DOB"]').daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,
+                    minYear: 1980,
+                    maxYear: parseInt(moment().format('YYYY'), 10),
+                    locale: {
+                        format: 'YYYY-MM-DD'
+                    }
+                });
+            });
+
+            // Password Helper section
+            $('#Password').keyup(function () {
+                var pswd = $(this).val();
+
+                if (pswd.length < 6) {
+                    $('#length').removeClass('valid').addClass('invalid');
+                } else {
+                    $('#length').removeClass('invalid').addClass('valid');
+                }
+                //validate letter
+                if (pswd.match(/[a-z]/)) {
+                    $('#letter').removeClass('invalid').addClass('valid');
+                } else {
+                    $('#letter').removeClass('valid').addClass('invalid');
+                }
+
+                //validate capital letter
+                if (pswd.match(/[A-Z]/)) {
+                    $('#capital').removeClass('invalid').addClass('valid');
+                } else {
+                    $('#capital').removeClass('valid').addClass('invalid');
+                }
+
+                //validate number
+                if (pswd.match(/\d/)) {
+                    $('#number').removeClass('invalid').addClass('valid');
+                } else {
+                    $('#number').removeClass('valid').addClass('invalid');
+                }
+
+            });
+            $('#Password').focus(function () {
+                $('#pswd_info').css('display', 'block');
+            });
+            $('#Password').blur(function () {
+                $('#pswd_info').css('display', 'none');
+            });
+
+        });
+    </script>
 
 </body>
 </html>

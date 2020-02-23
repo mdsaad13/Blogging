@@ -123,11 +123,15 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="DAL\AccountUtil.cs" />
+    <Compile Include="DAL\CommonUtil.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModel.cs" />
+    <Compile Include="Models\ModelBundle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -136,8 +140,20 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\style.css" />
+    <Content Include="Images\default_user.png" />
+    <Content Include="Images\logo-solid.jpg" />
+    <Content Include="Images\logo-transparent.png" />
+    <Content Include="Plugins\daterangepicker\daterangepicker.css" />
+    <Content Include="Plugins\daterangepicker\daterangepicker.js" />
+    <Content Include="Plugins\daterangepicker\moment.js" />
+    <Content Include="Plugins\icheck-bootstrap\icheck-bootstrap.css" />
     <Content Include="Plugins\pace-progress\pace-progress.css" />
     <Content Include="Plugins\pace-progress\pace-progress.js" />
+    <Content Include="Plugins\select2\select2.css" />
+    <Content Include="Plugins\select2\select2.js" />
+    <Content Include="Plugins\sweetalert2\sweetalert2.js" />
+    <Content Include="Plugins\wow\animate.css" />
+    <Content Include="Plugins\wow\wow.js" />
     <Content Include="Scripts\adminlte.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -153,6 +169,7 @@
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-ui.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -170,10 +187,10 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Blog\Index.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

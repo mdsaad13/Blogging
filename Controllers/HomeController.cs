@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Blogging.DAL;
+using Blogging.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,26 +12,29 @@ namespace Blogging.Controllers
     {
         public HomeController()
         {
-            ViewBag.SoftwareName = "Blogging";
+            ViewBag.SoftwareName = "Blogger";
         }
 
         public ActionResult Index()
         {
+            GetUserDetails();
             return View();
         }
 
-        public ActionResult About()
+        internal void GetUserDetails()
         {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
+            AccountUtil accountUtil = new AccountUtil();
+            
+            long userID = Convert.ToInt64(Session["userID"]);
+            if(userID != 0)
+            {
+                AccountModel accountModel = accountUtil.GetUserById(userID);
+                ViewBag.Name = accountModel.Name;
+                ViewBag.UserName = accountModel.UserName;
+                ViewBag.ImgUrl = accountModel.ImgUrl;
+                ViewBag.Followers = 0;
+                ViewBag.Blogs = 0;
+            }
         }
     }
 }

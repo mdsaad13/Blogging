@@ -1,0 +1,157 @@
+﻿@model Blogging.Models.AccountModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Login | @ViewBag.SoftwareName</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+
+    @Styles.Render("~/css/main")
+
+    <!-- Ionicons -->
+    @*<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">*@
+
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+</head>
+<body class="hold-transition register-page" style="font-family:'Product Sans'">
+
+    <div class="login-box">
+        <div class="login-logo">
+            <img src="~/Images/logo-transparent.png" class="img-fluid" style="height: 42px;
+        vertical-align: text-bottom" />
+            <a href="">@ViewBag.SoftwareName</a>
+        </div>
+        @using (Html.BeginForm("LoginAjax", "Account", FormMethod.Post, new { @id = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="card" style="border-radius: .25rem;">
+                <div class="card-body register-card-body">
+                    <h4 class="login-box-msg">Login</h4>
+
+                    <div class="col-12" id="error-wrapper" style="margin-top: .5rem;margin-bottom: .5rem;">
+                        <div class="alert alert-danger" id="alert" style="display:none">
+                        </div>
+                    </div>
+                    
+                    @Html.ValidationSummary(true, "", new { @class = "form-error" })
+
+                    @Html.ValidationMessageFor(model => model.unameORmobile, "", new { @class = "form-error" })
+                    <div class="input-group mb-3">
+                        @Html.EditorFor(model => model.unameORmobile, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter username or mobile number" } })
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-key"></span>
+                            </div>
+                        </div>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "form-error" })
+                    <div class="input-group mb-3">
+                        @Html.PasswordFor(model => model.Password, new { @class = "form-control", @placeholder = "Enter password" })
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3"></div>
+                    <div class="input-group mb-3 text-center">
+                        <input type="submit" value="Login" class="btn btn-info btn-block" id="btn-login" />
+                        <div class="spinner-border text-info hidden" role="status" id="spinner"></div>
+                    </div>
+
+                    <p class="mb-1">
+                        <a href="@Url.Action("forgot-password")">I forgot my password</a>
+                    </p>
+                    <p class="mb-1">
+                        <a href="@Url.Action("register")">Don't have an account?</a>
+                    </p>
+
+                </div>
+            </div>
+        }
+        <!-- /.card -->
+
+    </div>
+    <!-- /.register-box -->
+
+    @Scripts.Render("~/js/main")
+    @Scripts.Render("~/js/jqueryval")
+    @Scripts.Render("~/js/jquery-ui")
+
+    <script>
+        $(document).ready(function () {
+
+            $('#btn-login').click(function () {
+
+                var form = $('#form')[0];
+                var formData = new FormData(form);
+                
+                if ($(form).valid()) {
+                    
+
+                    $.ajax({
+                        type: 'POST',
+                        url: form.action,
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        beforeSend: function () {
+                            $("#form :input").prop("disabled", true);
+                            $('#btn-login').addClass('hidden');
+                            $('#spinner').removeClass('hidden');
+                            $('#alert').html('');
+                        },
+                        success: function (data) {
+                            $("#form :input").prop("disabled", false);
+                            $('#spinner').addClass('hidden');
+                            $('#btn-login').removeClass('hidden');
+                            $('#alert').css('display', 'block');
+
+                            if (data.status) {
+                                $("#form :input").prop("disabled", true);
+
+                                $('#alert').removeClass('alert-danger');
+                                $('#alert').addClass('alert-success');
+                                $('#alert').html('Login successfully!<br>Please wait...');
+
+                                setTimeout(SuccessRedirect(), 500);
+                                function SuccessRedirect() {
+                                     window.location.replace('/Home/Index/');
+                                }
+
+                            } else if (!data.status) {
+
+                                $('#alert').text(data.errorText);
+
+                                setTimeout(runEffect(), 500);
+
+                                function runEffect() {
+                                     $("#error-wrapper").effect( "shake", {times:4}, 500);
+                                }
+                                
+                            }
+
+                            return false;
+                        }
+                    });
+                    return false;
+                }
+                return false;
+            });
+
+        });
+    </script>
+
+</body>
+</html>
