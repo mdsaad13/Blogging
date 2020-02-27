@@ -118,8 +118,14 @@ namespace Blogging.Controllers
         public ActionResult AddImages(int blogid)
         {
             GetUserDetails();
-
+            ViewBag.Title = "Add Images to blog";
             return View();
+        }
+
+        [HttpPost]
+        public JsonResult TestSubmit(FormCollection Fc)
+        {
+            return Json(new { status = 3 });
         }
         
         public ActionResult MyBlogs()

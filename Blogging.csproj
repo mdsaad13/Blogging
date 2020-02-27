@@ -128,6 +128,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="DAL\AccountUtil.cs" />
     <Compile Include="DAL\CommonUtil.cs" />
+    <Compile Include="DAL\CreatorUtil.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -149,6 +150,8 @@
     <Content Include="Plugins\daterangepicker\daterangepicker.css" />
     <Content Include="Plugins\daterangepicker\daterangepicker.js" />
     <Content Include="Plugins\daterangepicker\moment.js" />
+    <Content Include="Plugins\ekko-lightbox\ekko-lightbox.css" />
+    <Content Include="Plugins\ekko-lightbox\ekko-lightbox.js" />
     <Content Include="Plugins\icheck-bootstrap\icheck-bootstrap.css" />
     <Content Include="Plugins\imageCropper\cropper.css" />
     <Content Include="Plugins\imageCropper\cropper.js" />
