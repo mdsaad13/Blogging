@@ -1,0 +1,31 @@
+﻿@model Blogging.Models.BlogModel
+
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+@Html.HiddenFor(model => model.BlogID)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label" })
+        @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter title of your blog" } })
+        @Html.ValidationMessageFor(model => model.Title, "", new { @class = "form-error" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.CatID, htmlAttributes: new { @class = "control-label" })
+        @Html.DropDownListFor(model => model.CatID, ViewBag.AllCat as SelectList, "Select Category", new { @class = "custom-select select2" })
+        @Html.ValidationMessageFor(model => model.CatID, "", new { @class = "form-error" })
+    </div>
+
+    <div class="form-group" id="URL-div">
+        @Html.LabelFor(model => model.URL, htmlAttributes: new { @class = "control-label" })
+        @Html.EditorFor(model => model.URL, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter url to access your blog" } })
+        @Html.ValidationMessageFor(model => model.URL, "", new { @class = "form-error" })
+        <span class="form-error" id="error_URL"></span>
+    </div>
+
+    <div class="form-group" id="Content-div">
+        @Html.LabelFor(model => model.Content, htmlAttributes: new { @class = "control-label" })
+        @Html.TextAreaFor(model => model.Content, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.Content, "", new { @class = "form-error" })
+        <span class="form-error" id="error_Content"></span>
+    </div>

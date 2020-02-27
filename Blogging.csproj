@@ -124,6 +124,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BlogController.cs" />
+    <Compile Include="Controllers\CreatorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="DAL\AccountUtil.cs" />
     <Compile Include="DAL\CommonUtil.cs" />
@@ -131,6 +132,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModel.cs" />
+    <Compile Include="Models\BlogModel.cs" />
+    <Compile Include="Models\CategoryModel.cs" />
     <Compile Include="Models\ModelBundle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -147,10 +150,14 @@
     <Content Include="Plugins\daterangepicker\daterangepicker.js" />
     <Content Include="Plugins\daterangepicker\moment.js" />
     <Content Include="Plugins\icheck-bootstrap\icheck-bootstrap.css" />
+    <Content Include="Plugins\imageCropper\cropper.css" />
+    <Content Include="Plugins\imageCropper\cropper.js" />
     <Content Include="Plugins\pace-progress\pace-progress.css" />
     <Content Include="Plugins\pace-progress\pace-progress.js" />
     <Content Include="Plugins\select2\select2.css" />
     <Content Include="Plugins\select2\select2.js" />
+    <Content Include="Plugins\summernote-bs4\summernote-bs4.css" />
+    <Content Include="Plugins\summernote-bs4\summernote-bs4.js" />
     <Content Include="Plugins\sweetalert2\sweetalert2.js" />
     <Content Include="Plugins\wow\animate.css" />
     <Content Include="Plugins\wow\wow.js" />
@@ -176,6 +183,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\overlayScrollbars.js" />
+    <Content Include="Scripts\popper.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -191,6 +199,9 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Blog\Index.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Creator\CreatorLayout.cshtml" />
+    <Content Include="Views\Creator\Index.cshtml" />
+    <Content Include="Views\Creator\_BlogForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

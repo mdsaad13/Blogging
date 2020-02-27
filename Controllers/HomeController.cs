@@ -15,18 +15,15 @@ namespace Blogging.Controllers
             ViewBag.SoftwareName = "Blogger";
         }
 
-        public ActionResult Index()
-        {
-            GetUserDetails();
-            return View();
-        }
-
+        /// <summary>
+        /// <b>Gets user details from session that's displayed on nav-bar</b>
+        /// </summary>
         internal void GetUserDetails()
         {
             AccountUtil accountUtil = new AccountUtil();
-            
+
             long userID = Convert.ToInt64(Session["userID"]);
-            if(userID != 0)
+            if (userID != 0)
             {
                 AccountModel accountModel = accountUtil.GetUserById(userID);
                 ViewBag.Name = accountModel.Name;
@@ -36,5 +33,12 @@ namespace Blogging.Controllers
                 ViewBag.Blogs = 0;
             }
         }
+
+        public ActionResult Index()
+        {
+            GetUserDetails();
+            return View();
+        }
+
     }
 }

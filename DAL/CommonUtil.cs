@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Blogging.Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -86,6 +87,35 @@ namespace Blogging.DAL
                 return false;
             }
            
+        }
+
+        internal List<CategoryModel> GetAllCat()
+        {
+            DataTable td = new DataTable();
+            List<CategoryModel> list = new List<CategoryModel>();
+            try
+            {
+                string sqlquery = "SELECT * FROM categories ORDER BY name ASC";
+                SqlCommand cmd = new SqlCommand(sqlquery, Conn);
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+                Conn.Open();
+                adp.Fill(td);
+                foreach (DataRow row in td.Rows)
+                {
+                    CategoryModel obj = new CategoryModel();
+                    obj.CatID = Convert.ToInt64(row["catid"]);
+                    obj.Name = Convert.ToString(row["name"]);
+                    obj.Icon = Convert.ToString(row["icon"]);
+                    list.Add(obj);
+                }
+            }
+            catch (Exception)
+            { }
+            finally
+            {
+                Conn.Close();
+            }
+            return list;
         }
     }
 }
