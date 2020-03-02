@@ -13,14 +13,19 @@ namespace Blogging.Models
 
         public long UserID { get; set; }
 
+
+        [Display(Name = "Category")]
         [Required]
         public long CatID { get; set; }
+
 
         [Required]
         [AllowHtml]
         [StringLength(2000, MinimumLength = 30, ErrorMessage = "Content should contain minimum 10 characters")]
         public string Content { get; set; }
 
+
+        [Display(Name = "Title of your blog")]
         [Required]
         [StringLength(100, MinimumLength = 5, ErrorMessage = "Title should contain minimum 5 characters")]
         public string Title { get; set; }
@@ -35,10 +40,26 @@ namespace Blogging.Models
 
         public long ViewTime { get; set; }
 
+
+        [Display(Name = "URL to access your blog")]
         [Required]
         [RegularExpression("^([a-zA-Z0-9_.-]{5,30})$", ErrorMessage = "URL should be at least of 5 characters and can only include _ and . special characters")]
         public string URL { get; set; }
 
+
+        [Display(Name = "Add images to blog")]
         public bool NextStep { get; set; }
+    }
+
+    public class BlogImages
+    {
+        public int ID { get; set; }
+
+        public int BlogID { get; set; }
+
+        public string URL { get; set; }
+
+        public string Alt { get; set; }
+
     }
 }

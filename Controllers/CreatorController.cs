@@ -2,12 +2,15 @@
 using Blogging.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
 namespace Blogging.Controllers
 {
+    [SessionAuthorize]
     public class CreatorController : Controller
     {
         public CreatorController()
@@ -47,7 +50,6 @@ namespace Blogging.Controllers
             GetUserDetails();
             CommonUtil commonUtil = new CommonUtil();
             ViewBag.AllCat = new SelectList(commonUtil.GetAllCat(), "catid", "name");
-            //ViewData["AllCat"] = new SelectList(commonUtil.GetAllCat(), "catid", "name");
             return View();
         }
         
@@ -89,16 +91,24 @@ namespace Blogging.Controllers
                         blogModel.Status = 0;
                         blogModel.ViewCount = 0;
                         blogModel.ViewTime = 0;
-
-                        if(blogModel.NextStep)
+                        // Inserting into blog
+                        CreatorUtil creatorUtil = new CreatorUtil();
+                        if (creatorUtil.CreatBlog(blogModel))
                         {
-                            // Redirect to Add Images
-                            return Json(new { status = 2, retURL = "/Creator/AddBlog/"+ blogModel.BlogID + "/AddImages" });
+                            if (blogModel.NextStep)
+                            {
+                                // Redirect to Add Images
+                                return Json(new { status = 2, retURL = "/Creator/AddBlog/" + blogModel.BlogID + "/AddImages" });
+                            }
+                            else
+                            {
+                                // Redirect to Blogs List
+                                return Json(new { status = 2, retURL = "/Creator/MyBlogs" });
+                            }
                         }
                         else
                         {
-                            // Redirect to Blogs List
-                            return Json(new { status = 2, retURL = "/Creator/MyBlogs" });
+                            return Json(new { status = 0 });
                         }
                     }
                     else
@@ -119,19 +129,124 @@ namespace Blogging.Controllers
         {
             GetUserDetails();
             ViewBag.Title = "Add Images to blog";
-            return View();
+            CommonUtil commonUtil = new CommonUtil();
+            if (commonUtil.Validate("blog", "blogid", Convert.ToString(blogid)))
+            {
+                ViewBag.BlogID = blogid;
+                return View();
+            }
+            else
+            {
+                return View("Error");
+            }
         }
 
         [HttpPost]
-        public JsonResult TestSubmit(FormCollection Fc)
+        public JsonResult AddImagesAjax(FormCollection formCollection)
         {
-            return Json(new { status = 3 });
+            var id = Convert.ToInt32(formCollection["id"]);
+
+            HttpFileCollectionBase file = Request.Files;
+            CommonUtil commonUtil = new CommonUtil();
+
+            if (commonUtil.CountByArgs("blogimg", "blogid = "+ id) <= 4)
+            {
+                if (file[0] != null && id != 0)
+                {
+                    string uniqueFileName = Guid.NewGuid().ToString();
+                    string extension = Path.GetExtension(file[0].FileName);
+                    uniqueFileName = uniqueFileName + extension;
+
+
+                    string path = Server.MapPath("~/Images/Blog/");
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+
+                    file[0].SaveAs(path + uniqueFileName);
+                    string ImgUrl = uniqueFileName;
+                    CreatorUtil creatorUtil = new CreatorUtil();
+
+                    if (creatorUtil.AttachImgToBlog(ImgUrl, id))
+                    {
+                        return Json(new { status = true });
+                    }
+                    else
+                    {
+                        // Image not inserted to DB
+                        return Json(new { status = false, message = "An unknown error occured. Please try again later..." });
+                    }
+                }
+                else
+                {
+                    // Image file or `blogid` not found
+                    return Json(new { status = false, message = "An unknown error occured. Please try again later..." });
+                }
+            }
+            else
+            {
+                return Json(new { status = false, message = "You can only attach 4 images to your blog" });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult FetchBlogImages(FormCollection formCollection)
+        {
+            int BlogID = Convert.ToInt32(formCollection["id"]);
+
+            string baseUrl = Request.Url.GetLeftPart(UriPartial.Authority);
+
+            StringBuilder Content = new StringBuilder();
+
+            CreatorUtil creatorUtil = new CreatorUtil();
+
+            List<BlogImages> ImgsList = new List<BlogImages>();
+
+            ImgsList = creatorUtil.GetImgsByBlog(BlogID);
+
+            if (ImgsList.Count > 0)
+            {
+                foreach (var item in ImgsList)
+                {
+
+                    Content.AppendFormat(@"
+        <div class=""col-sm-3 text-center"">
+            <a href = ""{3}/Images/Blog/{0}"" data-toggle = ""lightbox"" data-title = ""{2} - Blog Image"" data-gallery = ""gallery""  >
+                   <img src = ""{3}/Images/Blog/{0}"" class=""img-fluid mb-2 img-bordered-sm"" alt =""{2} - Blog Image"" >
+            </a>
+            <button class=""btn btn-outline-danger btn-block deleteImg"" id = ""{1}""> Delete</button>
+        </div>", item.URL, item.ID, BlogID, baseUrl);
+
+                }
+            }
+            else
+            {
+                Content.Append(@"
+        <div class=""col-sm-12 text-center"">
+            <div class=""alert alert-default-info alert-dismissible fade show"" role=""alert"">
+                <strong>No images found!</strong>
+                <button type=""button"" class=""close"" data-dismiss=""alert"" aria-label=""Close"">
+                    <span aria-hidden=""true"">&times;</span>
+                </button>
+             </div>
+        </div>");
+
+            }
+
+            return Json(new { status = true, content = Content.ToString() });
         }
         
         public ActionResult MyBlogs()
         {
             GetUserDetails();
 
+            return View();
+        }
+
+        public ActionResult Error()
+        {
+            GetUserDetails();
             return View();
         }
     }

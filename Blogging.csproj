@@ -126,6 +126,7 @@
     <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\CreatorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SessionAuthorize.cs" />
     <Compile Include="DAL\AccountUtil.cs" />
     <Compile Include="DAL\CommonUtil.cs" />
     <Compile Include="DAL\CreatorUtil.cs" />
@@ -153,8 +154,8 @@
     <Content Include="Plugins\ekko-lightbox\ekko-lightbox.css" />
     <Content Include="Plugins\ekko-lightbox\ekko-lightbox.js" />
     <Content Include="Plugins\icheck-bootstrap\icheck-bootstrap.css" />
-    <Content Include="Plugins\imageCropper\cropper.css" />
-    <Content Include="Plugins\imageCropper\cropper.js" />
+    <Content Include="Plugins\Jcropper\Jcropper.css" />
+    <Content Include="Plugins\Jcropper\Jcropper.js" />
     <Content Include="Plugins\pace-progress\pace-progress.css" />
     <Content Include="Plugins\pace-progress\pace-progress.js" />
     <Content Include="Plugins\select2\select2.css" />
@@ -208,6 +209,7 @@
     <Content Include="Views\Creator\AddBlog.cshtml" />
     <Content Include="Views\Creator\AddImages.cshtml" />
     <Content Include="Views\Creator\MyBlogs.cshtml" />
+    <Content Include="Views\Creator\Error.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

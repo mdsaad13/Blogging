@@ -3,7 +3,7 @@
 }
 @section head{
     <link rel="stylesheet" href="~/Plugins/ekko-lightbox/ekko-lightbox.css" />
-    <link rel="stylesheet" href="~/Plugins/imageCropper/cropper.css" />
+    <link rel="stylesheet" href="~/Plugins/Jcropper/Jcropper.css" />
 }
 
 <div class="row">
@@ -15,46 +15,86 @@
                         <h4>@ViewBag.Title</h4>
                     </div>
                     <div class="col-2">
-                        <button type="button" class="btn btn-info btn-block">
+                        <button type="button" class="btn btn-info btn-block" id="OpenImgUpload">
                             Upload Images <i class="fas fa-file-upload mb-2"></i>
                         </button>
+                        <form>
+                            <input type="file" id="FileUpload1" style="display:none"/>
+                        </form>
                     </div>
                 </div>
             </div>
             <div class="card-body">
-                <div class="row mb-3 text-center hidden" id="img-preloader">
-                    <div class="col-sm-4">
-                        <div class="animated-img-preloader img-bordered-sm"></div>
+                <div class="row mb-4" id="img-editor" style="display:none">
+                    <div class="col-md-12">
+                        <div class="alert alert-default-info alert-dismissible fade show" role="alert">
+                            <ul>
+                                <li>Crop you image <strong>by selecting on the image</strong></li>
+                                <li>Click on <strong>crop</strong> to view cropped image</li>
+                                <li>Click on <strong>upload</strong> to attach it to your blog</li>
+                            </ul>
+                            <strong></strong>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="progress mb-4 hidden">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                        </div>
                     </div>
-                    <div class="col-sm-4">
-                        <div class="animated-img-preloader img-bordered-sm"></div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="animated-img-preloader img-bordered-sm"></div>
-                    </div>
-                </div>
-                <div class="progress">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                </div>
-                <div class="row mb-3" id="ajax-images-row">
-                    <div class="col-sm-3 text-center">
-                        <label class="label" data-toggle="tooltip" title="Change your avatar">
-                            <img class="rounded" id="avatar" src="https://avatars0.githubusercontent.com/u/3456749?s=160" alt="avatar">
-                            <input type="file" class="sr-only" id="input" name="image" accept="image/*">
-                        </label>
-                        <!--
-                            <a href="">
-                            Upload Image
-                            <img src="data:image/png;base64,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" class="img-fluid mb-2" alt="black sample">
-                        </a>
-                        -->
+                    <div class="col-md-6">
+                        <img id="Image1" src="https://via.placeholder.com/1200/000000.png?text=2" alt="" class="img-fluid" height="200" style="cursor: crosshair;" />
 
+                        <input type="button" id="btnCrop" value="Crop" class="btn btn-primary btn-block mt-2" style="display: none" />
+                        
+                        <input type="hidden" name="imgX1" id="imgX1" />
+                        <input type="hidden" name="imgY1" id="imgY1" />
+                        <input type="hidden" name="imgWidth" id="imgWidth" />
+                        <input type="hidden" name="imgHeight" id="imgHeight" />
+                        <input type="hidden" name="imgCropped" id="imgCropped" />
+                        <input type="hidden" name="blogID" id="blogID" value="@ViewBag.BlogID" />
                     </div>
-                    <div class="col-sm-3 text-center">
+                    <div class="col-md-6">
+                        <canvas id="canvas" height="5" width="5" class="img-fluid"></canvas>
+                        <input type="button" id="btnUpload" value="Upload" style="display: none" class="btn btn-success btn-block mt-2" />
+                    </div>
+                </div>
+
+                <div class="row" id="RetMessage" style="display:none">
+                    <div class="col-12">
+                        <div class="alert alert-dismissible fade show mb-3" role="alert" id="RetMessageBG">
+                            <strong id="RetMessageInner"></strong>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3 text-center hidden" id="img-preloader">
+                    <div class="col-sm-3">
+                        <div class="animated-img-preloader img-bordered-sm"></div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="animated-img-preloader img-bordered-sm"></div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="animated-img-preloader img-bordered-sm"></div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="animated-img-preloader img-bordered-sm"></div>
+                    </div>
+                </div>
+
+                <div class="row mb-3" id="ajax-images-row">
+
+                    @*<div class="col-sm-3 text-center">
                         <a href="https://via.placeholder.com/1200/000000.png?text=2" data-toggle="lightbox" data-title="sample 2 - black" data-gallery="gallery">
                             <img src="https://via.placeholder.com/300/000000?text=2" class="img-fluid mb-2 img-bordered-sm" alt="black sample">
                         </a>
+                        <button class="btn btn-outline-danger btn-block">Delete</button>
                     </div>
+
                     <div class="col-sm-3 text-center">
                         <a href="https://via.placeholder.com/1200/FF0000/FFFFFF.png?text=3" data-toggle="lightbox" data-title="sample 3 - red" data-gallery="gallery">
                             <img src="https://via.placeholder.com/300/FF0000/FFFFFF?text=3" class="img-fluid mb-2 img-bordered-sm" alt="red sample">
@@ -64,42 +104,18 @@
                         <a href="https://via.placeholder.com/1200/FF0000/FFFFFF.png?text=4" data-toggle="lightbox" data-title="sample 4 - red" data-gallery="gallery">
                             <img src="https://via.placeholder.com/300/FF0000/FFFFFF?text=4" class="img-fluid mb-2 img-bordered-sm" alt="red sample">
                         </a>
-                    </div>
+                    </div>*@
                 </div>
 
             </div>
         </div>
     </div>
 </div>
-
-
-<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content modal-xl">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Crop the image</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="img-container">
-                    <img id="image" src="https://avatars0.githubusercontent.com/u/3456749">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="crop">Crop</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 @section scripts{
     <script type="text/javascript" src="~/Plugins/ekko-lightbox/ekko-lightbox.js"></script>
 
-    <script type="text/javascript" src="~/Plugins/imageCropper/cropper.js"></script>
+    <script type="text/javascript" src="~/Plugins/Jcropper/Jcropper.js"></script>
 
     <script>
         $(function () {
@@ -110,114 +126,184 @@
                 });
             });
         });
+        function AjaxLoadImages() {
+            // Dynamic load images
 
-        window.addEventListener('DOMContentLoaded', function () {
-            var avatar = document.getElementById('avatar');
-            var image = document.getElementById('image');
-            var input = document.getElementById('input');
-            var $progress = $('.progress');
-            var $progressBar = $('.progress-bar');
-            var $alert = $('.alert');
-            var $modal = $('#modal');
-            var cropper;
+            body = $('#ajax-images-row');
+            body.html('');
 
-            input.addEventListener('change', function (e) {
-                var files = e.target.files;
-                var done = function (url) {
-                    input.value = '';
-                    image.src = url;
-                    $alert.hide();
-                    $modal.modal('show');
-                };
-                var reader;
-                var file;
-                var url;
+            var id = $('#blogID').val();
+            $.ajax({
+                type: "POST",
+                url: "/Creator/FetchBlogImages",
+                data: {
+                    id: id
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $("#ajax-images-row").addClass('hidden');
+                    $("#img-preloader").removeClass('hidden');
+                },
+                success: function (data) {
 
-                if (files && files.length > 0) {
-                    file = files[0];
+                    setTimeout(hideProgressBar(), 1000);
+                    function hideProgressBar() {
+                        $("#ajax-images-row").removeClass('hidden');
+                        $("#img-preloader").addClass('hidden');
+                    }
 
-                    if (URL) {
-                        done(URL.createObjectURL(file));
-                    } else if (FileReader) {
-                        reader = new FileReader();
-                        reader.onload = function (e) {
-                            done(reader.result);
-                        };
-                        reader.readAsDataURL(file);
+                    if (data.status) {
+                        body.html(data.content);
                     }
                 }
             });
+        }
+        AjaxLoadImages();
+        // Open img upload dialogue
+        $('#OpenImgUpload').click(function () { $('#FileUpload1').trigger('click'); });
 
-            $modal.on('shown.bs.modal', function () {
-                cropper = new Cropper(image, {
-                    aspectRatio: 1,
-                    viewMode: 3,
+        $('#FileUpload1').change(function () {
+            $('#Image1').hide();
+            $('#OpenImgUpload').attr('disabled', true);
+            $('#img-editor').hide();
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#Image1').show();
+                $('#img-editor').show();
+                $('#Image1').attr("src", e.target.result);
+                $('#Image1').Jcrop({
+                    bgFade: true,
+                    onChange: SetCoordinates,
+                    onSelect: SetCoordinates,
+                    //boxWidth: 450,
+                    //boxHeight: 500
+                    boxWidth: 500,
+                    boxHeight: 600
                 });
-            }).on('hidden.bs.modal', function () {
-                cropper.destroy();
-                cropper = null;
-            });
+            }
+            reader.readAsDataURL($(this)[0].files[0]);
+        });
+        $('#btnCrop').click(function () {
+            var x1 = $('#imgX1').val();
+            var y1 = $('#imgY1').val();
+            var width = $('#imgWidth').val();
+            var height = $('#imgHeight').val();
+            var canvas = $("#canvas")[0];
+            var context = canvas.getContext('2d');
+            var img = new Image();
+            img.onload = function () {
+                canvas.height = height;
+                canvas.width = width;
+                context.drawImage(img, x1, y1, width, height, 0, 0, width, height);
+                $('#imgCropped').val(canvas.toDataURL());
+                $('#btnUpload').show();
+            };
+            img.src = $('#Image1').attr("src");
+        });
+        function SetCoordinates(c) {
+            $('#imgX1').val(c.x);
+            $('#imgY1').val(c.y);
+            $('#imgWidth').val(c.w);
+            $('#imgHeight').val(c.h);
+            $('#btnCrop').show();
+        };
 
-            document.getElementById('crop').addEventListener('click', function () {
-                var initialAvatarURL;
-                var canvas;
+        $('#btnUpload').click(function () {
+            var formData = new FormData();
 
-                $modal.modal('hide');
+            var imgCropped = $('#imgCropped').val();
+            var id = $('#blogID').val();
+            var canvas = $("#canvas")[0];
 
-                if (cropper) {
-                    canvas = cropper.getCroppedCanvas({
-                        width: 160,
-                        height: 160,
-                    });
-                    initialAvatarURL = avatar.src;
-                    avatar.src = canvas.toDataURL();
-                    $progress.show();
-                    $alert.removeClass('alert-success alert-warning');
+            formData.append('id', id);
 
-                    canvas.toBlob(function (blob) {
-                        var formData = new FormData();
-
-                        formData.append('avatar', blob, 'avatar.jpg');
-                        //$.ajax('https://jsonplaceholder.typicode.com/posts', {
-                        $.ajax('Creator/TestSubmit', {
-                            method: 'POST',
-                            data: formData,
-                            processData: false,
-                            contentType: false,
-
-                            xhr: function () {
-                                var xhr = new XMLHttpRequest();
-
-                                xhr.upload.onprogress = function (e) {
-                                    var percent = '0';
-                                    var percentage = '0%';
-
-                                    if (e.lengthComputable) {
-                                        percent = Math.round((e.loaded / e.total) * 100);
-                                        percentage = percent + '%';
-                                        $progressBar.width(percentage).attr('aria-valuenow', percent).text(percentage);
-                                    }
-                                };
-
-                                return xhr;
-                            },
-
-                            success: function () {
-                                $alert.show().addClass('alert-success').text('Upload success');
-                            },
-
-                            error: function () {
-                                avatar.src = initialAvatarURL;
-                                $alert.show().addClass('alert-warning').text('Upload error');
-                            },
-
-                            complete: function () {
-                                $progress.hide();
-                            },
-                        });
-                    });
+            function dataURLtoBlob(dataURL) {
+                var array, binary, i;
+                binary = atob(dataURL.split(',')[1]);
+                array = [];
+                i = 0;
+                while (i < binary.length) {
+                    array.push(binary.charCodeAt(i));
+                    i++;
                 }
+                return new Blob([new Uint8Array(array)], {
+                    type: 'image/png'
+                });
+            }
+
+            file = dataURLtoBlob(imgCropped);
+            formData.append('img', file, 'image.jpg');
+
+            //canvas.toBlob(function (blob) {
+            //    formData.append('img', blob, 'image.jpg');
+            //}, 'image/jpeg', 0.95);
+
+            var $progress = $('.progress');
+            var $progressBar = $('.progress-bar');
+
+            $.ajax({
+                type: "POST",
+                enctype: 'multipart/form-data',
+                url: "/Creator/AddImagesAjax",
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: "json",
+                beforeSend: function () {
+                    $("input").prop("disabled", true);
+                    $("#RetMessage").slideUp();
+                    $("#RetMessageInner").text('');
+                    $("#RetMessageBG").removeClass('alert-default-danger alert-default-success');
+                    $progress.removeClass('hidden');
+                },
+                xhr: function () {
+                    var xhr = new XMLHttpRequest();
+
+                    xhr.upload.onprogress = function (e) {
+                        var percent = '0';
+                        var percentage = '0%';
+
+                        if (e.lengthComputable) {
+                            percent = Math.round((e.loaded / e.total) * 100);
+                            percentage = percent + '%';
+                            $progressBar.width(percentage).attr('aria-valuenow', percent).text(percentage);
+                        }
+                    };
+
+                    return xhr;
+                },
+                success: function (data) {
+                    // alert(data);
+                    setTimeout(hideProgressBar(), 1000);
+                    function hideProgressBar() {
+                        $progress.addClass('hidden');
+                    }
+                    $("#RetMessage").slideDown();
+                    $("input").prop("disabled", false);
+                    $('#OpenImgUpload').attr('disabled', false);
+
+                    $('#img-editor').slideUp();
+                    var canvas = $("#canvas")[0];
+                    const context = canvas.getContext('2d');
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    jQuery('#Image1').removeAttr('src');
+                    $("#btnUpload").hide();
+                    $('#btnCrop').hide();
+
+                    if (data.status) {
+                        $("#RetMessageBG").addClass('alert-default-success');
+                        $("#RetMessageInner").text('Image uploaded successfully');
+
+                         AjaxLoadImages();
+
+                    } else if (!data.status) {
+                        $("#RetMessageBG").addClass('alert-default-danger');
+                        $("#RetMessageInner").text(data.message);
+                    }
+                }
+
             });
         });
+
     </script>
 }

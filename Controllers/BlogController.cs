@@ -11,7 +11,7 @@ namespace Blogging.Controllers
     //[RoutePrefix("blog")]
     public class BlogController : Controller
     {
-        BlogController()
+        public BlogController()
         {
             // Constructor
             ViewBag.SoftwareName = "Blogger";
