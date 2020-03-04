@@ -1,8 +1,82 @@
-﻿
+﻿@model IEnumerable<Blogging.Models.BlogModel>
 @{
-    ViewBag.Title = "MyBlogs";
+    ViewBag.Title = "My Blogs";
     Layout = "~/Views/Creator/CreatorLayout.cshtml";
 }
+@section head{
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/r-2.2.3/sc-2.0.1/datatables.min.css" />
+}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">All Blogs</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table class="table table-striped" id="myDataTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Created Date</th>
+                            <th scope="col">URL</th>
+                            <th scope="col">View Count</th>
+                            <th scope="col">View Time</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int i = 1; }
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @i
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Title)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DateTime)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.URL)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FormatViewCount)
+                                </td>
+                                <td>
+                                    @{
+                                        var timespan = TimeSpan.FromSeconds(item.ViewTime);
+                                        @timespan.ToString(@"mm\:ss")
+                                    }
+                                </td>
+                                <td>
+                                    <a class="btn btn-app" href="@Url.Action("ViewBlog", "Creator",  new { blogid = item.BlogID })">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+    <!-- /.col -->
+</div>
 
-<h2>MyBlogs</h2>
-
+@section scripts{
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/r-2.2.3/sc-2.0.1/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#myDataTable').DataTable({
+                responsive: true
+            });
+        });
+    </script>
+}

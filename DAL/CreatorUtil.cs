@@ -1,4 +1,5 @@
-﻿using Blogging.Models;
+﻿using Blogging.Controllers;
+using Blogging.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -144,5 +145,48 @@ namespace Blogging.DAL
             return list;
         }
 
+        internal List<BlogModel> GetAllBlogs()
+        {
+            DataTable td = new DataTable();
+            List<BlogModel> list = new List<BlogModel>();
+            try
+            {
+                long UserID = Convert.ToInt64(HttpContext.Current.Session["userID"]);
+                string sqlquery = "SELECT * FROM blog WHERE userID = @userID ORDER BY datetime DESC";
+
+                SqlCommand cmd = new SqlCommand(sqlquery, Conn);
+                cmd.Parameters.Add(new SqlParameter("userID", UserID));
+
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+                Conn.Open();
+                adp.Fill(td);
+                foreach (DataRow row in td.Rows)
+                {
+                    BlogModel obj = new BlogModel();
+                    obj.BlogID = Convert.ToInt32(row["blogid"]);
+                    obj.Title = Convert.ToString(row["title"]);
+                    obj.Content = Convert.ToString(row["blogContent"]);
+                    obj.DateTime = Convert.ToDateTime(row["datetime"]);
+                    obj.Status = Convert.ToInt32(row["status"]);
+                    obj.ViewCount = Convert.ToInt64(row["viewcount"]);
+                    obj.FormatViewCount = GeneralFns.FormatNumber(obj.ViewCount);
+                    obj.ViewTime = Convert.ToInt64(row["viewtime"]);
+                    obj.CatID = Convert.ToInt32(row["catid"]);
+                    obj.URL = Convert.ToString(row["url"]);
+
+                    if (!DBNull.Value.Equals(row["updatedate"]))
+                        obj.UpdateDateTime = Convert.ToDateTime(row["updatedate"]);
+
+                    list.Add(obj);
+                }
+            }
+            catch (Exception)
+            { }
+            finally
+            {
+                Conn.Close();
+            }
+            return list;
+        }
     }
 }

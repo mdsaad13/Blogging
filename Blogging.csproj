@@ -125,6 +125,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\CreatorController.cs" />
+    <Compile Include="Controllers\GeneralFns.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SessionAuthorize.cs" />
     <Compile Include="DAL\AccountUtil.cs" />
@@ -134,9 +135,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModel.cs" />
+    <Compile Include="Models\BlogBundle.cs" />
     <Compile Include="Models\BlogModel.cs" />
     <Compile Include="Models\CategoryModel.cs" />
-    <Compile Include="Models\ModelBundle.cs" />
+    <Compile Include="Models\CommentsModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -210,6 +212,7 @@
     <Content Include="Views\Creator\AddImages.cshtml" />
     <Content Include="Views\Creator\MyBlogs.cshtml" />
     <Content Include="Views\Creator\Error.cshtml" />
+    <Content Include="Views\Creator\ViewBlog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

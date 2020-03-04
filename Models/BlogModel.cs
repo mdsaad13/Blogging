@@ -37,8 +37,10 @@ namespace Blogging.Models
         public int Status { get; set; }
 
         public long ViewCount { get; set; }
+        public string FormatViewCount { get; set; }
 
         public long ViewTime { get; set; }
+        public string FormatViewTime { get; set; }
 
 
         [Display(Name = "URL to access your blog")]

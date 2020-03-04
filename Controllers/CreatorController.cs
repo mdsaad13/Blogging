@@ -201,9 +201,7 @@ namespace Blogging.Controllers
 
             CreatorUtil creatorUtil = new CreatorUtil();
 
-            List<BlogImages> ImgsList = new List<BlogImages>();
-
-            ImgsList = creatorUtil.GetImgsByBlog(BlogID);
+            List<BlogImages> ImgsList = creatorUtil.GetImgsByBlog(BlogID);
 
             if (ImgsList.Count > 0)
             {
@@ -240,6 +238,16 @@ namespace Blogging.Controllers
         public ActionResult MyBlogs()
         {
             GetUserDetails();
+            CreatorUtil creatorUtil = new CreatorUtil();
+            List<BlogModel> list = creatorUtil.GetAllBlogs();
+            return View(list);
+        }
+        
+        [HttpGet]
+        [Route("Creator/MyBlogs/{blogid}")]
+        public ActionResult ViewBlog(int blogid)
+        {
+            GetUserDetails();
 
             return View();
         }
@@ -249,5 +257,6 @@ namespace Blogging.Controllers
             GetUserDetails();
             return View();
         }
+
     }
 }

@@ -146,19 +146,20 @@
                 },
                 success: function (data) {
 
-                    setTimeout(hideProgressBar(), 1000);
-                    function hideProgressBar() {
-                        $("#ajax-images-row").removeClass('hidden');
-                        $("#img-preloader").addClass('hidden');
-                    }
-
                     if (data.status) {
                         body.html(data.content);
+                        setTimeout(function () {
+                            $("#ajax-images-row").removeClass('hidden');
+                            $("#img-preloader").addClass('hidden');
+                        }, 3000);
                     }
                 }
             });
         }
-        AjaxLoadImages();
+
+        $(window).on('load', function () {
+            AjaxLoadImages();
+        });
         // Open img upload dialogue
         $('#OpenImgUpload').click(function () { $('#FileUpload1').trigger('click'); });
 
@@ -281,6 +282,10 @@
                     $("#RetMessage").slideDown();
                     $("input").prop("disabled", false);
                     $('#OpenImgUpload').attr('disabled', false);
+
+                    if ($('#Image1').data('Jcrop')) {
+                        $('#Image1').data('Jcrop').destroy();
+                    }
 
                     $('#img-editor').slideUp();
                     var canvas = $("#canvas")[0];
