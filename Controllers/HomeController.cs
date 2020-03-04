@@ -37,7 +37,11 @@ namespace Blogging.Controllers
         public ActionResult Index()
         {
             GetUserDetails();
-            return View();
+            IndexUtil indexUtil = new IndexUtil();
+
+            List<AllBlogsModel> blogBundles = indexUtil.AllBlogs();
+
+            return View(blogBundles);
         }
 
     }

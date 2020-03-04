@@ -47,6 +47,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack, Version=1.11.21.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>packages\HtmlAgilityPack.1.11.21\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -131,11 +134,12 @@
     <Compile Include="DAL\AccountUtil.cs" />
     <Compile Include="DAL\CommonUtil.cs" />
     <Compile Include="DAL\CreatorUtil.cs" />
+    <Compile Include="DAL\IndexUtil.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModel.cs" />
-    <Compile Include="Models\BlogBundle.cs" />
+    <Compile Include="Models\AllBlogsModel.cs" />
     <Compile Include="Models\BlogModel.cs" />
     <Compile Include="Models\CategoryModel.cs" />
     <Compile Include="Models\CommentsModel.cs" />
@@ -213,6 +217,7 @@
     <Content Include="Views\Creator\MyBlogs.cshtml" />
     <Content Include="Views\Creator\Error.cshtml" />
     <Content Include="Views\Creator\ViewBlog.cshtml" />
+    <Content Include="Views\Account\ViewProfile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

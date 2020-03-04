@@ -36,7 +36,7 @@ namespace Blogging.DAL
         {
             try
             {
-                string query = "SELECT COUNT(*) FROM " + TableName + " " + args;
+                string query = "SELECT COUNT(*) FROM " + TableName + " WHERE " + args;
                 SqlCommand cmd = new SqlCommand(query, Conn);
                 Conn.Open();
                 int count = Convert.ToInt32(cmd.ExecuteScalar());

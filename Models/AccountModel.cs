@@ -29,7 +29,7 @@ namespace Blogging.Models
         
         [Required(ErrorMessage = "You'll use this when you log in and if you ever need to reset your password.")]
         [Display(Name = "User Name")]
-        [RegularExpression("^([a-zA-Z0-9_.-]{5,30})$", ErrorMessage = "Username should be atleast of 5 characters and can only include _ and . special characters")]
+        [RegularExpression("^([a-zA-Z0-9_-]{5,30})$", ErrorMessage = "Username should be atleast of 5 characters and can only include _ and . special characters")]
         public string UserName { get; set; }
 
 

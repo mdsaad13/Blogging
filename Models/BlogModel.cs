@@ -45,7 +45,7 @@ namespace Blogging.Models
 
         [Display(Name = "URL to access your blog")]
         [Required]
-        [RegularExpression("^([a-zA-Z0-9_.-]{5,30})$", ErrorMessage = "URL should be at least of 5 characters and can only include _ and . special characters")]
+        [RegularExpression("^([a-zA-Z0-9_-]{5,30})$", ErrorMessage = "URL should be at least of 5 characters and can only include _ and - special characters")]
         public string URL { get; set; }
 
 

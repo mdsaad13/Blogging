@@ -1,9 +1,11 @@
 ﻿using Blogging.DAL;
 using Blogging.Models;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -62,17 +64,21 @@ namespace Blogging.Controllers
                 string TestContent = " ";
                 if (blogModel.Content != null)
                 {
-                    TestContent = blogModel.Content.Replace(" ", "");
+                    //TestContent = blogModel.Content.Replace(" ", "");
 
-                    TestContent = TestContent.Replace("<p>", "");
-                    TestContent = TestContent.Replace("</p>", "");
-                    TestContent = TestContent.Replace("<hr>", "");
-                    TestContent = TestContent.Replace("<br>", "");
-                    TestContent = TestContent.Replace("<h1>", "");
-                    TestContent = TestContent.Replace("</h1>", "");
-                    TestContent = TestContent.Replace("<span>", "");
-                    TestContent = TestContent.Replace("</span>", "");
-                    TestContent = TestContent.Replace("style", "");
+                    //TestContent = TestContent.Replace("<p>", "");
+                    //TestContent = TestContent.Replace("</p>", "");
+                    //TestContent = TestContent.Replace("<hr>", "");
+                    //TestContent = TestContent.Replace("<br>", "");
+                    //TestContent = TestContent.Replace("<h1>", "");
+                    //TestContent = TestContent.Replace("</h1>", "");
+                    //TestContent = TestContent.Replace("<span>", "");
+                    //TestContent = TestContent.Replace("</span>", "");
+                    //TestContent = TestContent.Replace("style", "");
+                    HtmlDocument htmlDoc = new HtmlDocument();
+                    htmlDoc.LoadHtml(blogModel.Content);
+                    // Removing all html tags
+                    TestContent = htmlDoc.DocumentNode.InnerText;
                 }
 
                 if (TestContent.Length < 100)
@@ -149,7 +155,7 @@ namespace Blogging.Controllers
             HttpFileCollectionBase file = Request.Files;
             CommonUtil commonUtil = new CommonUtil();
 
-            if (commonUtil.CountByArgs("blogimg", "blogid = "+ id) <= 4)
+            if (commonUtil.CountByArgs("blogimg", "blogid = "+ id) < 6)
             {
                 if (file[0] != null && id != 0)
                 {
@@ -188,6 +194,24 @@ namespace Blogging.Controllers
             {
                 return Json(new { status = false, message = "You can only attach 4 images to your blog" });
             }
+        }
+
+        public JsonResult DeleteImgAjax(FormCollection formCollection)
+        {
+            int blogID = Convert.ToInt32(formCollection["blogid"]);
+            int imgID = Convert.ToInt32(formCollection["imgid"]);
+
+            CreatorUtil creatorUtil = new CreatorUtil();
+
+            if (creatorUtil.DeleteBlogImg(blogID, imgID))
+            {
+                return Json(new { status = true });
+            }
+            else
+            {
+                return Json(new { status = false });
+            }
+
         }
 
         [HttpPost]

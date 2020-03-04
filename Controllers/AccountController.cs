@@ -127,5 +127,12 @@ namespace Blogging.Controllers
 
             return Json(new { status, errorText });
         }
+
+        [Route("{Username}")]
+        public ActionResult ViewProfile(string Username)
+        {
+            ViewBag.Username = Username;
+            return View();
+        }
     }
 }

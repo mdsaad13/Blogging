@@ -128,10 +128,11 @@ namespace Blogging.DAL
                 adp.Fill(td);
                 foreach (DataRow row in td.Rows)
                 {
-                    BlogImages blogImages = new BlogImages();
-
-                    blogImages.ID = Convert.ToInt32(row["id"]);
-                    blogImages.URL = Convert.ToString(row["url"]);
+                    BlogImages blogImages = new BlogImages
+                    {
+                        ID = Convert.ToInt32(row["id"]),
+                        URL = Convert.ToString(row["url"])
+                    };
 
                     list.Add(blogImages);
                 }
@@ -187,6 +188,29 @@ namespace Blogging.DAL
                 Conn.Close();
             }
             return list;
+        }
+
+        internal bool DeleteBlogImg(int blogID, int imgID)
+        {
+            bool result = false;
+            try
+            {
+                string query = "DELETE FROM blogimg WHERE blogid = @blogID AND id = @imgID";
+                SqlCommand cmd = new SqlCommand(query, Conn);
+                cmd.Parameters.Add(new SqlParameter("@blogID", blogID));
+                cmd.Parameters.Add(new SqlParameter("@imgID", imgID));
+                Conn.Open();
+                int rows = cmd.ExecuteNonQuery();
+                if (rows != 0)
+                    result = true;
+            }
+            catch
+            { }
+            finally
+            {
+                Conn.Close();
+            }
+            return result;
         }
     }
 }

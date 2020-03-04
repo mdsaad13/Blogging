@@ -8,7 +8,7 @@ using System.Web.Mvc;
 
 namespace Blogging.Controllers
 {
-    //[RoutePrefix("blog")]
+    [RoutePrefix("blog")]
     public class BlogController : Controller
     {
         public BlogController()
@@ -36,7 +36,8 @@ namespace Blogging.Controllers
             }
         }
 
-        public ActionResult Index()
+        [Route("{BlogID}")]
+        public ActionResult Index(int BlogID)
         {
             GetUserDetails();
             return View();
