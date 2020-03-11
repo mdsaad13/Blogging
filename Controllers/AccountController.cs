@@ -128,11 +128,54 @@ namespace Blogging.Controllers
             return Json(new { status, errorText });
         }
 
-        [Route("{Username}")]
+        internal void GetUserDetails()
+        {
+            AccountUtil accountUtil = new AccountUtil();
+
+            long userID = Convert.ToInt64(Session["userID"]);
+            if (userID != 0)
+            {
+                AccountModel accountModel = accountUtil.GetUserById(userID);
+                ViewBag.Name = accountModel.Name;
+                ViewBag.UserName = accountModel.UserName;
+                ViewBag.ImgUrl = accountModel.ImgUrl;
+                ViewBag.Followers = 0;
+                ViewBag.Blogs = 0;
+            }
+        }
+
+        [Route("user/{Username}")]
         public ActionResult ViewProfile(string Username)
         {
-            ViewBag.Username = Username;
+            GetUserDetails();
+
+            AccountUtil accountUtil = new AccountUtil();
+            CommonUtil commonUtil = new CommonUtil();
+            if (commonUtil.Validate("users", "username", Username))
+            {
+                ProfileModel profileModel = accountUtil.GetUserByUname(Username);
+                return View(profileModel);
+            }
+            else
+            {
+                string Info = "User not found :(";
+                return View("Error", (object)Info);
+            }
+            
+        }
+
+        [Route("logout")]
+        public ActionResult Logout()
+        {
+            Session.Abandon();
+            return RedirectToAction("Login", "Account");
+        }
+
+        public ActionResult Error(string Info)
+        {
+            ViewBag.Info = Info;
             return View();
         }
+
     }
 }

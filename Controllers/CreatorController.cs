@@ -64,17 +64,6 @@ namespace Blogging.Controllers
                 string TestContent = " ";
                 if (blogModel.Content != null)
                 {
-                    //TestContent = blogModel.Content.Replace(" ", "");
-
-                    //TestContent = TestContent.Replace("<p>", "");
-                    //TestContent = TestContent.Replace("</p>", "");
-                    //TestContent = TestContent.Replace("<hr>", "");
-                    //TestContent = TestContent.Replace("<br>", "");
-                    //TestContent = TestContent.Replace("<h1>", "");
-                    //TestContent = TestContent.Replace("</h1>", "");
-                    //TestContent = TestContent.Replace("<span>", "");
-                    //TestContent = TestContent.Replace("</span>", "");
-                    //TestContent = TestContent.Replace("style", "");
                     HtmlDocument htmlDoc = new HtmlDocument();
                     htmlDoc.LoadHtml(blogModel.Content);
                     // Removing all html tags

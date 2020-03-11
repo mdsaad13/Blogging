@@ -1,1 +1,423 @@
-﻿@ViewBag.Username
+﻿@model Blogging.Models.ProfileModel
+@{
+    ViewBag.Title = Model.Uname;
+}
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<input type="hidden" name="CurrentUserID" id="CurrentUserID" value="@Model.UserID" />
+<div class="row">
+    <div class="col-md-3">
+
+        <!-- Profile Image -->
+        <div class="card card-info card-outline">
+            <div class="card-body box-profile">
+                <div class="text-center">
+                    @if (Model.ImgURL != null)
+                    {
+                        <img class="profile-user-img img-fluid img-circle lazy" src="~/Images/img-spinner.svg" data-src="/Images/UserProfiles/@Model.ImgURL" alt="@Model.Uname">
+                    }
+                    else
+                    {
+                        <img src="~/Images/img-spinner.svg" data-src="~/Images/default_user.png" class="profile-user-img img-fluid img-circle lazy" alt="User Image">
+                    }
+
+                </div>
+
+                <h3 class="profile-username text-center">@Model.Name</h3>
+
+                <p class="text-muted text-center">@@@Model.Uname</p>
+
+                <ul class="list-group list-group-unbordered mb-3">
+                    <li class="list-group-item">
+                        <b>Followers</b>
+                        <a class="float-right">@Model.Followers</a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Following</b>
+                        <a class="float-right">@Model.Following</a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Blogs</b>
+                        <a class="float-right">@Model.BlogsCount</a>
+                    </li>
+                </ul>
+                @if (Session["userID"] == null)
+                {
+                    <a class="btn btn-dark text-white mr-2" href="@Url.Action("login","Account")">Login</a>
+                    <a class="btn btn-dark text-white " href="@Url.Action("register","Account")">Register</a>
+                }
+                else if (Model.UserID != Convert.ToDouble(Session["userID"]))
+                {
+                    <button href="#" class="btn btn-info btn-block FollowUser" id="@Model.UserID"><b>Follow</b></button>
+                }
+                else
+                {
+                    <button href="#" class="btn btn-info btn-block" disabled="disabled"><b>Follow</b></button>
+                }
+            </div>
+            <!-- /.card-body -->
+        </div>
+        @if (Session["userID"] != null)
+        {
+            <div class="card card-info">
+                <div class="card-header">
+                    <h3 class="card-title">About Me</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <strong><i class="fas fa-envelope mr-1"></i> Email</strong>
+
+                    <p class="text-muted">
+                        <a href="mailto: @Model.Email" target="_blank">@Model.Email</a>
+                    </p>
+
+                    <hr>
+
+                    <strong>
+                        <i class="fas fa-@if (Model.Gender == "Male")
+                    {
+                        ViewContext.Writer.Write("mars");
+                    }
+                    else
+                    {
+                        ViewContext.Writer.Write("venus");
+                    }
+                mr-1">
+
+                        </i>
+                        Gender
+                    </strong>
+
+                    <p class="text-muted">@Model.Gender</p>
+
+                    <hr>
+
+                    <strong><i class="fas fa-birthday-cake mr-1"></i> DOB</strong>
+
+                    <p class="text-muted">
+                        @Model.DOB
+                    </p>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+        }
+        else
+        {
+            <div class="card card-info">
+                <div class="card-header">
+                    <h3 class="card-title">About Me</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <strong><i class="fas fa-envelope mr-1"></i> Email</strong>
+                    <p class="text-muted">
+                        <i>hidden</i>
+                    </p>
+                    <hr>
+                    <strong>
+                        <i class="fas fa-venus-mars mr-1"></i> Gender
+                    </strong>
+                    <p class="text-muted"><i>hidden</i></p>
+                    <hr>
+                    <strong><i class="fas fa-birthday-cake mr-1"></i> DOB</strong>
+                    <p class="text-muted">
+                        <i>hidden</i>
+                    </p>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        }
+        <!-- /.card -->
+    </div>
+    <!-- /.col -->
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header p-2">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#recents" data-toggle="tab" id="btn-RecentBlogs">Recent Blogs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#allblogs" data-toggle="tab" id="btn-AllBlogs">All Blogs</a>
+                    </li>
+                </ul>
+            </div><!-- /.card-header -->
+            <div class="card-body">
+                <div class="tab-content">
+
+                    <div class="active tab-pane" id="recents">
+
+                        <div class="row" id="post-loader-recents">
+                            <div class="col-md-4 mb-3">
+                                <div class="image-loader"></div>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <div class="text-line-loader" style="height:16px;margin-bottom:16px"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="image-loader"></div>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <div class="text-line-loader" style="height:16px;margin-bottom:16px"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="image-loader"></div>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <div class="text-line-loader" style="height:16px;margin-bottom:16px"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                            </div>
+                        </div>
+
+                        <div id="RecentsContent">
+                            <div class="row no-gutters">
+                                <div class="col-md-4">
+
+                                    <a href="@Url.Action("Index","Blog")">
+                                        <img class="card-img img-fluid lazy" src="~/Images/img-spinner.svg" data-src="https://makeawebsitehub.com/wp-content/uploads/2017/03/examples-of-blog.jpg" alt="">
+                                    </a>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body" style="padding-top:unset">
+                                        <h4 class="card-title font-weight-bold">6 UX Best Practices For Your Website [Infographic]</h4>
+                                        <br />
+                                        <p class="card-text">
+                                            6 UX Best Practice For Your WebsiteEven the best content won’t be read or shared if it lives on a third-rate website. From the moment visitors land on your site, they’re having experiences that can dictate whether they c…
+                                            <a href="#">Read More</a>
+                                        </p>
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                Published on: February 21st 2020 (Updated on: February 21st 2020)
+                                            </small>
+                                            <span class="badge text-dark float-right">
+                                                <i class="fas fa-tags"></i>&nbsp;
+                                                Science
+                                            </span>
+                                        </p>
+
+                                        <div class="row text-center text-sm">
+                                            <div class="col">
+                                                <i class="fas fa-thumbs-up"></i> 30
+                                            </div>
+                                            <div class="col">
+                                                <i class="fas fa-eye"></i> 30
+                                            </div>
+                                            <div class="col">
+                                                <i class="fas fa-comments"></i> 30
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.tab-pane -->
+                    <div class="tab-pane" id="allblogs">
+                        <div class="row mb-3">
+                            <div class="col-8">
+                                Sort By: <span id="SortedInfo">Ascending Order</span>
+                            </div>
+                            <div class="col-4">
+                                <form class="form-inline" method="post">
+                                    <select class="custom-select my-1 mr-sm-2" id="SortBlogs" name="SortBlogs">
+                                        <option value="2" selected>Ascending Order</option>
+                                        <option value="3">Descending Order</option>
+                                        <option value="4">Most Viewed</option>
+                                    </select>
+                                    <button type="button" class="btn btn-outline-info btn-SortBlogs" id="btn-SortBlogs">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="row" id="post-loader-allblogs">
+                            <div class="col-md-4 mb-3">
+                                <div class="image-loader"></div>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <div class="text-line-loader" style="height:16px;margin-bottom:16px"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="image-loader"></div>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <div class="text-line-loader" style="height:16px;margin-bottom:16px"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="image-loader"></div>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <div class="text-line-loader" style="height:16px;margin-bottom:16px"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                                <div class="text-line-loader"></div>
+                            </div>
+                        </div>
+
+                        <div id="AllBlogsContent">
+
+                        </div>
+
+                    </div>
+                    <!-- /.tab-pane -->
+
+                </div>
+                <!-- /.tab-content -->
+            </div><!-- /.card-body -->
+        </div>
+        <!-- /.nav-tabs-custom -->
+    </div>
+    <!-- /.col -->
+
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+
+            var CurrentUserID = $('#CurrentUserID').val();
+
+            RecentBlogs();
+
+            $('#btn-RecentBlogs').click(function () {
+                RecentBlogs();
+            });
+           
+            function RecentBlogs() {
+
+                var formData = new FormData();
+
+                formData.append('CurrentUserID', CurrentUserID);
+                formData.append('Sort', 1);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/blog/AjaxLoadProfile',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function () {
+                        $('#post-loader-recents').show();
+                    },
+                    success: function (data) {
+                        if (data.status) {
+                             setTimeout(function () {
+                                $('#post-loader-recents').hide();
+                                 $('#RecentsContent').html(data.content);
+                                 Lazzzy();
+                            setTimeout(function () {
+                                     Lazzzy();
+                                 }, 500);
+                            }, 500);
+                        } else {
+                            setTimeout(function () {
+                                $('#post-loader-recents').hide();
+                                $('#RecentsContent').html(`
+                                    <div class="alert alert-default-danger alert-dismissible fade show text-center" role="alert">
+                                        <strong>No Blogs Found!<br />Please try again later</strong>
+                                    </div>
+                                `);
+                            }, 1000);
+                        }
+                    },
+                    error: function () {
+                        setTimeout(function () {
+                            $('#post-loader-recents').hide();
+                            $('#RecentsContent').html(`
+                                    <div class="alert alert-default-danger alert-dismissible fade show text-center" role="alert">
+                                        <strong>An error occured!<br />Please try again later</strong>
+                                    </div>
+                                `);
+                        }, 1000);
+                    },
+                });
+
+            }
+
+            $('#btn-AllBlogs').click(function () {
+                AllBlogs();
+            });
+
+            $('#btn-SortBlogs').click(function () {
+                AllBlogs();
+            });
+
+            function AllBlogs() {
+                var Sort = $("#SortBlogs :selected").val();
+                $('#SortedInfo').text($("#SortBlogs :selected").text());
+
+                var formData = new FormData();
+
+                formData.append('CurrentUserID', CurrentUserID);
+                formData.append('Sort', Sort);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/blog/AjaxLoadProfile',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function () {
+                        $('#post-loader-allblogs').show();
+                    },
+                    success: function (data) {
+                        if (data.status) {
+                             setTimeout(function () {
+                                $('#post-loader-allblogs').hide();
+                                 $('#AllBlogsContent').html(data.content);
+                                 setTimeout(function () {
+                                     Lazzzy();
+                                 }, 500);
+                            }, 500);
+                        } else {
+                            setTimeout(function () {
+                                $('#post-loader-allblogs').hide();
+                                $('#AllBlogsContent').html(`
+                                    <div class="alert alert-default-danger alert-dismissible fade show text-center" role="alert">
+                                        <strong>No Blogs Found!<br />Please try again later</strong>
+                                    </div>
+                                `);
+                            }, 1000);
+                        }
+                    },
+                    error: function () {
+                        setTimeout(function () {
+                            $('#post-loader-allblogs').hide();
+                            $('#AllBlogsContent').html(`
+                                    <div class="alert alert-default-danger alert-dismissible fade show text-center" role="alert">
+                                        <strong>An error occured!<br />Please try again later</strong>
+                                    </div>
+                                `);
+                        }, 1000);
+                    },
+                });
+            }
+
+        });
+    </script>
+}

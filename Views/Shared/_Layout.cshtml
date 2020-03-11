@@ -7,6 +7,21 @@
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <!-- Chrome, Firefox OS and Opera -->
+    <meta name="theme-color" content="#17a2b8">
+
+    <!-- icon in the highest resolution we need it for -->
+    <link rel="icon" sizes="192x192" href="~/favicon.ico">
+
+    <!-- reuse same icon for Safari -->
+    <link rel="apple-touch-icon" href="~/favicon.ico">
+
+    <!-- multiple icons for IE -->
+    <meta name="msapplication-square310x310logo" content="~/favicon.ico">
+
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
     @Styles.Render("~/css/main")
@@ -16,6 +31,7 @@
 
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
     @RenderSection("head", required: false)
 </head>
 <body class="hold-transition sidebar-mini layout-fixed @ViewBag.sidebar_collapse">
@@ -34,9 +50,9 @@
             </ul>
 
             <!-- SEARCH FORM -->
-            <form class="form-inline ml-auto">
+            <form class="ml-auto" style="width:720px" method="get" action="@Url.Action("Search", "Home")">
                 <div class="input-group input-group-sm">
-                    <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                    <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search" name="query" id="query">
                     <div class="input-group-append">
                         <button class="btn btn-navbar" type="submit">
                             <i class="fas fa-search"></i>
@@ -136,8 +152,8 @@
                             </li>
                             <!-- Menu Footer-->
                             <li class="user-footer">
-                                <a href="#" class="btn btn-default btn-flat">Profile</a>
-                                <a href="#" class="btn btn-default btn-flat float-right">Sign out</a>
+                                <a href="@Url.Action("ViewProfile","Account", new { Username = ViewBag.UserName })" class="btn btn-default btn-flat">Profile</a>
+                                <a href="@Url.Action("Logout", "Account")" class="btn btn-default btn-flat float-right">Sign out</a>
                             </li>
                         </ul>
                     </li>
@@ -150,7 +166,7 @@
                         <a class="btn btn-dark text-white mr-2" href="@Url.Action("register","Account")">Register</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-dark text-white" href="@Url.Action("login","Account")">Login</a>
+                        <button class="btn btn-dark text-white" type="button" data-toggle="modal" data-target="#modal-login">Login</button>
                     </li>
                 </ul>
             }
@@ -314,6 +330,156 @@
 
     @Scripts.Render("~/js/main")
     @RenderSection("scripts", required: false)
+
+
+    @if (Session["userID"] == null)
+    {
+        <!-- if not logged in then login -->
+        <div class="modal fade" id="modal-login" tabindex="-1" role="dialog" aria-labelledby="modal-loginTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal-loginTitle">Login</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="error-wrapper">
+                            <div class="alert alert-danger" id="alert" style="display:none">
+                                
+                            </div>
+                        </div>
+                        <form method="post" id="login-form" class="needs-validation" novalidate>
+                            @Html.AntiForgeryToken()
+                            <div class="form-group">
+                                <label for="unameORmobile">Username or Mobile number</label>
+                                <input type="text" class="form-control" id="unameORmobile" name="unameORmobile" placeholder="Enter username or mobile number">
+                                <span id="error_unameORmobile" class="form-error"></span>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="Password">Password</label>
+                                <input type="password" class="form-control" id="Password" name="Password" placeholder="Password">
+                                <span id="error_Password" class="form-error"></span>
+                            </div>
+                            <div class="form-group text-center">
+                                <button type="submit" class="btn btn-info w-100" id="btn-login">Login</button>
+                                <div class="spinner-border text-info hidden" role="status" id="spinner"></div>
+                            </div>
+                            <p class="mb-1">
+                                <a href="@Url.Action("forgot-password", "Account")">I forgot my password</a>
+                            </p>
+                            <p class="mb-1">
+                                <a href="@Url.Action("Register", "Account")">Don't have an account?</a>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        $(document).ready(function () {
+
+            $('#btn-login').click(function () {
+
+                var error_unameORmobile = '';
+                var error_Password = '';
+
+                var UnameValid = false;
+                var PassValid = false;
+
+                if ($.trim($('#unameORmobile').val()).length == 0) {
+                    $('#unameORmobile').addClass('is-invalid');
+                    error_unameORmobile = 'Kindly enter username or mobile number';
+                } else {
+                    if ($.trim($('#unameORmobile').val()).length <= 5) {
+                        $('#unameORmobile').addClass('is-invalid');
+                        error_username = 'Kindly enter a valid credientials';
+                    } else {
+                        $('#unameORmobile').removeClass('is-invalid');
+                        $('#unameORmobile').addClass('is-valid');
+                        UnameValid = true;
+                    }
+                }
+
+                if ($.trim($('#Password').val()).length == 0) {
+                    $('#Password').addClass('is-invalid');
+                    error_Password = 'Kindly enter your password';
+                } else {
+                    if ($.trim($('#Password').val()).length <= 6) {
+                        $('#Password').addClass('is-invalid');
+                        error_Password = 'Kindly enter a valid password';
+                    } else {
+                        $('#Password').removeClass('is-invalid');
+                        $('#Password').addClass('is-valid');
+                        PassValid = true;
+                    }
+                }
+
+                $('#error_unameORmobile').text(error_unameORmobile);
+                $('#error_Password').text(error_Password);
+
+                if (UnameValid == true && PassValid == true) {
+                    var form = $('#login-form')[0];
+                var formData = new FormData(form);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Account/LoginAjax',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        beforeSend: function () {
+                            $("#form :input").prop("disabled", true);
+                            $('#btn-login').addClass('hidden');
+                            $('#spinner').removeClass('hidden');
+                            $('#alert').html('');
+                        },
+                        success: function (data) {
+                            $("#form :input").prop("disabled", false);
+                            $('#spinner').addClass('hidden');
+                            $('#btn-login').removeClass('hidden');
+                            $('#alert').css('display', 'block');
+
+                            if (data.status) {
+                                $("#form :input").prop("disabled", true);
+
+                                $('#alert').removeClass('alert-danger');
+                                $('#alert').addClass('alert-success');
+                                $('#alert').html('Login successfully!<br>Please wait...');
+
+                                setTimeout(SuccessRedirect(), 500);
+                                function SuccessRedirect() {
+                                     window.location.replace(window.location.href);
+                                }
+
+                            } else if (!data.status) {
+
+                                $('#alert').text(data.errorText);
+
+                                setTimeout(runEffect(), 500);
+
+                                function runEffect() {
+                                     $("#error-wrapper").effect( "shake", {times:4}, 500);
+                                }
+
+                            }
+
+                            return false;
+                        }
+                    });
+                    return false;
+                } else {
+                    return false;
+                }
+
+                
+                return false;
+            });
+
+        });
+        </script>
+    }
 
 </body>
 </html>

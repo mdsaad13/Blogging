@@ -66,4 +66,18 @@ namespace Blogging.Models
         [RegularExpression(@"([a-zA-Z0-9\s_\\.\-:])+(.png|.jpg|.gif|.jpeg)$", ErrorMessage = "It dosen't look like an image")]
         public HttpPostedFileBase Image { get; set; }
     }
+
+    public class ProfileModel
+    {
+        public double UserID { get; set; }
+        public string Name { get; set; }
+        public string Uname { get; set; }
+        public string Email { get; set; }
+        public string Gender { get; set; }
+        public string ImgURL { get; set; }
+        public string DOB { get; set; }
+        public string Followers { get; set; }
+        public string Following { get; set; }
+        public string BlogsCount { get; set; }
+    }
 }

@@ -1,4 +1,5 @@
-﻿using Blogging.Models;
+﻿using Blogging.Controllers;
+using Blogging.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -203,9 +204,9 @@ namespace Blogging.DAL
             return accountModel;
         }
         
-        internal AccountModel GetUserByUname(string username)
+        internal ProfileModel GetUserByUname(string username)
         {
-            AccountModel accountModel = new AccountModel();
+            ProfileModel profileModel = new ProfileModel();
             try
             {
                 /*
@@ -238,24 +239,34 @@ namespace Blogging.DAL
                 adp.Fill(dt);
                 if (dt.Rows.Count > 0)
                 {
-                    accountModel.ID = Convert.ToInt64(dt.Rows[0]["userID"]);
-                    accountModel.Name = Convert.ToString(dt.Rows[0]["name"]);
-                    accountModel.Email = Convert.ToString(dt.Rows[0]["email"]);
-                    accountModel.Mobile = Convert.ToString(dt.Rows[0]["phone"]);
+                    profileModel.UserID = Convert.ToInt64(dt.Rows[0]["userID"]);
+                    profileModel.Uname = Convert.ToString(dt.Rows[0]["username"]);
+                    profileModel.Name = Convert.ToString(dt.Rows[0]["name"]);
+                    profileModel.Email = Convert.ToString(dt.Rows[0]["email"]);
 
                     string query1 = "SELECT * FROM userDetails WHERE userID = @userID";
                     SqlCommand cmd1 = new SqlCommand(query1, Conn);
-                    cmd1.Parameters.Add(new SqlParameter("userID", accountModel.ID));
+                    cmd1.Parameters.Add(new SqlParameter("userID", profileModel.UserID));
                     SqlDataAdapter adp1 = new SqlDataAdapter(cmd1);
                     DataTable dt1 = new DataTable();
                     adp1.Fill(dt1);
 
                     if (dt1.Rows.Count > 0)
                     {
-                        accountModel.Gender = Convert.ToString(dt1.Rows[0]["gender"]);
-                        accountModel.DOB = Convert.ToDateTime(dt1.Rows[0]["dob"]);
-                        accountModel.ImgUrl = Convert.ToString(dt1.Rows[0]["imgURL"]);
-                    }    
+                        profileModel.Gender = Convert.ToString(dt1.Rows[0]["gender"]);
+                        var DOB = Convert.ToDateTime(dt1.Rows[0]["dob"]);
+                        profileModel.DOB = DOB.ToLongDateString();
+                        if (!DBNull.Value.Equals(dt1.Rows[0]["imgURL"]))
+                            profileModel.ImgURL = Convert.ToString(dt1.Rows[0]["imgURL"]);
+                        else
+                            profileModel.ImgURL = String.Empty;
+                    }
+
+                    CommonUtil commonUtil = new CommonUtil();
+
+                    profileModel.Following = GeneralFns.FormatNumber(commonUtil.CountByArgs("Followers", "userID = "+ profileModel.UserID));
+                    profileModel.Followers = GeneralFns.FormatNumber(commonUtil.CountByArgs("Followers", "Follow_userID = "+ profileModel.UserID));
+                    profileModel.BlogsCount = GeneralFns.FormatNumber(commonUtil.CountByArgs("blog", "userID = " + profileModel.UserID));
                 }
             }
             catch (Exception)
@@ -263,7 +274,7 @@ namespace Blogging.DAL
                 throw;
             }
 
-            return accountModel;
+            return profileModel;
         }
     }
 }

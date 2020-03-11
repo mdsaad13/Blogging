@@ -86,13 +86,117 @@ namespace Blogging.DAL
             return list;
         }
 
+        /// <summary>
+        /// <b>param: </b><c>double UserID</c><br></br>
+        /// <b>param: </b><c>int type</c><br></br>
+        /// <c>
+        /// if type = 1 // Recents 5 blogs<br></br>
+        /// else if type = 2 // All blogs sorted by asc<br></br>
+        /// else if type = 3 // All blogs sorted by desc<br></br>
+        /// else if type = 4 // All blogs sorted by most viewed
+        /// </c>
+        /// </summary>
+        /// <param name="UserID"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        internal List<AllBlogsModel> AllBlogs (double userID, int type)
+        {
+            DataTable td = new DataTable();
+            List<AllBlogsModel> list = new List<AllBlogsModel>();
+            CommonUtil commonUtil = new CommonUtil();
+
+            string sqlquery = string.Empty;
+
+            if (type == 1)
+            {
+                // Recents 5 blogs
+                sqlquery = "SELECT TOP 5 * FROM blog WHERE userID = @userID ORDER BY datetime DESC";
+            }
+            else if(type == 2)
+            {
+                // All blogs sorted by asc
+                sqlquery = "SELECT * FROM blog WHERE userID = @userID ORDER BY datetime ASC";
+            }
+            else if(type == 3)
+            {
+                // All blogs sorted by desc
+                sqlquery = "SELECT * FROM blog WHERE userID = @userID ORDER BY datetime DESC";
+            }
+            else if(type == 4)
+            {
+                // All blogs sorted by most viewed
+                sqlquery = "SELECT * FROM blog WHERE userID = @userID ORDER BY viewcount DESC";
+            }
+
+            try
+            {
+                SqlCommand cmd = new SqlCommand(sqlquery, Conn);
+                cmd.Parameters.Add(new SqlParameter("userID", userID));
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+                Conn.Open();
+                adp.Fill(td);
+
+                foreach (DataRow row in td.Rows)
+                {
+                    int BlogID = Convert.ToInt32(row["blogid"]);
+                    long UserID = Convert.ToInt64(row["userID"]);
+                    string Content = Convert.ToString(row["blogContent"]);
+                    DateTime PublishDate = Convert.ToDateTime(row["datetime"]);
+
+                    HtmlDocument htmlDoc = new HtmlDocument();
+                    htmlDoc.LoadHtml(Content);
+                    // Removing all html tags
+                    Content = htmlDoc.DocumentNode.InnerText;
+
+                    string[] UserDetails = BasicUserDetails(UserID);
+
+                    bool HasImages = false;
+                    string BlogImg = String.Empty;
+                    if (commonUtil.CountByArgs("blogimg", "blogid = "+ BlogID) > 0)
+                    {
+                        HasImages = true;
+                        BlogImg = RandBlogImg(BlogID);
+                    }
+
+                    AllBlogsModel SingleBlogData = new AllBlogsModel()
+                    {
+                        BlogID = BlogID,
+                        Freatured = IsFeatured(BlogID),
+                        HasImages = HasImages,
+                        BlogImg = BlogImg,
+                        Title = Convert.ToString(row["title"]),
+                        Content = Content.Substring(0, 220),
+                        PublistDate = PublishDate.ToLongDateString(),
+                        Likes = GeneralFns.FormatNumber(commonUtil.CountByArgs("likes", "blogid = " + BlogID)),
+                        Views = GeneralFns.FormatNumber(Convert.ToInt64(row["viewcount"])),
+                        Comments = GeneralFns.FormatNumber(commonUtil.CountByArgs("comments", "blogid = " + BlogID)),
+                        URL = Convert.ToString(row["url"]),
+
+                        CatName = CategoryName(Convert.ToInt32(row["catid"])),
+                        UniqueUserName = UserDetails[0],
+                        UserName = UserDetails[1],
+                        UserImg = UserDetails[2],
+                    };
+                    list.Add(SingleBlogData);
+                }
+            }
+            catch (Exception)
+            { }
+            finally
+            {
+                Conn.Close();
+            }
+
+            return list;
+        }
+
         private string RandBlogImg(int BlogID)
         {
             DataTable td = new DataTable();
             string Url;
             try
             {
-                string sqlquery = "SELECT * FROM blogimg WHERE blogid = @blogid ORDER BY RAND()";
+                string sqlquery = "SELECT TOP 1 * FROM blogimg WHERE blogid = @blogid ORDER BY NEWID()";
                 SqlCommand cmd = new SqlCommand(sqlquery, Conn);
                 cmd.Parameters.Add(new SqlParameter("blogid", BlogID));
                 SqlDataAdapter adp = new SqlDataAdapter(cmd);

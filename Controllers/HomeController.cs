@@ -43,6 +43,18 @@ namespace Blogging.Controllers
 
             return View(blogBundles);
         }
+        
+        [HttpGet]
+        //[Route("Search/AddBlog/{blogid}/AddImages")]
+        public ActionResult Search(string query)
+        {
+            GetUserDetails();
+            IndexUtil indexUtil = new IndexUtil();
+
+            List<AllBlogsModel> blogBundles = indexUtil.AllBlogs();
+
+            return View("Index", blogBundles);
+        }
 
     }
 }
