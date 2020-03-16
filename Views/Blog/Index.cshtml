@@ -1,10 +1,10 @@
-﻿
+﻿@model Blogging.Models.SingleBlog
 @{
     ViewBag.Title = "Index";
-    ViewBag.SoftwareName = "Blogger";
     ViewBag.sidebar_collapse = "sidebar-collapse";
 }
-<link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+@*<link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">*@
+<link rel="stylesheet" href="~/Plugins/flickity/flickity.css" />
 
 <style>
     .carousel {
@@ -28,56 +28,86 @@
     }
 </style>
 
-<div class="container">
-    <h2 class="text-center cyan-gradient-text">Examples of Blogs – Inspiration for New Bloggers</h2>
-
-    <div class="row text-gray" style="line-height:2.5rem;margin-bottom:1rem">
-        <div class="col-10">
-            <a href="">
-                <img class="img-circle" src="~/Images/default_user.png" style="height:2.5rem;vertical-align:central" height="2.5rem" />
-                <span>Mohammed Saad</span>
-            </a>
-            |
-            <span>
-                Posted on February 19, 2020 (Updated on February 20, 2020)
-            </span>
-        </div>
-        <div class="col-2">
-            <i class="fas fa-eye text-lg"></i> 30
-            &nbsp;
-            <i class="fas fa-thumbs-up text-lg"></i> 30
-        </div>
-    </div>
-</div>
-<div class="card card-info card-outline elevation-3">
+<div class="card elevation-3">
     <!-- /.card-header -->
     <div class="card-body">
+        <div class="container">
+            <h1 class="text-center">
+                <span class="cyan-gradient-text">
+                    @Model.Blog.Title
+                </span>
+                <i class="far fa-bookmark text-info Bookmark" style="cursor:pointer" id=""></i>
+            </h1>
+
+            <div class="row text-gray" style="line-height:2.5rem;margin-bottom:1rem">
+                <div class="col-10">
+                    <span>
+                        Published on: @Model.Blog.PublishDate
+                        @if (Model.Blog.UpdateDate != null)
+                        {
+                            string UpdateDate = "(Updated on: " + Model.Blog.UpdateDate + ")";
+                        }
+                    </span>
+    
+                    </div>
+    
+                <div class="col-2">
+                    <i class="fas fa-eye text-lg"></i>  @Model.Blog.Views
+                    &nbsp;
+                    <i class="fas fa-thumbs-up text-lg"></i>  @Model.Blog.Likes
+                </div>
+            </div>
+        </div>
         <div class="row">
-            <div class="col-12 col-sm-12 col-md-3 col-lg-3">
+            <div class="col-12 col-md-2 col-lg-2">
 
                 <div class="card card-info card-outline elevation-3">
                     <div class="card-body box-profile">
                         <div class="text-center">
-                            <img class="profile-user-img img-fluid img-circle" src="/Images/default_user.png" alt="User profile picture">
+                            @if (Model.Profile.ImgURL != null)
+                            {
+                                <img class="profile-user-img img-fluid img-circle lazy" src="~/Images/img-spinner.svg" data-src="/Images/UserProfiles/@Model.Profile.ImgURL" alt="@Model.Profile.Uname">
+                            }
+                            else
+                            {
+                                <img src="~/Images/img-spinner.svg" data-src="~/Images/default_user.png" class="profile-user-img img-fluid img-circle lazy" alt="User Image">
+                            }
                         </div>
 
-                        <h3 class="profile-username text-center">Nina Mcintire</h3>
+                        <h3 class="profile-username text-center"> @Model.Profile.Name</h3>
 
-                        <p class="text-muted text-center">Software Engineer</p>
+                        <p class="text-muted text-center">
+                            <a href="@Url.Action("ViewProfile","Account", new { Username = Model.Profile.Uname })">
+                                @@@Model.Profile.Uname
+                            </a>
+                            
+                        </p>
 
                         <ul class="list-group list-group-unbordered mb-3">
                             <li class="list-group-item">
-                                <b>Followers</b> <a class="float-right">1,322</a>
+                                <b>Followers</b> <a class="float-right"> @Model.Profile.Followers</a>
                             </li>
                             <li class="list-group-item">
-                                <b>Following</b> <a class="float-right">543</a>
+                                <b>Following</b> <a class="float-right"> @Model.Profile.Following</a>
                             </li>
                             <li class="list-group-item">
-                                <b>Blogs</b> <a class="float-right">13,287</a>
+                                <b>Blogs</b> <a class="float-right"> @Model.Profile.BlogsCount</a>
                             </li>
                         </ul>
 
-                        <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
+                        @if (Session["userID"] == null)
+                        {
+                            <button class="btn btn-dark text-white btn-block" type="button" data-toggle="modal" data-target="#modal-login">Login/Register</button>
+                        }
+                        else if (Model.Profile.UserID != Convert.ToDouble(Session["userID"]))
+                        {
+                            <button href="#" class="btn btn-info btn-block FollowUser" id="@Model.Profile.UserID"><b>Follow</b></button>
+                        }
+                        else
+                        {
+                            <button href="#" class="btn btn-info btn-block" disabled="disabled"><b>Follow</b></button>
+                        }
+
                     </div>
                     <!-- /.card-body -->
                 </div>
@@ -86,83 +116,47 @@
                 <div class="card sticky-top-t1 ">
                     <div class="card-body p-0">
                         <ul class="nav flex-column">
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    Category 1 <span class="float-right badge bg-primary">31</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    Category 2 <span class="float-right badge bg-info">5</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    Category 3 <span class="float-right badge bg-success">12</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    Category 4 <span class="float-right badge bg-danger">842</span>
-                                </a>
-                            </li>
+                            @{ 
+                                List <string> ColorList = new List<string>{ "bg-primary","bg-info","bg-danger","bg-warning","bg-indigo"};
+                                var random = new Random();
+                                int ColorListIndex;
+                            }
+                            @foreach (var CatList in Model.CatList)
+                            {
+                                 ColorListIndex = random.Next(ColorList.Count);
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        @CatList.Name <span class="float-right badge @ColorList[ColorListIndex]"> @CatList.Count</span>
+                                    </a>
+                                </li>
+                            }
+
                         </ul>
                     </div>
                 </div>
                 <!-- /.widget-user -->
             </div>
-            <div class="col-12 col-md-6 col-lg-6 text-justify">
-                <div class="carousel mb-5">
-                    <div class="carousel-cell">
-                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/orange-tree.jpg" alt="orange tree" />
-                    </div>
-                    <div class="carousel-cell">
-                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/one-world-trade.jpg" alt="One World Trade" />
-                    </div>
-                    <div class="carousel-cell">
-                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/drizzle.jpg" alt="drizzle" />
-                    </div>
-                    <div class="carousel-cell">
-                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/cat-nose.jpg" alt="cat nose" />
-                    </div>
-                    <div class="carousel-cell">
-                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/contrail.jpg" alt="contrail" />
-                    </div>
-                    <div class="carousel-cell">
-                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/golden-hour.jpg" alt="golden hour" />
-                    </div>
-                    <div class="carousel-cell">
-                        <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/flight-formation.jpg" alt="flight formation" />
-                    </div>
-                </div>
+            <div class="col-12 col-md-8 col-lg-8">
 
-                Transition words are everywhere, even if you don’t notice them. Without them, language would be dry and robotic, with abrupt changes from one sentence to the next. To maximize the quality and readability of your web content, it’s essential for you to be aware of these linguistic elements and whether you’re using them to their full effect in your writing.
-                <br />
-                There are many different types of transition words and phrases you can use. In this article, we’ll break them down into ten categories and talk about the impact they have on readability and Search Engine Optimization (SEO).
-                <br />
-                Let’s jump in
-                <br />
-                <br />
-                <h3>An Introduction to Transition Words</h3>
-                In short, a transition word or phrase is one that helps bridge two sentences, paragraphs, or sections of a piece together. They provide additional context that can help readers link information together to see the big picture. Additionally, they provide structure and organization to your text to make it easier to understand.
-                <br />
-                It’s almost impossible to overstate the importance of transition words when it comes to language. There are hundreds you can use, so it’s not an exaggeration to say there’s one for just about every occasion. Some popular examples include ‘therefore’, ‘for example’, ‘in addition’, ‘in short’, and many others.
-                <br />
-                In practice, it’s easy to see what a huge difference transition words make when it comes to readability. Here are a few examples to illustrate that fact:
-                <br />
-                I’m not a fan of pasta. I do love lasagna. / I’m not a fan of pasta. However, I do love lasagna.
-                Garlic goes well with everything. It really highlights the flavor of tomatoes. / Garlic goes well with everything. In particular, it really highlights the flavor of tomatoes.
-                There are a lot of factors that contribute to success. Hard work is of utmost importance. / There are a lot of factors that contribute to success. Above all, hard work is of utmost importance.
-                This list is getting very long. I’m going to wrap it up. / This list is getting very long. Therefore, I’m going to wrap it up.
-                In many cases, you can make your point without transition words. However, as the examples above show, language becomes more of a blunt instrument when you do so. Connecting your sentences helps them flow more naturally and sound more sophisticated, which can make your content more enjoyable to read.
-                <br />
-                <h3>Why Transition Words Are Important for SEO</h3>
-                There’s a definite link between transition words and SEO, although we wouldn’t go as far as to say there’s a direct correlation. In short, using transition words can improve your content’s structure and readability.
-                <br />
-                The more ‘readable’ your content is, the more engaging people are likely to find it. That means visitors may spend more time on your website, which is one of the metrics search engines take into consideration when determining rankings.
-                <br />
-                That link may sound tenuous, but the fact is, there’s no downside to making your content easier to read. It’s such an important element that plugins such as Yoast SEO include specific Readability scores:
+                @* Images Section *@
+                @if (Model.Blog.HasImages)
+                {
+                    <div class="carousel mb-5">
+                        @foreach (var BlogImgs in Model.BlogImages)
+                        {
 
+                        <div class="carousel-cell">
+                            <img class="lazy" src="~/Images/img-spinner.svg" data-src="/Images/Blog/@BlogImgs.URL" alt="@BlogImgs.Alt" />
+                        </div>
+                        }
+                    </div>
+                }
+
+                @* Blog Content here *@
+
+                    @Html.Raw(Model.Blog.Content)
+
+                @* Comments section *@
                 <div style="margin-top:20px">
                     <div class="card card-info card-outline direct-chat direct-chat-info">
                         <div class="card-header">
@@ -205,10 +199,10 @@
                                 </div>
                                 <!-- /.direct-chat-msg -->
                                 <!-- Message to the right -->
-                                <div class="direct-chat-msg right">
+                                <div class="direct-chat-msg">
                                     <div class="direct-chat-infos clearfix">
-                                        <span class="direct-chat-name float-right">Sarah Bullock</span>
-                                        <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
+                                        <span class="direct-chat-name">Sarah Bullock</span>
+                                        <span class="direct-chat-timestamp float-right">23 Jan 2:05 pm</span>
                                     </div>
                                     <!-- /.direct-chat-infos -->
                                     <img class="direct-chat-img" src="~/Images/default_user.png" alt="Message User Image">
@@ -221,37 +215,12 @@
                                 <!-- /.direct-chat-msg -->
                             </div>
                             <!--/.direct-chat-messages-->
-                            <!-- Contacts are loaded here -->
-                            <div class="direct-chat-contacts">
-                                <button type="button" class="btn btn-tool" data-toggle="tooltip" title="tooltip" data-widget="chat-pane-toggle">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                                <ul class="contacts-list">
-                                    <li>
-                                        <a href="#">
-                                            <img class="contacts-list-img" src="~/Images/default_user.png">
-
-                                            <div class="contacts-list-info">
-                                                <span class="contacts-list-name">
-                                                    Count Dracula
-                                                    <small class="contacts-list-date float-right">2/28/2015</small>
-                                                </span>
-                                                <span class="contacts-list-msg">How have you been? I was...</span>
-                                            </div>
-                                            <!-- /.contacts-list-info -->
-                                        </a>
-                                    </li>
-                                    <!-- End Contact Item -->
-                                </ul>
-                                <!-- /.contatcts-list -->
-                            </div>
-                            <!-- /.direct-chat-pane -->
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
                             <form action="#" method="post">
                                 <div class="input-group">
-                                    <input type="text" name="message" placeholder="Type Message ..." class="form-control">
+                                    <input type="text" name="message" placeholder="Type Message ..." class="form-control" autocomplete="off">
                                     <span class="input-group-append">
                                         <button type="submit" class="btn btn-outline-info">Send</button>
                                     </span>
@@ -264,11 +233,24 @@
                 </div>
             </div>
             @* Adds section *@
-            <div class="col-12 col-sm-12 col-md-3 col-lg-3">
+            <div class="col-md-2 col-lg-2">
                 <div class="card sticky-top-t1">
-                    <img class="img-fluid" src="https://media-exp1.licdn.com/dms/image/C560BAQHpg-r-l1OuMw/company-logo_200_200/0?e=2159024400&v=beta&t=OpcQBP3_pWwy8srJcQHoDHxaUH9MRN1RPaV5ZzKoUEY" />
-                    <br />
-                    <img class="img-fluid" src="https://media-exp1.licdn.com/dms/image/C560BAQHpg-r-l1OuMw/company-logo_200_200/0?e=2159024400&v=beta&t=OpcQBP3_pWwy8srJcQHoDHxaUH9MRN1RPaV5ZzKoUEY" />
+                    @if (Model.AdsList.Count > 0)
+                    {
+                        foreach (var Ads in Model.AdsList)
+                        {
+                            <a href="@Ads.Target">
+                                <img class="img-fluid lazy" src="~/Images/img-spinner.svg" data-src="/Images/AdsImg/@Ads.ImgUrl" />
+                            </a>
+                            <br />
+                        }
+                    }
+                    else
+                    {
+                        <img class="img-fluid" src="https://media-exp1.licdn.com/dms/image/C560BAQHpg-r-l1OuMw/company-logo_200_200/0?e=2159024400&v=beta&t=OpcQBP3_pWwy8srJcQHoDHxaUH9MRN1RPaV5ZzKoUEY" />
+                        <br />
+                        <img class="img-fluid" src="https://media-exp1.licdn.com/dms/image/C560BAQHpg-r-l1OuMw/company-logo_200_200/0?e=2159024400&v=beta&t=OpcQBP3_pWwy8srJcQHoDHxaUH9MRN1RPaV5ZzKoUEY" />
+                    }
                 </div>
             </div>
         </div>
@@ -276,7 +258,8 @@
     <!-- /.card-body -->
 </div>
 @section scripts{
-    <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js" type="text/javascript"></script>
+    @*<script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js" type="text/javascript"></script>*@
+    <script src="~/Plugins/flickity/flickity.js" type="text/javascript"></script>
     <script>
         var $carousel = $('.carousel').flickity({
             imagesLoaded: true,

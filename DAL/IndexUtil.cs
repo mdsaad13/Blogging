@@ -62,7 +62,7 @@ namespace Blogging.DAL
                         BlogImg = BlogImg,
                         Title = Convert.ToString(row["title"]),
                         Content = Content.Substring(0, 220),
-                        PublistDate = PublishDate.ToLongDateString(),
+                        PublishDate = PublishDate.ToLongDateString(),
                         Likes = GeneralFns.FormatNumber(commonUtil.CountByArgs("likes", "blogid = " + BlogID)),
                         Views = GeneralFns.FormatNumber(Convert.ToInt64(row["viewcount"])),
                         Comments = GeneralFns.FormatNumber(commonUtil.CountByArgs("comments", "blogid = " + BlogID)),
@@ -166,7 +166,7 @@ namespace Blogging.DAL
                         BlogImg = BlogImg,
                         Title = Convert.ToString(row["title"]),
                         Content = Content.Substring(0, 220),
-                        PublistDate = PublishDate.ToLongDateString(),
+                        PublishDate = PublishDate.ToLongDateString(),
                         Likes = GeneralFns.FormatNumber(commonUtil.CountByArgs("likes", "blogid = " + BlogID)),
                         Views = GeneralFns.FormatNumber(Convert.ToInt64(row["viewcount"])),
                         Comments = GeneralFns.FormatNumber(commonUtil.CountByArgs("comments", "blogid = " + BlogID)),
@@ -188,6 +188,76 @@ namespace Blogging.DAL
             }
 
             return list;
+        }
+
+        internal SingleBlog FetchSingleBlog(string URL)
+        {
+            SingleBlog singleBlog = new SingleBlog();
+            DataTable td = new DataTable();
+            CommonUtil commonUtil = new CommonUtil();
+            CreatorUtil creatorUtil = new CreatorUtil();
+            AccountUtil accountUtil = new AccountUtil();
+
+            string sqlquery = "SELECT * FROM blog WHERE url = @URL";
+
+            try
+            {
+                SqlCommand cmd = new SqlCommand(sqlquery, Conn);
+                cmd.Parameters.Add(new SqlParameter("URL", URL));
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+                Conn.Open();
+                adp.Fill(td);
+                
+                double UserID = Convert.ToDouble(td.Rows[0]["userID"]);
+                int BlogID = Convert.ToInt32(td.Rows[0]["blogid"]);
+
+                singleBlog.Blog = new AllBlogsModel();
+
+                singleBlog.Blog.BlogID = Convert.ToInt32(td.Rows[0]["blogid"]);
+                singleBlog.Blog.Freatured = IsFeatured(BlogID);
+                singleBlog.Blog.Title = Convert.ToString(td.Rows[0]["title"]);
+                singleBlog.Blog.Content = Convert.ToString(td.Rows[0]["blogContent"]);
+
+                DateTime PublishDate = Convert.ToDateTime(td.Rows[0]["datetime"]);
+                singleBlog.Blog.PublishDate = PublishDate.ToLongDateString();
+
+                if (!DBNull.Value.Equals(td.Rows[0]["updatedate"]))
+                {
+                    DateTime UpdateDate = Convert.ToDateTime(td.Rows[0]["updatedate"]);
+                    singleBlog.Blog.UpdateDate = UpdateDate.ToLongDateString();
+                } 
+                else
+                    singleBlog.Blog.UpdateDate = string.Empty;
+
+                singleBlog.Blog.Likes = GeneralFns.FormatNumber(commonUtil.CountByArgs("likes", "blogid = " + BlogID));
+                singleBlog.Blog.Views = GeneralFns.FormatNumber(Convert.ToInt64(td.Rows[0]["viewcount"]));
+                singleBlog.Blog.Comments = GeneralFns.FormatNumber(commonUtil.CountByArgs("comments", "blogid = " + BlogID));
+                singleBlog.Blog.URL = Convert.ToString(td.Rows[0]["url"]);
+
+                singleBlog.Profile = accountUtil.GetUserDetailsByID(UserID);
+
+                if (commonUtil.CountByArgs("blogimg", "blogid = " + BlogID) > 0)
+                {
+                    singleBlog.Blog.HasImages = true;
+                    singleBlog.BlogImages = creatorUtil.GetImgsByBlog(BlogID);
+                }
+                else
+                {
+                    singleBlog.Blog.HasImages = false;
+                }
+
+                singleBlog.CatList = PersonalizedCats(Convert.ToInt64(td.Rows[0]["catid"]));
+                singleBlog.AdsList = PersonalizedAds(Convert.ToInt64(td.Rows[0]["catid"]));
+
+            }
+            catch
+            { }
+            finally
+            {
+                Conn.Close();
+            }
+
+            return singleBlog;
         }
 
         private string RandBlogImg(int BlogID)
@@ -276,6 +346,102 @@ namespace Blogging.DAL
             }
 
             return Name;
+        }
+
+        private List<CategoryModel> PersonalizedCats(long CatID)
+        {
+            List<CategoryModel> categoryList = new List<CategoryModel>();
+            DataTable dataTable = new DataTable();
+            CommonUtil commonUtil = new CommonUtil();
+
+            try
+            {
+                string query = "SELECT * FROM categories WHERE catid = @catid";
+                SqlCommand cmd = new SqlCommand(query, Conn);
+                cmd.Parameters.Add(new SqlParameter("catid", CatID));
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+                adp.Fill(dataTable);
+
+                CategoryModel Firstcategory = new CategoryModel()
+                {
+                    CatID = Convert.ToInt64(dataTable.Rows[0]["catid"]),
+                    Name = Convert.ToString(dataTable.Rows[0]["name"]),
+                    Count = commonUtil.CountByArgs("blog", "catid = "+ CatID),
+                };
+                categoryList.Add(Firstcategory);
+                dataTable.Reset();
+
+                string query1 = "SELECT TOP 5 * FROM categories WHERE catid <> @catid ORDER BY NEWID()";
+                SqlCommand cmd1 = new SqlCommand(query1, Conn);
+                cmd1.Parameters.Add(new SqlParameter("catid", CatID));
+                SqlDataAdapter adp1 = new SqlDataAdapter(cmd1);
+                adp1.Fill(dataTable);
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    CategoryModel Othercategory = new CategoryModel();
+                    //int BlogID = Convert.ToInt32(row["blogid"]);
+                    Othercategory.CatID = Convert.ToInt64(row["catid"]);
+                    Othercategory.Name = Convert.ToString(row["name"]);
+                    Othercategory.Count = commonUtil.CountByArgs("blog", "catid = " + Othercategory.CatID);
+
+                    categoryList.Add(Othercategory);
+                }
+            }
+            catch
+            { }
+
+            return categoryList;
+        }
+        
+        private List<AdsModel> PersonalizedAds(long CatID)
+        {
+            List<AdsModel> AdsList = new List<AdsModel>();
+            DataTable dataTable = new DataTable();
+            var dateTime = DateTime.Now;
+            try
+            {
+                string query = "SELECT TOP 2 * FROM ads WHERE catid = @catid AND fromDate > @fromDate AND toDate > @toDate ORDER BY NEWID()";
+                SqlCommand cmd = new SqlCommand(query, Conn);
+                cmd.Parameters.Add(new SqlParameter("catid", CatID));
+                cmd.Parameters.Add(new SqlParameter("fromDate", dateTime));
+                cmd.Parameters.Add(new SqlParameter("toDate", dateTime));
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+                adp.Fill(dataTable);
+
+                if (dataTable.Rows.Count == 0)
+                {
+                    string query1 = "SELECT TOP 2 * FROM ads WHERE fromDate > @fromDate AND toDate > @toDate ORDER BY NEWID()";
+                    SqlCommand cmd1 = new SqlCommand(query1, Conn);
+                    cmd1.Parameters.Add(new SqlParameter("catid", CatID));
+                    cmd1.Parameters.Add(new SqlParameter("fromDate", dateTime));
+                    cmd1.Parameters.Add(new SqlParameter("toDate", dateTime));
+                    SqlDataAdapter adp1 = new SqlDataAdapter(cmd1);
+                    adp1.Fill(dataTable);
+                }
+                else if (dataTable.Rows.Count == 1)
+                {
+                    string query2 = "SELECT TOP 1 * FROM ads WHERE fromDate > @fromDate AND toDate > @toDate ORDER BY NEWID()";
+                    SqlCommand cmd2 = new SqlCommand(query2, Conn);
+                    cmd2.Parameters.Add(new SqlParameter("fromDate", dateTime));
+                    cmd2.Parameters.Add(new SqlParameter("toDate", dateTime));
+                    SqlDataAdapter adp2 = new SqlDataAdapter(cmd);
+                    adp2.Fill(dataTable);
+                }
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    AdsModel adsModel = new AdsModel()
+                    {
+                        ImgUrl = Convert.ToString(row["img"]),
+                        Target = Convert.ToString(row["target"]),
+                    };
+                    AdsList.Add(adsModel);
+                }
+            }
+            catch
+            { }
+            return AdsList;
         }
 
     }

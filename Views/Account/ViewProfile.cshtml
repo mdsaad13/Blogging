@@ -42,8 +42,7 @@
                 </ul>
                 @if (Session["userID"] == null)
                 {
-                    <a class="btn btn-dark text-white mr-2" href="@Url.Action("login","Account")">Login</a>
-                    <a class="btn btn-dark text-white " href="@Url.Action("register","Account")">Register</a>
+                    <button class="btn btn-dark text-white btn-block" type="button" data-toggle="modal" data-target="#modal-login">Login/Register</button>
                 }
                 else if (Model.UserID != Convert.ToDouble(Session["userID"]))
                 {

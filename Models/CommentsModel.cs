@@ -12,6 +12,13 @@ namespace Blogging.Models
         public long BlogID { get; set; }
         public string Text { get; set; }
         public DateTime DateTime { get; set; }
+
+        // Extras
+        public string Name { get; set; }
+        public string UserName { get; set; }
+        public string ImgURL { get; set; }
+        public string FormatDateTime { get; set; }
+        public double RepliesCount { get; set; }
     }
     public class RepliesModel
     {
@@ -20,5 +27,11 @@ namespace Blogging.Models
         public long CommentID { get; set; }
         public string Text { get; set; }
         public DateTime DateTime { get; set; }
+
+        // Extras
+        public string Name { get; set; }
+        public string UserName { get; set; }
+        public string ImgURL { get; set; }
+        public string FormatDateTime { get; set; }
     }
 }

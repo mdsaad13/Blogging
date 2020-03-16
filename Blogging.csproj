@@ -139,6 +139,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModel.cs" />
+    <Compile Include="Models\AdsModel.cs" />
     <Compile Include="Models\AllBlogsModel.cs" />
     <Compile Include="Models\BlogModel.cs" />
     <Compile Include="Models\CategoryModel.cs" />
@@ -159,6 +160,8 @@
     <Content Include="Plugins\daterangepicker\moment.js" />
     <Content Include="Plugins\ekko-lightbox\ekko-lightbox.css" />
     <Content Include="Plugins\ekko-lightbox\ekko-lightbox.js" />
+    <Content Include="Plugins\flickity\flickity.css" />
+    <Content Include="Plugins\flickity\flickity.js" />
     <Content Include="Plugins\icheck-bootstrap\icheck-bootstrap.css" />
     <Content Include="Plugins\Jcropper\Jcropper.css" />
     <Content Include="Plugins\Jcropper\Jcropper.js" />
@@ -220,6 +223,7 @@
     <Content Include="Views\Creator\ViewBlog.cshtml" />
     <Content Include="Views\Account\ViewProfile.cshtml" />
     <Content Include="Views\Account\Error.cshtml" />
+    <Content Include="Views\Blog\Error.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

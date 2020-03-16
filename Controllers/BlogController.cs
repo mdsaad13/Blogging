@@ -41,57 +41,70 @@ namespace Blogging.Controllers
         public ActionResult Index(string Url)
         {
             GetUserDetails();
-            return View();
+            CommonUtil commonUtil = new CommonUtil();
+            if (commonUtil.Validate("blog", "url", Url))
+            {
+                IndexUtil indexUtil = new IndexUtil();
+                SingleBlog Content = indexUtil.FetchSingleBlog(Url);
+                return View(Content);
+            }
+            else
+            {
+                string Info = "Blog not found :(";
+                ViewBag.Info = Info;
+                return View("Error");
+            }            
         }
 
         [Route("AjaxLoadProfile")]
         public JsonResult AjaxLoadProfile(FormCollection form)
         {
             bool status = false;
-
-            double CurrentUserID = Convert.ToDouble(form["CurrentUserID"]);
-            int Type = Convert.ToInt32(form["Sort"]);
-
             StringBuilder Content = new StringBuilder();
 
-            IndexUtil indexUtil = new IndexUtil();
-
-            // Validating input
-            if (CurrentUserID != 0)
+            if (form.Count != 0)
             {
-                switch (Type)
-                {
-                    case 1:
-                        status = true;
-                        break;
-                    case 2:
-                        status = true;
-                        break;
-                    case 3:
-                        status = true;
-                        break;
-                    case 4:
-                        status = true;
-                        break;
-                    default:
-                        status = false;
-                        break;
-                }
-            }
+                double CurrentUserID = Convert.ToDouble(form["CurrentUserID"]);
+                int Type = Convert.ToInt32(form["Sort"]);               
 
-            if (status)
-            {
-                List<AllBlogsModel> BlogsList = indexUtil.AllBlogs(CurrentUserID, Type);
+                IndexUtil indexUtil = new IndexUtil();
 
-                if (BlogsList.Count > 0)
+                // Validating input
+                if (CurrentUserID != 0)
                 {
-                    foreach (var item in BlogsList)
+                    switch (Type)
                     {
-                        if (!item.HasImages)
+                        case 1:
+                            status = true;
+                            break;
+                        case 2:
+                            status = true;
+                            break;
+                        case 3:
+                            status = true;
+                            break;
+                        case 4:
+                            status = true;
+                            break;
+                        default:
+                            status = false;
+                            break;
+                    }
+                }
+
+                if (status)
+                {
+                    List<AllBlogsModel> BlogsList = indexUtil.AllBlogs(CurrentUserID, Type);
+
+                    if (BlogsList.Count > 0)
+                    {
+                        foreach (var item in BlogsList)
                         {
-                            item.BlogImg = "cyan-plain-bg.png";
-                        }
-                        Content.AppendFormat(@"
+                            if (!item.HasImages)
+                            {
+                                item.BlogImg = "cyan-plain-bg.png";
+                            }
+                            Content.AppendFormat(@"
                         <div class=""row no-gutters"">
                                 <div class=""col-md-4"">
 
@@ -130,25 +143,31 @@ namespace Blogging.Controllers
                                         </div>
                                     </div>
                                 </div>
-                            </div>", item.BlogImg, item.Title, item.Content, item.PublistDate, item.URL, item.Likes, item.Views, item.Comments, item.CatName);
-                        //0 img
-                        //1 title
-                        //2 content
-                        //3 date
-                        //4 url
-                        //5 likes
-                        //6 views
-                        //7 comments
-                        //8 category name
+                            </div>", item.BlogImg, item.Title, item.Content, item.PublishDate, item.URL, item.Likes, item.Views, item.Comments, item.CatName);
+                            //0 img
+                            //1 title
+                            //2 content
+                            //3 date
+                            //4 url
+                            //5 likes
+                            //6 views
+                            //7 comments
+                            //8 category name
+                        }
+                    }
+                    else
+                    {
+                        status = false;
                     }
                 }
-                else
-                {
-                    status = false;
-                }
             }
+
             return Json(new { status, content = Content.ToString() });
         }
 
+        public ActionResult Error()
+        {
+            return View();
+        }
     }
 }

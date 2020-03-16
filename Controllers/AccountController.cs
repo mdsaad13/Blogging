@@ -159,9 +159,9 @@ namespace Blogging.Controllers
             else
             {
                 string Info = "User not found :(";
-                return View("Error", (object)Info);
+                ViewBag.Info = Info;
+                return View("Error");
             }
-            
         }
 
         [Route("logout")]
@@ -171,9 +171,8 @@ namespace Blogging.Controllers
             return RedirectToAction("Login", "Account");
         }
 
-        public ActionResult Error(string Info)
+        public ActionResult Error()
         {
-            ViewBag.Info = Info;
             return View();
         }
 
