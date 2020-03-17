@@ -190,6 +190,45 @@ namespace Blogging.DAL
             return list;
         }
 
+        internal bool InsertComment(CommentsModel commentsModel)
+        {
+            bool result = false;
+            try
+            {
+                string query = "INSERT INTO comments (commentID, blogid, userID, text, datetime)" +
+                        " VALUES(@commentID, @blogid, @userID, @text, @datetime)";
+                SqlCommand cmd = new SqlCommand(query, Conn);
+
+                cmd.Parameters.Add(new SqlParameter("commentID", commentsModel.CommentID));
+                cmd.Parameters.Add(new SqlParameter("blogid", commentsModel.BlogID));
+                cmd.Parameters.Add(new SqlParameter("userID", commentsModel.UserID));
+                cmd.Parameters.Add(new SqlParameter("text", commentsModel.Text));
+                cmd.Parameters.Add(new SqlParameter("datetime", commentsModel.DateTime));
+
+                Conn.Open();
+
+                int rows = cmd.ExecuteNonQuery();
+
+                if (rows > 0)
+                {
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            catch
+            {
+                result = false;
+            }
+            finally
+            {
+                Conn.Close();
+            }
+            return result;
+        }
+
         internal SingleBlog FetchSingleBlog(string URL)
         {
             SingleBlog singleBlog = new SingleBlog();
@@ -249,13 +288,14 @@ namespace Blogging.DAL
                 singleBlog.CatList = PersonalizedCats(Convert.ToInt64(td.Rows[0]["catid"]));
                 singleBlog.AdsList = PersonalizedAds(Convert.ToInt64(td.Rows[0]["catid"]));
 
+                long CommentsCount = commonUtil.CountByArgs("comments", "blogid = " + BlogID);
+                singleBlog.CommentsCount = CommentsCount;
+                singleBlog.FormatedCommentsCount = GeneralFns.FormatNumber(CommentsCount);
+                Conn.Close();
+                singleBlog.CommentsList = BlogComments(0, BlogID);
             }
             catch
             { }
-            finally
-            {
-                Conn.Close();
-            }
 
             return singleBlog;
         }
@@ -444,5 +484,53 @@ namespace Blogging.DAL
             return AdsList;
         }
 
+        internal List<CommentsModel> BlogComments(long Offset, long BlogID)
+        {
+            List<CommentsModel> List = new List<CommentsModel>();
+            DataTable dataTable = new DataTable();
+            CommonUtil commonUtil = new CommonUtil();
+
+            try
+            {
+                string query = "SELECT * FROM comments WHERE blogid = @BlogID ORDER BY datetime DESC OFFSET "+ Offset + "ROWS FETCH NEXT 5 ROWS ONLY";
+                //string query = "SELECT * FROM comments";
+                SqlCommand cmd = new SqlCommand(query, Conn);
+                cmd.Parameters.Add(new SqlParameter("BlogID", BlogID));
+                
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+
+                Conn.Open();
+                adp.Fill(dataTable);
+
+                    foreach (DataRow row in dataTable.Rows)
+                    {
+                        CommentsModel commentsModel = new CommentsModel();
+
+                        commentsModel.UserID = Convert.ToInt64(row["userID"]);
+                        commentsModel.CommentID = Convert.ToInt64(row["commentID"]);
+                        commentsModel.BlogID = Convert.ToInt64(row["blogid"]);
+                        commentsModel.Text = Convert.ToString(row["text"]);
+                        commentsModel.DateTime = Convert.ToDateTime(row["datetime"]);
+
+                        string[] UserDetails = BasicUserDetails(commentsModel.UserID);
+
+                        commentsModel.Name = UserDetails[1];
+                        commentsModel.UserName = UserDetails[0];
+                        commentsModel.ImgURL = UserDetails[2];
+
+                        commentsModel.FormatDateTime = Convert.ToString(GeneralFns.TimeAgo(commentsModel.DateTime));
+                        commentsModel.RepliesCount = commonUtil.CountByArgs("replies", "commentID = "+ commentsModel.CommentID);
+                        
+                        List.Add(commentsModel);
+                    }
+            }
+            catch
+            { }
+            finally
+            {
+                Conn.Close();
+            }
+            return List;
+        }
     }
 }

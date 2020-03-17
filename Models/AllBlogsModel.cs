@@ -27,10 +27,13 @@ namespace Blogging.Models
 
     public class SingleBlog
     {
+        public long CommentsCount { get; set; }
+        public string FormatedCommentsCount { get; set; }
         public ProfileModel Profile { get; set; }
         public AllBlogsModel Blog { get; set; }
         public List<BlogImages> BlogImages { get; set; }
         public List<CategoryModel> CatList { get; set; }
         public List<AdsModel> AdsList { get; set; }
+        public List<CommentsModel> CommentsList { get; set; }
     }
 }

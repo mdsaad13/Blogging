@@ -3,7 +3,6 @@
     ViewBag.Title = "Index";
     ViewBag.sidebar_collapse = "sidebar-collapse";
 }
-@*<link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">*@
 <link rel="stylesheet" href="~/Plugins/flickity/flickity.css" />
 
 <style>
@@ -16,10 +15,14 @@
         overflow: hidden;
     }
 
-        .carousel-cell img {
-            display: block;
-            height: 200px;
-        }
+    .direct-chat-msg:focus {
+        outline: none;
+    }
+
+    .carousel-cell img {
+        display: block;
+        height: 200px;
+    }
 
     @@media screen and ( min-width: 768px ) {
         .carousel-cell img {
@@ -48,11 +51,13 @@
                             string UpdateDate = "(Updated on: " + Model.Blog.UpdateDate + ")";
                         }
                     </span>
-    
-                    </div>
-    
+
+                </div>
+
                 <div class="col-2">
                     <i class="fas fa-eye text-lg"></i>  @Model.Blog.Views
+                    &nbsp;
+                    <i class="fas fa-comments text-lg"></i>  @Model.CommentsCount
                     &nbsp;
                     <i class="fas fa-thumbs-up text-lg"></i>  @Model.Blog.Likes
                 </div>
@@ -80,18 +85,21 @@
                             <a href="@Url.Action("ViewProfile","Account", new { Username = Model.Profile.Uname })">
                                 @@@Model.Profile.Uname
                             </a>
-                            
+
                         </p>
 
                         <ul class="list-group list-group-unbordered mb-3">
                             <li class="list-group-item">
-                                <b>Followers</b> <a class="float-right"> @Model.Profile.Followers</a>
+                                <b>Followers</b>
+                                <a class="float-right"> @Model.Profile.Followers</a>
                             </li>
                             <li class="list-group-item">
-                                <b>Following</b> <a class="float-right"> @Model.Profile.Following</a>
+                                <b>Following</b>
+                                <a class="float-right"> @Model.Profile.Following</a>
                             </li>
                             <li class="list-group-item">
-                                <b>Blogs</b> <a class="float-right"> @Model.Profile.BlogsCount</a>
+                                <b>Blogs</b>
+                                <a class="float-right"> @Model.Profile.BlogsCount</a>
                             </li>
                         </ul>
 
@@ -116,14 +124,14 @@
                 <div class="card sticky-top-t1 ">
                     <div class="card-body p-0">
                         <ul class="nav flex-column">
-                            @{ 
-                                List <string> ColorList = new List<string>{ "bg-primary","bg-info","bg-danger","bg-warning","bg-indigo"};
+                            @{
+                                List<string> ColorList = new List<string> { "bg-primary", "bg-info", "bg-danger", "bg-warning", "bg-indigo" };
                                 var random = new Random();
                                 int ColorListIndex;
                             }
                             @foreach (var CatList in Model.CatList)
                             {
-                                 ColorListIndex = random.Next(ColorList.Count);
+                                ColorListIndex = random.Next(ColorList.Count);
                                 <li class="nav-item">
                                     <a href="#" class="nav-link">
                                         @CatList.Name <span class="float-right badge @ColorList[ColorListIndex]"> @CatList.Count</span>
@@ -145,16 +153,16 @@
                         @foreach (var BlogImgs in Model.BlogImages)
                         {
 
-                        <div class="carousel-cell">
-                            <img class="lazy" src="~/Images/img-spinner.svg" data-src="/Images/Blog/@BlogImgs.URL" alt="@BlogImgs.Alt" />
-                        </div>
+                            <div class="carousel-cell">
+                                <img class="lazy" src="~/Images/img-spinner.svg" data-src="/Images/Blog/@BlogImgs.URL" alt="@BlogImgs.Alt" />
+                            </div>
                         }
                     </div>
                 }
 
                 @* Blog Content here *@
 
-                    @Html.Raw(Model.Blog.Content)
+                @Html.Raw(Model.Blog.Content)
 
                 @* Comments section *@
                 <div style="margin-top:20px">
@@ -163,7 +171,7 @@
                             <h3 class="card-title">Comments</h3>
 
                             <div class="card-tools">
-                                <span data-toggle="tooltip" title="3 New Messages" class="badge bg-success">3</span>
+                                <span data-toggle="tooltip" title="@Model.FormatedCommentsCount New Messages" class="badge bg-success" id="span-CommentCount">@Model.FormatedCommentsCount</span>
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                     <i class="fas fa-minus"></i>
                                 </button>
@@ -175,57 +183,147 @@
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
-                            <!-- Conversations are loaded here -->
-                            <div class="direct-chat-messages">
-                                <!-- Message. Default to the left -->
-                                <div class="direct-chat-msg">
-                                    <div class="direct-chat-infos clearfix">
-                                        <span class="direct-chat-name float-left">Alexander Pierce</span>
-                                        <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
-                                    </div>
-                                    <!-- /.direct-chat-infos -->
-                                    <img class="direct-chat-img" src="~/Images/default_user.png" alt="Message User Image">
-                                    <!-- /.direct-chat-img -->
-                                    <div class="direct-chat-text">
-                                        Nice Blog. That's unbelievable!
-                                    </div>
-                                    <span class="text-sm">
-                                        <button type="button" class="btn btn-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
-                                            <i class="fas fa-comments"></i>
-                                            2 Replies
-                                        </button>
-                                    </span>
-                                    <!-- /.direct-chat-text -->
+                            <input type="hidden" name="TotalComments" value="@Model.CommentsCount" />
+                            <div class="direct-chat-messages" style="height: 350px;">
+                                
+                                <div id="direct-chat-messages">
+                                    @foreach (var Commentitem in Model.CommentsList)
+                                    {
+                                        <!-- Message. Default to the left -->
+                                        <div class="direct-chat-msg" id="@Commentitem.CommentID">
+                                            <div class="direct-chat-infos clearfix">
+                                                <span class="direct-chat-name float-left">
+                                                    <a href="@Url.Action("ViewProfile","Account", new { Username = Commentitem.UserName })" class="text-dark">
+                                                        @Commentitem.Name
+                                                    </a>
+
+                                                </span>
+                                                <span class="direct-chat-timestamp float-right">@Commentitem.FormatDateTime</span>
+                                            </div>
+                                            @if (Commentitem.ImgURL == null)
+                                            {
+                                                <a href="@Url.Action("ViewProfile","Account", new { Username = Commentitem.UserName })" class="text-dark">
+                                                    <img class="direct-chat-img" src="~/Images/default_user.png" alt="Message User Image">
+                                                </a>
+
+                                            }
+                                            else
+                                            {
+                                                <a href="@Url.Action("ViewProfile","Account", new { Username = Commentitem.UserName })" class="text-dark">
+                                                    <img class="direct-chat-img lazy"  src="/Images/img-spinner.svg" data-src="/Images/UserProfiles/@Commentitem.ImgURL" alt="@Commentitem.UserName">
+                                                </a>
+
+                                            }
+
+                                            <!-- /.direct-chat-img -->
+                                            <div class="direct-chat-text">
+                                                @Commentitem.Text
+                                            </div>
+                                            @if (Commentitem.RepliesCount > 0)
+                                            {
+                                                <span class="text-sm">
+                                                    <button type="button" class="btn btn-tool" data-toggle="tooltip" title="Contacts">
+                                                        <i class="fas fa-comments"></i>
+                                                        @if (Commentitem.RepliesCount == 1)
+                                                        {
+                                                            <span>@Commentitem.RepliesCount</span><span> Reply</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@Commentitem.RepliesCount</span><span> Replies</span>
+                                                        }
+
+                                                    </button>
+                                                </span>
+                                            }
+                                        </div>
+                                    }
                                 </div>
-                                <!-- /.direct-chat-msg -->
-                                <!-- Message to the right -->
-                                <div class="direct-chat-msg">
-                                    <div class="direct-chat-infos clearfix">
-                                        <span class="direct-chat-name">Sarah Bullock</span>
-                                        <span class="direct-chat-timestamp float-right">23 Jan 2:05 pm</span>
+
+                                <div id="Loader" class="hidden">
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <div class="text-line-loader float-left" style="height:16px;width:20%"></div>
+                                            <div class="text-line-loader float-right" style="height:16px;width:20%"></div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="mb-2"></div>
+                                        <div class="col-12">
+                                            <div class="image-loader float-left" style="height: 40px;width: 40px;border-radius: 50%;"></div>
+                                            <div class="text-line-loader float-right" style="border-radius: .3rem;width: 94%;height: 40px;margin:unset"></div>
+                                        </div>
+                                        <div class="col-10"></div>
                                     </div>
-                                    <!-- /.direct-chat-infos -->
-                                    <img class="direct-chat-img" src="~/Images/default_user.png" alt="Message User Image">
-                                    <!-- /.direct-chat-img -->
-                                    <div class="direct-chat-text">
-                                        You better believe it!
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <div class="text-line-loader float-left" style="height:16px;width:20%"></div>
+                                            <div class="text-line-loader float-right" style="height:16px;width:20%"></div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="mb-2"></div>
+                                        <div class="col-12">
+                                            <div class="image-loader float-left" style="height: 40px;width: 40px;border-radius: 50%;"></div>
+                                            <div class="text-line-loader float-right" style="border-radius: .3rem;width: 94%;height: 40px;margin:unset"></div>
+                                        </div>
+                                        <div class="col-10"></div>
                                     </div>
-                                    <!-- /.direct-chat-text -->
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <div class="text-line-loader float-left" style="height:16px;width:20%"></div>
+                                            <div class="text-line-loader float-right" style="height:16px;width:20%"></div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="mb-2"></div>
+                                        <div class="col-12">
+                                            <div class="image-loader float-left" style="height: 40px;width: 40px;border-radius: 50%;"></div>
+                                            <div class="text-line-loader float-right" style="border-radius: .3rem;width: 94%;height: 40px;margin:unset"></div>
+                                        </div>
+                                        <div class="col-10"></div>
+                                    </div>
                                 </div>
-                                <!-- /.direct-chat-msg -->
+
+                                @if (Model.CommentsCount > 5)
+                                {
+                                    <div class="text-center" id="LoadMoreData-div">
+                                        <a href="#" id="btn-LoadMoreData">Load More Comments</a>
+                                    </div>
+                                }
+                                <div id="LastDivForFocus" tabindex="1" style="outline:none"></div>
+
                             </div>
                             <!--/.direct-chat-messages-->
+
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            <form action="#" method="post">
-                                <div class="input-group">
-                                    <input type="text" name="message" placeholder="Type Message ..." class="form-control" autocomplete="off">
-                                    <span class="input-group-append">
-                                        <button type="submit" class="btn btn-outline-info">Send</button>
-                                    </span>
-                                </div>
-                            </form>
+                            @if (Session["userID"] == null)
+                            {
+                                <button class="btn btn-dark text-white btn-block" type="button" data-toggle="modal" data-target="#modal-login">Login/Register to comment</button>
+                            }
+                            else
+                            {
+                                using (Html.BeginForm("AjaxAddComment", "Blog", FormMethod.Post, new { @id = "form" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    double UserID = Convert.ToDouble(Session["userID"]);
+
+                                    <input type="hidden" name="UserID" id="UserID" value="@UserID" />
+                                    <input type="hidden" name="BlogID" id="BlogID" value="@Model.Blog.BlogID" />
+
+                                    <div id="div-CommentSection">
+                                        <div class="input-group">
+
+                                            <input type="text" name="Text" id="Text" placeholder="Post Comment...." autocomplete="off" class="form-control" />
+
+                                            <span class="input-group-append">
+                                                <button type="submit" class="btn btn-outline-info" id="btn-comment">Send</button>
+                                                <div class="spinner-border text-info hidden" role="status" id="spinner"></div>
+                                            </span>
+                                        </div>
+                                        <span id="error_Text" class="form-error"></span>
+                                    </div>
+                                }
+                            }
                         </div>
                         <!-- /.card-footer-->
                     </div>
@@ -258,7 +356,10 @@
     <!-- /.card-body -->
 </div>
 @section scripts{
-    @*<script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js" type="text/javascript"></script>*@
+    @Scripts.Render("~/js/jqueryval")
+    @Scripts.Render("~/js/jquery-ui")
+    @Scripts.Render("~/js/sweetalert2")
+
     <script src="~/Plugins/flickity/flickity.js" type="text/javascript"></script>
     <script>
         var $carousel = $('.carousel').flickity({
@@ -280,6 +381,149 @@
                 var x = (slide.target + flkty.x) * -1 / 3;
                 img.style[transformProp] = 'translateX(' + x + 'px)';
             });
+        });
+    </script>
+
+    <script type="text/javascript">
+        var $CommentCount = parseInt($('#span-CommentCount').text());
+        var $CurrentDataCount = @Model.CommentsList.Count;
+        var $MoreData = @if (Model.CommentsCount > 5) { @("true") } else { @("false") };
+
+        $(document).ready(function () {
+
+            $('#btn-LoadMoreData').click(function () {
+                if ($MoreData) {
+                     var formData = new FormData();
+                    formData.append('CurrentDataCount', $CurrentDataCount);
+                    formData.append('BlogID', $('#BlogID').val());
+
+                    $.ajax({
+                        type: 'post',
+                        url: '/blog/AjaxLoadComments',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        beforeSend: function () {
+                            $('#Loader').removeClass('hidden');
+                            $('#LastDivForFocus').focus();
+                            $('#LoadMoreData-div').addClass('hidden');
+                        },
+                        success: function (data) {
+                            $('#LoadMoreData-div').removeClass('hidden');
+                            if (data.status) {
+                                $MoreData = data.MoreData;
+                                $CurrentDataCount = data.CurrentDataCount;
+                                $('#span-CommentCount').text(data.CommentsCount)
+                                $CommentCount = data.CommentsCount;
+
+                                if (!$MoreData) {
+                                    $('#LoadMoreData-div').html('<p class="text-black-50 text-center">No More Comments To Load!</p>');
+                                }
+                                setTimeout(function () {
+                                    $('#Loader').addClass('hidden');
+                                    $("#direct-chat-messages").append(data.content);
+                                    Lazzzy();
+                                }, 2000);
+                                
+                            } else {
+                                $('#Loader').addClass('hidden');
+                                // unknown error
+                                Swal.fire({
+                                    position: 'top-end',
+                                    icon: 'error',
+                                    title: '',
+                                    text: 'An unknown error has occured. Please try again later!',
+                                    showConfirmButton: false,
+                                });
+                            }
+
+                            return false;
+                        }
+                    });
+                }
+                return false;
+            });
+
+            $('#btn-comment').click(function () {
+
+                var FormValid = false;
+
+                if ($.trim($('#Text').val()).length == 0) {
+                    $('#error_Text').text('This field cannot be empty');
+                    $("#div-CommentSection").effect("shake", { times: 3 }, 500);
+                } else {
+                    FormValid = true;
+                }
+                if (FormValid) {
+                    var form = $('#form')[0];
+                    var formData = new FormData(form);
+                    $.ajax({
+                        type: 'post',
+                        url: form.action,
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        cache: false,
+                        beforeSend: function () {
+                            $("#form :input").prop("disabled", true);
+                            $('#btn-comment').addClass('hidden');
+                            $('#spinner').removeClass('hidden');
+                        },
+                        success: function (data) {
+                            if (data.status) {
+
+                                var Comment = `
+                                <div class="direct-chat-msg" tabindex="1" id="`+ data.CommentID + `" style="display:none">
+                                    <div class="direct-chat-infos clearfix">
+                                        <span class="direct-chat-name">@ViewBag.Name</span>
+                                        <span class="direct-chat-timestamp float-right">Just Now</span>
+                                    </div>
+                                    @if (ViewBag.ImgUrl == null)
+                                    {
+                                        <img src="/Images/default_user.png" class="direct-chat-img" alt="User Image">
+                                    }
+                                    else
+                                    {
+                                        <img src="/Images/UserProfiles/@ViewBag.ImgUrl" class="direct-chat-img" alt="@ViewBag.UserName">
+                                    }
+                                    <div class="direct-chat-text">
+                                        `+ $('#Text').val() + `
+                                    </div>
+                                </div>
+                                `;
+                                $("#direct-chat-messages").prepend(Comment);
+                                $('#' + data.CommentID).fadeIn("slow");
+                                $('#' + data.CommentID).focus();
+                                $('#' + data.CommentID).effect("highlight", { color: "#b2ebf2" }, 3000);
+
+                                $("#form :input").prop("disabled", false);
+                                $('#btn-comment').removeClass('hidden');
+                                $('#spinner').addClass('hidden');
+
+                                $CommentCount++;
+                                $CurrentDataCount++;
+                                $('#span-CommentCount').text($CommentCount);
+                                $('#Text').val('');
+
+                            } else {
+                                // unknown error
+                                Swal.fire({
+                                    position: 'top-end',
+                                    icon: 'error',
+                                    title: '',
+                                    text: 'An unknown error has occured. Please try again later!',
+                                    showConfirmButton: false,
+                                });
+                            }
+
+                            return false;
+                        }
+                    });
+                    return false;
+                }
+                return false;
+            });
+
         });
     </script>
 }

@@ -165,6 +165,85 @@ namespace Blogging.Controllers
             return Json(new { status, content = Content.ToString() });
         }
 
+        [HttpPost]
+        [Route("AjaxLoadComments")]
+        public JsonResult AjaxLoadComments(FormCollection formCollection)
+        {
+            CommonUtil commonUtil = new CommonUtil();
+            IndexUtil indexUtil = new IndexUtil();
+            StringBuilder Content = new StringBuilder();
+
+            bool MoreData = true;
+            long CurrentDataCount = Convert.ToInt64(formCollection["CurrentDataCount"]);
+            long BlogID = Convert.ToInt64(formCollection["BlogID"]);
+            long CommentsCount = commonUtil.CountByArgs("comments", "blogid = "+BlogID);
+
+            List<CommentsModel> CommentsList = indexUtil.BlogComments(CurrentDataCount, BlogID);
+
+            CurrentDataCount += CommentsList.Count;
+            if (CurrentDataCount >= CommentsCount)
+            {
+                MoreData = false;
+            }
+
+            bool status = CommentsList.Count > 0 ? true : false;
+            string Image;
+            if (status)
+            {
+                foreach (var Commentitem in CommentsList)
+                {
+                    if (Commentitem.ImgURL == null)
+                    {
+                        Image = "/Images/default_user.png";
+                    }
+                    else
+                    {
+                        Image = "/Images/UserProfiles/"+Commentitem.ImgURL;
+                    }
+                    
+                    Content.AppendFormat(@"
+                        <div class=""direct-chat-msg"" id=""{0}"">
+                            <div class=""direct-chat-infos clearfix"">
+                                <span class=""direct-chat-name float-left"">
+                                     <a href=""/user/{3}"" class=""text-dark"">
+                                         {4}
+                                      </a>
+                                 </span>
+                                <span class=""direct-chat-timestamp float-right"">{2}</span>
+                             </div>
+                             <a href=""/user/{3}"" class=""text-dark"">
+                                 <img class=""direct-chat-img lazy"" src=""/Images/img-spinner.svg"" data-src=""{5}"" alt=""{3}"">
+                             </a>
+                             <div class=""direct-chat-text"">
+                                {1}
+                             </div>
+                        </div>
+                    ", Commentitem.CommentID, Commentitem.Text, Commentitem.FormatDateTime, Commentitem.UserName, Commentitem.Name, Image);
+                }
+            }
+
+            return Json(new { status, content = Content.ToString(), MoreData, CurrentDataCount, CommentsCount });
+        }
+
+        [ValidateAntiForgeryToken]
+        [Route("AjaxAddComment")]
+        public JsonResult AjaxAddComment(CommentsModel commentsModel)
+        {
+            bool status = false;
+            IndexUtil indexUtil = new IndexUtil();
+            commentsModel.DateTime = DateTime.Now;
+
+            Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            Random random = new Random();
+            int randomNo = random.Next(1000);
+
+            commentsModel.CommentID = Convert.ToInt64(string.Format("{1}{0}", unixTimestamp, randomNo));
+
+            status = indexUtil.InsertComment(commentsModel);
+
+            return Json(new { status , commentsModel.CommentID });
+        }
+
         public ActionResult Error()
         {
             return View();

@@ -71,172 +71,172 @@
             display: none;
         }
 
-        .invisible{
-            display:none;
+        .invisible {
+            display: none;
         }
     </style>
 
 </head>
 <body style="background-color:#e0f7fa">
-   
-        <div class="container" style="margin-top:20px">
-            <div class="register-logo">
-                <img src="~/Images/logo-transparent.png" class="img-fluid" style="height: 42px;
+
+    <div class="container" style="margin-top:20px">
+        <div class="register-logo">
+            <img src="~/Images/logo-transparent.png" class="img-fluid" style="height: 42px;
         vertical-align: text-bottom" />
-                <a href="">@ViewBag.SoftwareName</a>
-            </div>
-            @using (Html.BeginForm("RegisterAjax", "Account", FormMethod.Post, new { enctype = "multipart/form-data", @id = "form" }))
-            {
-                @Html.AntiForgeryToken()
-                <div class="card" style="border-radius: .25rem;">
-                    <div class="card-body register-card-body">
-                        <p class="login-box-msg">Register to become a creator at @ViewBag.SoftwareName</p>
-                        @Html.ValidationSummary(true, "", new { @class = "form-error" })
-                        <div class="row">
-                            <div class="col-12 col-lg-6">
-                                <div class="text-center">
-                                    <label for="customFile" style="cursor:pointer" title="upload image">
-                                        <img src="~/Images/default_user.png" class="img-bordered img-circle img-fluid" id="outputImg" style="height:225px;width:225px" />
-                                    </label>
-                                </div>
-                                <br />
-                                <label>Upload Profile Picture</label>
-                                <div class="custom-file col-md-12">
-                                    @Html.TextBoxFor(model => model.Image, new { type = "file", @class = "custom-file-input", @accept = "image/*", @id = "customFile" })
-                                    <label class="custom-file-label" for="customFile">Choose file</label>
-                                </div>
-                                @Html.ValidationMessageFor(model => model.Image, "", new { @class = "form-error" })
-
-                                <div class="m-4 d-sm-block d-lg-none">
-                                    <hr />
-                                </div>
+            <a href="">@ViewBag.SoftwareName</a>
+        </div>
+        @using (Html.BeginForm("RegisterAjax", "Account", FormMethod.Post, new { enctype = "multipart/form-data", @id = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="card" style="border-radius: .25rem;">
+                <div class="card-body register-card-body">
+                    <p class="login-box-msg">Register to become a creator at @ViewBag.SoftwareName</p>
+                    @Html.ValidationSummary(true, "", new { @class = "form-error" })
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <div class="text-center">
+                                <label for="customFile" style="cursor:pointer" title="upload image">
+                                    <img src="~/Images/default_user.png" class="img-bordered img-circle img-fluid" id="outputImg" style="height:225px;width:225px" />
+                                </label>
                             </div>
-
-                            <div class="col-12 col-lg-6">
-                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "form-error" })
-                                <div class="input-group mb-3">
-                                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your name" } })
-                                    <div class="input-group-append">
-                                        <div class="input-group-text">
-                                            <span class="fas fa-user"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "form-error" })
-                                <div class="input-group mb-3">
-                                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your email" } })
-                                    <div class="input-group-append">
-                                        <div class="input-group-text">
-                                            <span class="fas fa-envelope"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                @Html.ValidationMessageFor(model => model.Mobile, "", new { @class = "form-error" })
-                                <span class="form-error" id="error_mobile"></span>
-                                <div class="input-group mb-3" id="Mobile-div">
-                                    @Html.EditorFor(model => model.Mobile, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your mobile number" } })
-                                    <div class="input-group-append">
-                                        <div class="input-group-text">
-                                            <span class="fas fa-phone"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "form-error" })
-                                <span class="form-error" id="error_username"></span>
-                                <div class="input-group mb-3" id="UserName-div">
-                                    @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your username" } })
-                                    <div class="input-group-append">
-                                        <div class="input-group-text">
-                                            <span class="fas fa-key"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                @Html.ValidationMessageFor(model => model.DOB, "", new { @class = "form-error" })
-                                <div class="input-group mb-3">
-                                    @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your birthdate" } })
-                                    <div class="input-group-append">
-                                        <div class="input-group-text">
-                                            <span class="fas fa-birthday-cake"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "form-error" })
-                                <div class="form-group clearfix">
-                                    <div class="icheck-info d-inline">
-                                        @Html.RadioButtonFor(model => model.Gender, "Male", new { @id = "Male" })
-                                        <label for="Male">
-                                            Male
-                                        </label>
-                                    </div>
-                                    <div class="icheck-info d-inline">
-                                        @Html.RadioButtonFor(model => model.Gender, "Female", new { @id = "Female" })
-                                        <label for="Female">
-                                            Female
-                                        </label>
-                                    </div>
-                                </div>
-
-                                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "form-error" })
-
-                                <div class="input-group mb-3">
-                                    @Html.PasswordFor(model => model.Password, new { @class = "form-control", @placeholder = "Enter your password" })
-                                    <div id="pswd_info" class="elevation-3">
-                                        <p><b>Password must meet the following requirements:</b></p>
-                                        <ul>
-                                            <li id="letter" class="invalid">At least <strong>one small letter</strong></li>
-                                            <li id="capital" class="invalid">At least <strong>one capital letter</strong></li>
-                                            <li id="number" class="invalid">At least <strong>one number</strong></li>
-                                            <li id="length" class="invalid">Be at least <strong>6 characters</strong></li>
-                                        </ul>
-                                    </div>
-                                    <div class="input-group-append">
-                                        <div class="input-group-text">
-                                            <span class="fas fa-lock"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                @Html.ValidationMessageFor(model => model.ConfirmPass, "", new { @class = "form-error" })
-                                <div class="input-group mb-3">
-                                    @Html.PasswordFor(model => model.ConfirmPass, new { @class = "form-control", @placeholder = "Re-Enter your password" })
-                                    <div class="input-group-append">
-                                        <div class="input-group-text">
-                                            <span class="fas fa-lock"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row" id="footer">
-                                    <div class="col-8">
-                                        <div class="icheck-primary">
-                                            <a href="@Url.Action("Login")" class="text-center">I have already registered</a>
-                                        </div>
-                                    </div>
-                                    <!-- /.col -->
-                                    <div class="col-4 text-center">
-                                        <input type="submit" class="btn btn-info btn-block" id="btn-register" value="Register" />
-                                        <div class="spinner-border text-info invisible" role="status" id="spinner"></div>
-                                    </div>
-                                    <!-- /.col -->
-                                </div>
+                            <br />
+                            <label>Upload Profile Picture</label>
+                            <div class="custom-file col-md-12">
+                                @Html.TextBoxFor(model => model.Image, new { type = "file", @class = "custom-file-input", @accept = "image/*", @id = "customFile" })
+                                <label class="custom-file-label" for="customFile">Choose file</label>
                             </div>
+                            @Html.ValidationMessageFor(model => model.Image, "", new { @class = "form-error" })
 
+                            <div class="m-4 d-sm-block d-lg-none">
+                                <hr />
+                            </div>
                         </div>
 
+                        <div class="col-12 col-lg-6">
+                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "form-error" })
+                            <div class="input-group mb-3">
+                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your name" } })
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-user"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "form-error" })
+                            <div class="input-group mb-3">
+                                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your email" } })
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-envelope"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @Html.ValidationMessageFor(model => model.Mobile, "", new { @class = "form-error" })
+                            <span class="form-error" id="error_mobile"></span>
+                            <div class="input-group mb-3" id="Mobile-div">
+                                @Html.EditorFor(model => model.Mobile, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your mobile number" } })
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-phone"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "form-error" })
+                            <span class="form-error" id="error_username"></span>
+                            <div class="input-group mb-3" id="UserName-div">
+                                @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your username" } })
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-key"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @Html.ValidationMessageFor(model => model.DOB, "", new { @class = "form-error" })
+                            <div class="input-group mb-3">
+                                @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your birthdate" } })
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-birthday-cake"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "form-error" })
+                            <div class="form-group clearfix">
+                                <div class="icheck-info d-inline">
+                                    @Html.RadioButtonFor(model => model.Gender, "Male", new { @id = "Male" })
+                                    <label for="Male">
+                                        Male
+                                    </label>
+                                </div>
+                                <div class="icheck-info d-inline">
+                                    @Html.RadioButtonFor(model => model.Gender, "Female", new { @id = "Female" })
+                                    <label for="Female">
+                                        Female
+                                    </label>
+                                </div>
+                            </div>
+
+                            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "form-error" })
+
+                            <div class="input-group mb-3">
+                                @Html.PasswordFor(model => model.Password, new { @class = "form-control", @placeholder = "Enter your password" })
+                                <div id="pswd_info" class="elevation-3">
+                                    <p><b>Password must meet the following requirements:</b></p>
+                                    <ul>
+                                        <li id="letter" class="invalid">At least <strong>one small letter</strong></li>
+                                        <li id="capital" class="invalid">At least <strong>one capital letter</strong></li>
+                                        <li id="number" class="invalid">At least <strong>one number</strong></li>
+                                        <li id="length" class="invalid">Be at least <strong>6 characters</strong></li>
+                                    </ul>
+                                </div>
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-lock"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @Html.ValidationMessageFor(model => model.ConfirmPass, "", new { @class = "form-error" })
+                            <div class="input-group mb-3">
+                                @Html.PasswordFor(model => model.ConfirmPass, new { @class = "form-control", @placeholder = "Re-Enter your password" })
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-lock"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" id="footer">
+                                <div class="col-8">
+                                    <div class="icheck-primary">
+                                        <a href="@Url.Action("Login")" class="text-center">I have already registered</a>
+                                    </div>
+                                </div>
+                                <!-- /.col -->
+                                <div class="col-4 text-center">
+                                    <input type="submit" class="btn btn-info btn-block" id="btn-register" value="Register" />
+                                    <div class="spinner-border text-info invisible" role="status" id="spinner"></div>
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                        </div>
 
                     </div>
-                    <!-- /.form-box -->
-                </div>
-            }
-            <!-- /.card -->
 
-        </div>
-    
+
+                </div>
+                <!-- /.form-box -->
+            </div>
+        }
+        <!-- /.card -->
+
+    </div>
+
 
     @Scripts.Render("~/js/main")
     @Scripts.Render("~/js/jqueryval")
@@ -276,11 +276,11 @@
                             if (data.errorCode == 1) {
                                 // mobile number exists!
                                 $('#error_mobile').text('Mobile number already exist! Kindly try a different number');
-                                 $("#Mobile-div").effect( "shake", {times:4}, 800 );
+                                $("#Mobile-div").effect("shake", { times: 4 }, 800);
                             } else if (data.errorCode == 2) {
                                 // username exists!
                                 $('#error_username').text('username already exist! Kindly try a different username');
-                                $("#UserName-div").effect( "shake", {times:4}, 800 );
+                                $("#UserName-div").effect("shake", { times: 4 }, 800);
                             } else if (data.errorCode == 3) {
                                 // unknown error
                                 Swal.fire({
@@ -299,9 +299,9 @@
 
                                 setTimeout(SuccessRedirect(), 500);
                                 function SuccessRedirect() {
-                                     window.location.replace('/Home/Index/');
+                                    window.location.replace('/Home/Index/');
                                 }
-                               
+
                             } else {
                                 // unknown error
                                 Swal.fire({
