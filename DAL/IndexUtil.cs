@@ -388,7 +388,7 @@ namespace Blogging.DAL
             return Name;
         }
 
-        private List<CategoryModel> PersonalizedCats(long CatID)
+        internal List<CategoryModel> PersonalizedCats(long CatID = 0)
         {
             List<CategoryModel> categoryList = new List<CategoryModel>();
             DataTable dataTable = new DataTable();
@@ -396,21 +396,24 @@ namespace Blogging.DAL
 
             try
             {
-                string query = "SELECT * FROM categories WHERE catid = @catid";
-                SqlCommand cmd = new SqlCommand(query, Conn);
-                cmd.Parameters.Add(new SqlParameter("catid", CatID));
-                SqlDataAdapter adp = new SqlDataAdapter(cmd);
-                adp.Fill(dataTable);
-
-                CategoryModel Firstcategory = new CategoryModel()
+                if (CatID != 0)
                 {
-                    CatID = Convert.ToInt64(dataTable.Rows[0]["catid"]),
-                    Name = Convert.ToString(dataTable.Rows[0]["name"]),
-                    Count = commonUtil.CountByArgs("blog", "catid = "+ CatID),
-                };
-                categoryList.Add(Firstcategory);
-                dataTable.Reset();
+                    string query = "SELECT * FROM categories WHERE catid = @catid";
+                    SqlCommand cmd = new SqlCommand(query, Conn);
+                    cmd.Parameters.Add(new SqlParameter("catid", CatID));
+                    SqlDataAdapter adp = new SqlDataAdapter(cmd);
+                    adp.Fill(dataTable);
 
+                    CategoryModel Firstcategory = new CategoryModel()
+                    {
+                        CatID = Convert.ToInt64(dataTable.Rows[0]["catid"]),
+                        Name = Convert.ToString(dataTable.Rows[0]["name"]),
+                        Count = commonUtil.CountByArgs("blog", "catid = " + CatID),
+                    };
+                    categoryList.Add(Firstcategory);
+                    dataTable.Reset();
+                }
+                
                 string query1 = "SELECT TOP 5 * FROM categories WHERE catid <> @catid ORDER BY NEWID()";
                 SqlCommand cmd1 = new SqlCommand(query1, Conn);
                 cmd1.Parameters.Add(new SqlParameter("catid", CatID));
@@ -531,6 +534,51 @@ namespace Blogging.DAL
                 Conn.Close();
             }
             return List;
+        }
+
+        internal List<CategoryModel> AllCategories(long Offset = 0)
+        {
+            List<CategoryModel> CategoriesList = new List<CategoryModel>();
+
+            DataTable dataTable = new DataTable();
+            CommonUtil commonUtil = new CommonUtil();
+
+            try
+            {
+                string query = "SELECT * FROM categories ORDER BY name ASC OFFSET @offset ROWS FETCH NEXT 40 ROWS ONLY";
+
+                SqlCommand cmd = new SqlCommand(query, Conn);
+                cmd.Parameters.Add(new SqlParameter("offset", Offset));
+
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+
+                Conn.Open();
+                adp.Fill(dataTable);
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+
+                    CategoryModel categoryModel = new CategoryModel();
+
+                    categoryModel.CatID = Convert.ToInt64(row["catid"]);
+                    categoryModel.Name = Convert.ToString(row["name"]);
+
+                    if (!DBNull.Value.Equals(row["icon"]))
+                        categoryModel.Icon = Convert.ToString(row["icon"]);
+
+                    categoryModel.Count = commonUtil.CountByArgs("blog", "catid = " + categoryModel.CatID);
+                    categoryModel.FormatedCount = GeneralFns.FormatNumber(categoryModel.Count);
+
+                    CategoriesList.Add(categoryModel);
+                }
+            }
+            catch
+            { }
+            finally
+            {
+                Conn.Close();
+            }
+            return CategoriesList;
         }
     }
 }

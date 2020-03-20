@@ -14,5 +14,7 @@ namespace Blogging.Models
         public string Icon { get; set; }
 
         public int Count { get; set; }
+
+        public string FormatedCount { get; set; }
     }
 }

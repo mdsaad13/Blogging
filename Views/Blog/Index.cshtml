@@ -296,6 +296,9 @@
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
+
+                            <input type="hidden" name="BlogID" id="BlogID" value="@Model.Blog.BlogID" />
+
                             @if (Session["userID"] == null)
                             {
                                 <button class="btn btn-dark text-white btn-block" type="button" data-toggle="modal" data-target="#modal-login">Login/Register to comment</button>
@@ -308,7 +311,6 @@
                                     double UserID = Convert.ToDouble(Session["userID"]);
 
                                     <input type="hidden" name="UserID" id="UserID" value="@UserID" />
-                                    <input type="hidden" name="BlogID" id="BlogID" value="@Model.Blog.BlogID" />
 
                                     <div id="div-CommentSection">
                                         <div class="input-group">

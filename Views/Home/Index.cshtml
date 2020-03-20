@@ -3,80 +3,88 @@
     ViewBag.Title = "Home";
 }
 
-<div class="row">
+    <div class="row">
 
-    @foreach (var item in Model)
-    {
-        <div class="col-lg-4 col-12">
-            <div class="card card-outline elevation-3" style="margin-top: 26px;border-bottom: 3px solid #17a2b8;">
-                <div class="card-body">
-                    @if (item.HasImages)
-                    {
-                        <img src="~/Images/Blog/@item.BlogImg" class="img-fluid img-rounded elevation-3 card-img-top" style="margin-top: -42px;" />
-                        <hr />
-                    }
+        @{
+            List<string> AnimationsList = new List<string> { "bounceInLeft", "bounceInDown", "bounceInRight", "bounceInUp", "fadeInDown", "fadeInLeft", "fadeInRight", "fadeInUp", "flipInX", "flipInY", "lightSpeedIn", "slideInDown", "slideInLeft", "slideInUp", "slideInRight", "zoomIn", "zoomInDown", "zoomInUp", "zoomInLeft", "zoomInRight", "jackInTheBox" };
+            var random = new Random();
+            int AnimationsListIndex;
+        }
 
-                    @if (item.Freatured)
-                    {
-                        <span class="badge bg-gradient-gray-dark float-left">
-                            <i class="fas fa-star"></i>&nbsp;
-                            FEATURED
+        @foreach (var item in Model)
+        {
+            AnimationsListIndex = random.Next(AnimationsList.Count);
+
+            <div class="col-lg-4 col-12 wow @AnimationsList[AnimationsListIndex]">
+                <div class="card card-outline elevation-3" style="margin-top: 26px;border-bottom: 3px solid #17a2b8;">
+                    <div class="card-body">
+                        @if (item.HasImages)
+                        {
+                            <img src="~/Images/Blog/@item.BlogImg" class="img-fluid img-rounded elevation-3 card-img-top" style="margin-top: -42px;" />
+                            <hr />
+                        }
+
+                        @if (item.Freatured)
+                        {
+                            <span class="badge bg-gradient-gray-dark float-left">
+                                <i class="fas fa-star"></i>&nbsp;
+                                FEATURED
+                            </span>
+                        }
+                        <span class="badge text-dark float-right">
+                            <i class="fas fa-tags"></i>&nbsp;
+                            @item.CatName
                         </span>
-                    }
-                    <span class="badge text-dark float-right">
-                        <i class="fas fa-tags"></i>&nbsp;
-                        @item.CatName
-                    </span>
-                    <div class="clearfix"></div>
-                    <h4>@item.Title</h4>
-                    <div class="text-gray text-sm row">
-                        <div class="col-12">
-                            <a href="@Url.Action("ViewProfile","Account", new { Username = item.UniqueUserName })">
-                                @if (item.UserImg != null)
-                                {
-                                    <img src="~/Images/UserProfiles/@item.UserImg" class="img-circle" style="height:2rem" alt="@item.UniqueUserName" />
-                                }
-                                else
-                                {
-                                    <img src="~/Images/default_user.png" class="img-circle" style="height:2rem" />
-                                }
+                        <div class="clearfix"></div>
+                        <h4>@item.Title</h4>
+                        <div class="text-gray text-sm row">
+                            <div class="col-12">
+                                <a href="@Url.Action("ViewProfile","Account", new { Username = item.UniqueUserName })">
+                                    @if (item.UserImg != null)
+                                    {
+                                        <img src="~/Images/UserProfiles/@item.UserImg" class="img-circle" style="height:2rem" alt="@item.UniqueUserName" />
+                                    }
+                                    else
+                                    {
+                                        <img src="~/Images/default_user.png" class="img-circle" style="height:2rem" />
+                                    }
 
-                                @item.UserName
-                            </a>
+                                    @item.UserName
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <br />
+                                <i class="fas fa-clock"></i>
+                                Published on: @item.PublishDate
+                            </div>
                         </div>
-                        <div class="col-12">
-                            <br />
-                            <i class="fas fa-clock"></i>
-                            Published on: @item.PublishDate
+                        <hr />
+                        <div class="row text-center text-sm">
+                            <div class="col">
+                                <i class="fas fa-thumbs-up"></i> @item.Likes
+                            </div>
+                            <div class="col">
+                                <i class="fas fa-eye"></i> @item.Views
+                            </div>
+                            <div class="col">
+                                <i class="fas fa-comments"></i> @item.Comments
+                            </div>
                         </div>
+                        <hr />
+                        <p class="card-text text-sm">
+                            @item.Content&hellip;
+                        </p>
                     </div>
-                    <hr />
-                    <div class="row text-center text-sm">
-                        <div class="col">
-                            <i class="fas fa-thumbs-up"></i> @item.Likes
+                    <a href="@Url.Action("Index","Blog", new { Url = item.URL })">
+                        <div class="card-footer text-center">
+                            View Full Blog
                         </div>
-                        <div class="col">
-                            <i class="fas fa-eye"></i> @item.Views
-                        </div>
-                        <div class="col">
-                            <i class="fas fa-comments"></i> @item.Comments
-                        </div>
-                    </div>
-                    <hr />
-                    <p class="card-text text-sm">
-                        @item.Content&hellip;
-                    </p>
+                    </a>
                 </div>
-                <a href="@Url.Action("Index","Blog", new { Url = item.URL })">
-                    <div class="card-footer text-center">
-                        View Full Blog
-                    </div>
-                </a>
             </div>
-        </div>
-    }
+        }
 
-    @*<div class="col-lg-4 col-12">
+        @*<div class="col-lg-4 col-12">
             <div class="card card-outline elevation-3" style="margin-top: 26px;border-bottom: 3px solid #17a2b8;">
                 <div class="card-body">
                     <img src="https://makeawebsitehub.com/wp-content/uploads/2017/03/examples-of-blog.jpg" class="img-fluid img-rounded elevation-3 card-img-top" style="margin-top: -42px;" />
@@ -130,4 +138,4 @@
             </div>
         </div>*@
 
-</div>
+    </div>

@@ -35,6 +35,9 @@ namespace Blogging.Controllers
                 ViewBag.Followers = 0;
                 ViewBag.Blogs = 0;
             }
+
+            IndexUtil indexUtil = new IndexUtil();
+            ViewBag.Sidenav_CatList = indexUtil.PersonalizedCats();
         }
 
         [Route("{Url}")]

@@ -224,6 +224,8 @@
     <Content Include="Views\Account\ViewProfile.cshtml" />
     <Content Include="Views\Account\Error.cshtml" />
     <Content Include="Views\Blog\Error.cshtml" />
+    <Content Include="Views\Home\AllCategories.cshtml" />
+    <Content Include="Views\Home\SingleCategory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

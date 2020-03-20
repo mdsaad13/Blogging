@@ -34,6 +34,8 @@
 
     <script type="text/javascript" src="~/Scripts/main.js"></script>
 
+    <link rel="stylesheet" href="~/Plugins/wow/animate.css" />
+
     @RenderSection("head", required: false)
 </head>
 <body class="hold-transition sidebar-mini layout-fixed @ViewBag.sidebar_collapse">
@@ -187,38 +189,9 @@
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column text-sm nav-flat" data-widget="treeview" role="menu" data-accordion="false">
-                        @*<li class="nav-item has-treeview menu-open">
-                                <a href="#" class="nav-link active">
-                                    <i class="nav-icon fas fa-tachometer-alt"></i>
-                                    <p>
-                                        Dashboard
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="./index.html" class="nav-link active">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Dashboard v1</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="./index2.html" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Dashboard v2</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="./index3.html" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Dashboard v3</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>*@
 
                         <li class="nav-item">
-                            <a href="" class="nav-link active">
+                            <a href="@Url.Action("Index", "Home")" class="nav-link active">
                                 <i class="nav-icon fas fa-home"></i>
                                 <p>
                                     Home
@@ -226,32 +199,35 @@
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a href="" class="nav-link">
-                                <i class="nav-icon fas fa-bookmark"></i>
-                                <p>
-                                    Bookmarks
-                                </p>
-                            </a>
-                        </li>
+                        @if (Session["userID"] != null)
+                        {
+                            <li class="nav-item">
+                                <a href="" class="nav-link">
+                                    <i class="nav-icon fas fa-bookmark"></i>
+                                    <p>
+                                        Bookmarks
+                                    </p>
+                                </a>
+                            </li>
 
-                        <li class="nav-item">
-                            <a href="" class="nav-link">
-                                <i class="nav-icon fas fa-thumbs-up"></i>
-                                <p>
-                                    Liked
-                                </p>
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a href="" class="nav-link">
+                                    <i class="nav-icon fas fa-thumbs-up"></i>
+                                    <p>
+                                        Liked
+                                    </p>
+                                </a>
+                            </li>
 
-                        <li class="nav-item">
-                            <a href="" class="nav-link">
-                                <i class="nav-icon fas fa-history"></i>
-                                <p>
-                                    History
-                                </p>
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a href="" class="nav-link">
+                                    <i class="nav-icon fas fa-history"></i>
+                                    <p>
+                                        History
+                                    </p>
+                                </a>
+                            </li>
+                        }
 
                         <li class="nav-header">BROWSE</li>
 
@@ -264,49 +240,53 @@
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
-                                @{
-                                    for (int i = 1; i <= 10; i++)
-                                    {
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Category @i</p>
-                                            </a>
-                                        </li>
-                                    }
+                                @foreach (var Sidenav_CatList in ViewBag.Sidenav_CatList)
+                                {
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link text-blue">
-                                            <p>View All</p>
+                                        <a href="#" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>
+                                                @Sidenav_CatList.Name
+                                                <span class="right badge badge-info">@Sidenav_CatList.Count</span>
+                                            </p>
                                         </a>
                                     </li>
                                 }
+
+                                <li class="nav-item">
+                                    <a href="@Url.Action("AllCategories", "Home")" class="nav-link text-blue">
+                                        <p>View All</p>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
+                        @if (Session["userID"] != null)
+                        {
+                            <li class="nav-header">PEOPLE YOU FOLLOW</li>
 
-                        <li class="nav-header">PEOPLE YOU FOLLOW</li>
-
-                        <li class="nav-item has-treeview">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>
-                                    Subscriptions
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                @{
-                                    for (int i = 1; i <= 20; i++)
-                                    {
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Person @i</p>
-                                            </a>
-                                        </li>
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-users"></i>
+                                    <p>
+                                        Subscriptions
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    @{
+                                        for (int i = 1; i <= 20; i++)
+                                        {
+                                            <li class="nav-item">
+                                                <a href="#" class="nav-link">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Person @i</p>
+                                                </a>
+                                            </li>
+                                        }
                                     }
-                                }
-                            </ul>
-                        </li>
+                                </ul>
+                            </li>
+                        }
 
                     </ul>
                 </nav>
@@ -331,6 +311,11 @@
     <!-- ./wrapper -->
 
     @Scripts.Render("~/js/main")
+    <script type="text/javascript" src="~/Plugins/wow/wow.js"></script>
+    <script>
+        new WOW().init();
+    </script>
+
     @RenderSection("scripts", required: false)
 
 
@@ -357,12 +342,12 @@
                             <div class="form-group">
                                 <label for="unameORmobile">Username or Mobile number</label>
                                 <input type="text" class="form-control" id="unameORmobile" name="unameORmobile" placeholder="Enter username or mobile number">
-                                <span id="error_unameORmobile" class="form-error"></span>
+                                <span id="error_unameORmobile" class="form-error" style="display:none"></span>
                             </div>
                             <div class="form-group mb-3">
                                 <label for="Password">Password</label>
                                 <input type="password" class="form-control" id="Password" name="Password" placeholder="Password">
-                                <span id="error_Password" class="form-error"></span>
+                                <span id="error_Password" class="form-error" style="display:none"></span>
                             </div>
                             <div class="form-group text-center">
                                 <button type="submit" class="btn btn-info w-100" id="btn-login">Login</button>
@@ -384,7 +369,7 @@
         $(document).ready(function () {
 
             $('#btn-login').click(function () {
-
+                
                 var error_unameORmobile = '';
                 var error_Password = '';
 
@@ -421,6 +406,9 @@
 
                 $('#error_unameORmobile').text(error_unameORmobile);
                 $('#error_Password').text(error_Password);
+
+                $('#error_unameORmobile').slideDown("slow");
+                $('#error_Password').slideDown("slow");
 
                 if (UnameValid == true && PassValid == true) {
                     var form = $('#login-form')[0];
