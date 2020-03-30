@@ -349,5 +349,76 @@ namespace Blogging.DAL
 
             return profileModel;
         }
+
+        internal bool InsertFollow(long CurrentUserID, long UserID)
+        {
+            DateTime dateTime = DateTime.Now;
+            bool result = false;
+            try
+            {
+                string query = "INSERT INTO Followers (userID, Follow_userID, datetime)" +
+                        " VALUES(@userID, @Follow_userID, @datetime)";
+                SqlCommand cmd = new SqlCommand(query, Conn);
+
+                cmd.Parameters.Add(new SqlParameter("userID", CurrentUserID));
+                cmd.Parameters.Add(new SqlParameter("Follow_userID", UserID));
+                cmd.Parameters.Add(new SqlParameter("datetime", dateTime));
+
+                Conn.Open();
+
+                int rows = cmd.ExecuteNonQuery();
+
+                if (rows > 0)
+                {
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            catch (Exception Ex)
+            {
+                result = false;
+            }
+            finally
+            {
+                Conn.Close();
+            }
+            return result;
+        }
+
+        internal bool DeleteFollow(long CurrentUserID, long UserID)
+        {
+            bool result = false;
+            try
+            {
+                string query = "DELETE FROM Followers WHERE userID = @CurrentUserID AND Follow_userID = @Follow_userID";
+                SqlCommand cmd = new SqlCommand(query, Conn);
+
+                cmd.Parameters.Add(new SqlParameter("CurrentUserID", CurrentUserID));
+                cmd.Parameters.Add(new SqlParameter("Follow_userID", UserID));
+
+                Conn.Open();
+                int rows = cmd.ExecuteNonQuery();
+
+                if (rows > 0)
+                {
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            catch
+            { }
+            finally
+            {
+                Conn.Close();
+            }
+            return result;
+        }
+
     }
 }

@@ -56,7 +56,7 @@
             <!-- SEARCH FORM -->
             <form class="ml-auto" style="width:720px" method="get" action="@Url.Action("Search", "Home")">
                 <div class="input-group input-group-sm">
-                    <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search" name="query" id="query">
+                    <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search" name="query" id="query" autocomplete="off">
                     <div class="input-group-append">
                         <button class="btn btn-navbar" type="submit">
                             <i class="fas fa-search"></i>
@@ -69,34 +69,6 @@
             @if (Session["userID"] != null)
             {
                 <ul class="navbar-nav ml-auto">
-
-                    <!-- Notifications Dropdown Menu -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link" data-toggle="dropdown" href="#">
-                            <i class="far fa-bell"></i>
-                            <span class="badge badge-warning navbar-badge">15</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                            <span class="dropdown-item dropdown-header">15 Notifications</span>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-envelope mr-2"></i> 4 new messages
-                                <span class="float-right text-muted text-sm">3 mins</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-users mr-2"></i> 8 friend requests
-                                <span class="float-right text-muted text-sm">12 hours</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-file mr-2"></i> 3 new reports
-                                <span class="float-right text-muted text-sm">2 days</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-                        </div>
-                    </li>
 
                     <li class="nav-item dropdown user-menu">
                         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
@@ -115,7 +87,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                             <!-- User image -->
-                            <li class="user-header bg-gradient-info">
+                            <li class="user-header">
                                 @{
                                     if (ViewBag.ImgUrl == null)
                                     {
@@ -179,7 +151,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-light-info elevation-2">
             <!-- Brand Logo -->
-            <a href="" class="brand-link">
+            <a href="@Url.Action("Index", "Home")" class="brand-link">
                 <img src="~/Images/logo-solid.jpg" alt="@ViewBag.SoftwareName" class="brand-image img-circle">
                 <span class="brand-text font-weight-light">@ViewBag.SoftwareName</span>
             </a>
@@ -191,7 +163,7 @@
                     <ul class="nav nav-pills nav-sidebar flex-column text-sm nav-flat" data-widget="treeview" role="menu" data-accordion="false">
 
                         <li class="nav-item">
-                            <a href="@Url.Action("Index", "Home")" class="nav-link active">
+                            <a href="@Url.Action("Index", "Home")" class="nav-link @ViewData["Active_Home"]">
                                 <i class="nav-icon fas fa-home"></i>
                                 <p>
                                     Home
@@ -202,7 +174,7 @@
                         @if (Session["userID"] != null)
                         {
                             <li class="nav-item">
-                                <a href="" class="nav-link">
+                                <a href="@Url.Action("Bookmarks", "Home")" class="nav-link @ViewData["Active_Bookmarks"]">
                                     <i class="nav-icon fas fa-bookmark"></i>
                                     <p>
                                         Bookmarks
@@ -211,19 +183,10 @@
                             </li>
 
                             <li class="nav-item">
-                                <a href="" class="nav-link">
+                                <a href="@Url.Action("Liked", "Home")" class="nav-link @ViewData["Active_Liked"]">
                                     <i class="nav-icon fas fa-thumbs-up"></i>
                                     <p>
                                         Liked
-                                    </p>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="" class="nav-link">
-                                    <i class="nav-icon fas fa-history"></i>
-                                    <p>
-                                        History
                                     </p>
                                 </a>
                             </li>
@@ -231,7 +194,7 @@
 
                         <li class="nav-header">BROWSE</li>
 
-                        <li class="nav-item has-treeview">
+                        <li class="nav-item has-treeview @ViewData["Active_Cats_Menu_Open"]">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-tags"></i>
                                 <p>
@@ -239,11 +202,26 @@
                                     <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
-                            <ul class="nav nav-treeview">
+                            <ul class="nav nav-treeview ">
+                                @{ int CatListCount = 1; }
                                 @foreach (var Sidenav_CatList in ViewBag.Sidenav_CatList)
                                 {
+                                    if (ViewData["Active_Cats_Menu_Open"] != null)
+                                    {
+                                        if (ViewData["Active_Cats_Open_Last"] != null)
+                                        {
+                                            ViewData["Active_Last_Cats"] = "active";
+                                        }
+                                        else
+                                        {
+                                            if (CatListCount == 1)
+                                            {
+                                                ViewData["Active_First_Cats"] = "active";
+                                            }
+                                        }
+                                    }
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link">
+                                        <a href="@Url.Action("SingleCategory", "Home", new { CatName = Sidenav_CatList.Name })" class="nav-link @ViewData["Active_First_Cats"]">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>
                                                 @Sidenav_CatList.Name
@@ -251,10 +229,12 @@
                                             </p>
                                         </a>
                                     </li>
+                                    CatListCount++;
+                                    ViewData["Active_First_Cats"] = null;
                                 }
 
                                 <li class="nav-item">
-                                    <a href="@Url.Action("AllCategories", "Home")" class="nav-link text-blue">
+                                    <a href="@Url.Action("AllCategories", "Home")" class="nav-link text-blue @ViewData["Active_Last_Cats"]">
                                         <p>View All</p>
                                     </a>
                                 </li>
@@ -334,7 +314,7 @@
                     <div class="modal-body">
                         <div id="error-wrapper">
                             <div class="alert alert-danger" id="alert" style="display:none">
-                                
+
                             </div>
                         </div>
                         <form method="post" id="login-form" class="needs-validation" novalidate>
@@ -366,108 +346,108 @@
         </div>
 
         <script>
-        $(document).ready(function () {
+            $(document).ready(function () {
 
-            $('#btn-login').click(function () {
-                
-                var error_unameORmobile = '';
-                var error_Password = '';
+                $('#btn-login').click(function () {
 
-                var UnameValid = false;
-                var PassValid = false;
+                    var error_unameORmobile = '';
+                    var error_Password = '';
 
-                if ($.trim($('#unameORmobile').val()).length == 0) {
-                    $('#unameORmobile').addClass('is-invalid');
-                    error_unameORmobile = 'Kindly enter username or mobile number';
-                } else {
-                    if ($.trim($('#unameORmobile').val()).length <= 5) {
+                    var UnameValid = false;
+                    var PassValid = false;
+
+                    if ($.trim($('#unameORmobile').val()).length == 0) {
                         $('#unameORmobile').addClass('is-invalid');
-                        error_username = 'Kindly enter a valid credientials';
+                        error_unameORmobile = 'Kindly enter username or mobile number';
                     } else {
-                        $('#unameORmobile').removeClass('is-invalid');
-                        $('#unameORmobile').addClass('is-valid');
-                        UnameValid = true;
-                    }
-                }
-
-                if ($.trim($('#Password').val()).length == 0) {
-                    $('#Password').addClass('is-invalid');
-                    error_Password = 'Kindly enter your password';
-                } else {
-                    if ($.trim($('#Password').val()).length <= 6) {
-                        $('#Password').addClass('is-invalid');
-                        error_Password = 'Kindly enter a valid password';
-                    } else {
-                        $('#Password').removeClass('is-invalid');
-                        $('#Password').addClass('is-valid');
-                        PassValid = true;
-                    }
-                }
-
-                $('#error_unameORmobile').text(error_unameORmobile);
-                $('#error_Password').text(error_Password);
-
-                $('#error_unameORmobile').slideDown("slow");
-                $('#error_Password').slideDown("slow");
-
-                if (UnameValid == true && PassValid == true) {
-                    var form = $('#login-form')[0];
-                var formData = new FormData(form);
-                    $.ajax({
-                        type: 'POST',
-                        url: '/Account/LoginAjax',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        beforeSend: function () {
-                            $("#form :input").prop("disabled", true);
-                            $('#btn-login').addClass('hidden');
-                            $('#spinner').removeClass('hidden');
-                            $('#alert').html('');
-                        },
-                        success: function (data) {
-                            $("#form :input").prop("disabled", false);
-                            $('#spinner').addClass('hidden');
-                            $('#btn-login').removeClass('hidden');
-                            $('#alert').css('display', 'block');
-
-                            if (data.status) {
-                                $("#form :input").prop("disabled", true);
-
-                                $('#alert').removeClass('alert-danger');
-                                $('#alert').addClass('alert-success');
-                                $('#alert').html('Login successfully!<br>Please wait...');
-
-                                setTimeout(SuccessRedirect(), 500);
-                                function SuccessRedirect() {
-                                     window.location.replace(window.location.href);
-                                }
-
-                            } else if (!data.status) {
-
-                                $('#alert').text(data.errorText);
-
-                                setTimeout(runEffect(), 500);
-
-                                function runEffect() {
-                                     $("#error-wrapper").effect( "shake", {times:4}, 500);
-                                }
-
-                            }
-
-                            return false;
+                        if ($.trim($('#unameORmobile').val()).length <= 5) {
+                            $('#unameORmobile').addClass('is-invalid');
+                            error_username = 'Kindly enter a valid credientials';
+                        } else {
+                            $('#unameORmobile').removeClass('is-invalid');
+                            $('#unameORmobile').addClass('is-valid');
+                            UnameValid = true;
                         }
-                    });
-                    return false;
-                } else {
-                    return false;
-                }
+                    }
 
-                
-                return false;
+                    if ($.trim($('#Password').val()).length == 0) {
+                        $('#Password').addClass('is-invalid');
+                        error_Password = 'Kindly enter your password';
+                    } else {
+                        if ($.trim($('#Password').val()).length <= 6) {
+                            $('#Password').addClass('is-invalid');
+                            error_Password = 'Kindly enter a valid password';
+                        } else {
+                            $('#Password').removeClass('is-invalid');
+                            $('#Password').addClass('is-valid');
+                            PassValid = true;
+                        }
+                    }
+
+                    $('#error_unameORmobile').text(error_unameORmobile);
+                    $('#error_Password').text(error_Password);
+
+                    $('#error_unameORmobile').slideDown("slow");
+                    $('#error_Password').slideDown("slow");
+
+                    if (UnameValid == true && PassValid == true) {
+                        var form = $('#login-form')[0];
+                        var formData = new FormData(form);
+                        $.ajax({
+                            type: 'POST',
+                            url: '/Account/LoginAjax',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            beforeSend: function () {
+                                $("#form :input").prop("disabled", true);
+                                $('#btn-login').addClass('hidden');
+                                $('#spinner').removeClass('hidden');
+                                $('#alert').html('');
+                            },
+                            success: function (data) {
+                                $("#form :input").prop("disabled", false);
+                                $('#spinner').addClass('hidden');
+                                $('#btn-login').removeClass('hidden');
+                                $('#alert').css('display', 'block');
+
+                                if (data.status) {
+                                    $("#form :input").prop("disabled", true);
+
+                                    $('#alert').removeClass('alert-danger');
+                                    $('#alert').addClass('alert-success');
+                                    $('#alert').html('Login successfully!<br>Please wait...');
+
+                                    setTimeout(SuccessRedirect(), 500);
+                                    function SuccessRedirect() {
+                                        window.location.replace(window.location.href);
+                                    }
+
+                                } else if (!data.status) {
+
+                                    $('#alert').text(data.errorText);
+
+                                    setTimeout(runEffect(), 500);
+
+                                    function runEffect() {
+                                        $("#error-wrapper").effect("shake", { times: 4 }, 500);
+                                    }
+
+                                }
+
+                                return false;
+                            }
+                        });
+                        return false;
+                    } else {
+                        return false;
+                    }
+
+
+                    return false;
+                });
+
             });
-
-        });
         </script>
     }
 

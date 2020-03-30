@@ -32,8 +32,9 @@ namespace Blogging.Controllers
                 ViewBag.Name = accountModel.Name;
                 ViewBag.UserName = accountModel.UserName;
                 ViewBag.ImgUrl = accountModel.ImgUrl;
-                ViewBag.Followers = 0;
-                ViewBag.Blogs = 0;
+                CommonUtil commonUtil = new CommonUtil();
+                ViewBag.Followers = commonUtil.CountByArgs("Followers", $"Follow_userID = {userID}");
+                ViewBag.Blogs = commonUtil.CountByArgs("blog", $"userID = {userID}");
             }
 
             IndexUtil indexUtil = new IndexUtil();
@@ -49,6 +50,36 @@ namespace Blogging.Controllers
             {
                 IndexUtil indexUtil = new IndexUtil();
                 SingleBlog Content = indexUtil.FetchSingleBlog(Url);
+                if (Session["userID"] == null)
+                {
+                    ViewData["Bookmark"] = "DisabledBookmark";
+                    ViewData["BookmarkIcon"] = "far";
+
+                    ViewData["Like"] = "DisabledLikeBlog";
+                }
+                else
+                {
+                    long userID = Convert.ToInt64(Session["userID"]);
+
+                    string query1 = $"userID = {userID} AND Follow_userID = {Content.Profile.UserID}";
+                    ViewData["Follow"] = commonUtil.RawValidate("Followers", query1) ? "Unfollow" : "Follow";
+
+                    string query = $"userID = {userID} AND blogid = {Content.Blog.BlogID}";
+
+                    ViewData["Like"] = commonUtil.RawValidate("likes", query) ? "LikedBlog" : "LikeBlog";
+                    ViewData["Bookmark"] = commonUtil.RawValidate("bookmarks", query) ? "Bookmarked" : "Bookmark";
+
+                    if (Convert.ToString(ViewData["Bookmark"]) == "Bookmarked")
+                    {
+                        ViewData["BookmarkIcon"] = "fas";
+                    }
+                    else
+                    {
+                        ViewData["BookmarkIcon"] = "far";
+                    }
+                    
+                }
+                
                 return View(Content);
             }
             else
@@ -97,7 +128,7 @@ namespace Blogging.Controllers
 
                 if (status)
                 {
-                    List<AllBlogsModel> BlogsList = indexUtil.AllBlogs(CurrentUserID, Type);
+                    List<AllBlogsModel> BlogsList = indexUtil.UsersBlogs(CurrentUserID, Type);
 
                     if (BlogsList.Count > 0)
                     {
@@ -228,6 +259,7 @@ namespace Blogging.Controllers
             return Json(new { status, content = Content.ToString(), MoreData, CurrentDataCount, CommentsCount });
         }
 
+        [SessionAuthorize]
         [ValidateAntiForgeryToken]
         [Route("AjaxAddComment")]
         public JsonResult AjaxAddComment(CommentsModel commentsModel)
@@ -245,6 +277,51 @@ namespace Blogging.Controllers
             status = indexUtil.InsertComment(commentsModel);
 
             return Json(new { status , commentsModel.CommentID });
+        }
+
+        [SessionAuthorize]
+        [Route("AjaxBookmark")]
+        public JsonResult AjaxBookmark(FormCollection formCollection)
+        {
+            bool status = false;
+            IndexUtil indexUtil = new IndexUtil();
+
+            long userID = Convert.ToInt64(Session["userID"]);
+
+            int State = Convert.ToInt32(formCollection["State"]);
+            int BlogID = Convert.ToInt32(formCollection["BlogID"]);
+
+            if (State == 1) // Bookmark Blog
+            {
+                status = indexUtil.InsertBookmarkOrLike("bookmarks", userID, BlogID);
+            }
+            else if (State == 2) // Remove From Bookmarks
+            {
+                status = indexUtil.DeleteBookmarkOrLike("bookmarks", userID, BlogID);
+            }
+            return Json(new { status });
+        }
+
+        [SessionAuthorize]
+        [Route("AjaxLike")]
+        public JsonResult AjaxLike(FormCollection formCollection)
+        {
+            bool status = false;
+            IndexUtil indexUtil = new IndexUtil();
+
+            long userID = Convert.ToInt64(Session["userID"]);
+            int State = Convert.ToInt32(formCollection["State"]);
+            int BlogID = Convert.ToInt32(formCollection["BlogID"]);
+
+            if (State == 1) // Like Blog
+            {
+                status = indexUtil.InsertBookmarkOrLike("likes", userID, BlogID);
+            }
+            else if (State == 2) // Remove From Like
+            {
+                status = indexUtil.DeleteBookmarkOrLike("likes", userID, BlogID);
+            }
+            return Json(new { status });
         }
 
         public ActionResult Error()

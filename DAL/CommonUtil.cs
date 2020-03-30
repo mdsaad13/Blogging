@@ -88,6 +88,37 @@ namespace Blogging.DAL
             }
            
         }
+        
+        internal bool RawValidate(string TableName, string fields)
+        {
+            try
+            {
+                string query = "SELECT * FROM " + TableName + " WHERE " + fields;
+
+                SqlCommand cmd = new SqlCommand(query, Conn);
+
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+
+                DataTable dt = new DataTable();
+                adp.Fill(dt);
+                if (dt.Rows.Count > 0)
+                {
+                    // Found in database
+                    return true;
+                }
+                else
+                {
+                    // not found
+                    return false;
+                }
+                
+            }
+            catch
+            {
+                return false;
+            }
+           
+        }
 
         internal List<CategoryModel> GetAllCat()
         {

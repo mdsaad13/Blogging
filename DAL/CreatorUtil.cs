@@ -212,5 +212,125 @@ namespace Blogging.DAL
             }
             return result;
         }
+
+        internal List<AdsModel> GetAllAds()
+        {
+            DataTable td = new DataTable();
+            List<AdsModel> list = new List<AdsModel>();
+            try
+            {
+                long UserID = Convert.ToInt64(HttpContext.Current.Session["userID"]);
+                string sqlquery = "SELECT * FROM ads WHERE userID = @userID ORDER BY id DESC";
+
+                SqlCommand cmd = new SqlCommand(sqlquery, Conn);
+                cmd.Parameters.Add(new SqlParameter("userID", UserID));
+
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+                Conn.Open();
+                adp.Fill(td);
+                foreach (DataRow row in td.Rows)
+                {
+                    AdsModel obj = new AdsModel();
+                    obj.ID = Convert.ToDouble(row["id"]);
+                    obj.UserID = Convert.ToDouble(row["userID"]);
+                    obj.ImgUrl = Convert.ToString(row["img"]);
+                    obj.Target = Convert.ToString(row["target"]);
+                    obj.FromDate = Convert.ToDateTime(row["fromDate"]);
+                    obj.ToDate = Convert.ToDateTime(row["toDate"]);
+                    obj.CatID = Convert.ToDouble(row["catid"]);
+
+                    if (!DBNull.Value.Equals(row["views"]))
+                        obj.Views = Convert.ToInt64(row["views"]); 
+                    
+                    if (!DBNull.Value.Equals(row["clicks"]))
+                        obj.Clicks = Convert.ToInt64(row["clicks"]);
+
+                    obj.FormatedViews = GeneralFns.FormatNumber(obj.Views);
+                    obj.FormatedClicks = GeneralFns.FormatNumber(obj.Clicks);
+
+                    list.Add(obj);
+                }
+            }
+            catch (Exception)
+            { }
+            finally
+            {
+                Conn.Close();
+            }
+            return list;
+        }
+
+        internal bool InsertAd(AdsAndPaymentBundle model)
+        {
+            bool status = false;
+            try
+            {
+                /*
+                 * Creating a SQL prepared statement
+                 */
+                string query = "INSERT INTO ads (id, img, target, fromDate, toDate, catid, userID, views, clicks)" +
+                        " VALUES(@id, @img, @target, @fromDate, @toDate, @catid, @userID, @views, @clicks)";
+                
+                string query1 = "INSERT INTO payment_details (userID, razorpay_payment_id, payment_for, adID, datetime)" +
+                        " VALUES(@userID, @razorpay_payment_id, @payment_for, @adID, @datetime)";
+
+
+                SqlCommand cmd = new SqlCommand(query, Conn);
+
+                SqlCommand cmd1 = new SqlCommand(query1, Conn);
+
+                /*
+                 * Binding the SQL prepared statement with values
+                 */
+                cmd.Parameters.Add(new SqlParameter("id", model.Ads.ID));
+                cmd.Parameters.Add(new SqlParameter("img", model.Ads.ImgUrl));
+                cmd.Parameters.Add(new SqlParameter("target", model.Ads.Target));
+                cmd.Parameters.Add(new SqlParameter("fromDate", model.Ads.FromDate));
+                cmd.Parameters.Add(new SqlParameter("toDate", model.Ads.ToDate));
+                cmd.Parameters.Add(new SqlParameter("catid", model.Ads.CatID));
+                cmd.Parameters.Add(new SqlParameter("userID", model.Ads.UserID));
+                cmd.Parameters.Add(new SqlParameter("views", model.Ads.Views));
+                cmd.Parameters.Add(new SqlParameter("clicks", model.Ads.Clicks));
+
+                cmd1.Parameters.Add(new SqlParameter("userID", model.Ads.UserID));
+                cmd1.Parameters.Add(new SqlParameter("razorpay_payment_id", model.Pay.Razor_payment_id));
+                cmd1.Parameters.Add(new SqlParameter("payment_for", 1));
+                cmd1.Parameters.Add(new SqlParameter("adID", model.Ads.ID));
+                cmd1.Parameters.Add(new SqlParameter("datetime", DateTime.Now));
+
+                /*
+                 * Opening sql connection
+                 */
+                Conn.Open();
+
+                /*
+                 * @return rows = number of rows affected
+                 */
+                int rows = cmd.ExecuteNonQuery();
+
+                int rows1 = cmd1.ExecuteNonQuery();
+
+                if (rows > 0 && rows1 > 0)
+                {
+                    status = true;
+                }
+                else
+                {
+                    status = false;
+                }
+            }
+            catch(Exception ex)
+            {
+                status = false;
+            }
+            finally
+            {
+                /*
+                 * Closing sql connection
+                 */
+                Conn.Close();
+            }
+            return status;
+        }
     }
 }

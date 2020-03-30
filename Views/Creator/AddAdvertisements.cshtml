@@ -1,0 +1,236 @@
+﻿@model Blogging.Models.AdsAndPaymentBundle
+
+@{
+    ViewBag.Title = "Add Advertisements";
+    ViewData["My_Advertisements"] = "active";
+    Layout = "~/Views/Creator/CreatorLayout.cshtml";
+
+    ViewBag.BreadCrums = $"<li class=\"breadcrumb-item\"><a href=\"{ Url.Action("Advertisements", "Creator") }\">My Advertisements</a></li>";
+
+}
+<!--Plugin CSS file with desired skin-->
+<link rel="stylesheet" href="~/Plugins/ion-rangeSlider/ion-rangeSlider.css" />
+<link rel="stylesheet" href="~/Plugins/select2/select2.css" />
+
+@using (Html.BeginForm("AddAdvertisementsAjax", "Creator"))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Pay.UserID)
+    @Html.HiddenFor(model => model.Pay.UserName)
+    @Html.HiddenFor(model => model.Pay.Email)
+    @Html.HiddenFor(model => model.Pay.Mobile)
+    @Html.HiddenFor(model => model.Pay.Amount)
+    @Html.HiddenFor(model => model.Pay.Razor_payment_id)
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-info card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">@ViewBag.Title</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                            <i class="fas fa-expand"></i> Maximise
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+
+                <div class="card-body">
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Ads.Image, htmlAttributes: new { @class = "control-label col-12" })
+                        <label for="customFile" style="cursor:pointer" title="upload image">
+                            <img src="~/Images/DummyAd.png" class="img-bordered img-fluid" id="outputImg" style="height:225px;width:225px" height="225" width="225" />
+                        </label>
+                        <div class="custom-file col-md-12 hidden">
+                            @Html.TextBoxFor(model => model.Ads.Image, new { type = "file", @class = "custom-file-input", @accept = "image/*", @id = "customFile" })
+                            <label class="custom-file-label" for="customFile">Choose file</label>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Ads.Image, "", new { @class = "form-error" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Ads.Target, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.Ads.Target, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter on click redirect URL" } })
+                        @Html.ValidationMessageFor(model => model.Ads.Target, "", new { @class = "form-error" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Ads.CatID, htmlAttributes: new { @class = "control-label col-12" })
+                        @Html.DropDownListFor(model => model.Ads.CatID, ViewBag.AllCat as SelectList, "Select Category", new { @class = "custom-select select2" })
+                        @Html.ValidationMessageFor(model => model.Ads.CatID, "", new { @class = "form-error" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Ads.NoOfDays, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.Ads.NoOfDays, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Ads.NoOfDays, "", new { @class = "form-error" })
+                    </div>
+
+                    <div class="form-group">
+                        <h4>
+                            Amount: ₹
+                            <span id="Charges"></span>
+                        </h4>
+                    </div>
+
+                    <div class="card-footer text-center">
+                        <button type="submit" class="btn btn-info w-25" id="btn-submit">Add Advertisement</button>
+                    </div>
+                </div>
+                <div class="hidden" id="spinner">
+                    <div class="spinner-border text-info" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section scripts{
+    @Scripts.Render("~/js/jqueryval")
+    <!--Plugin JavaScript file-->
+    <script src="~/Plugins/ion-rangeSlider/ion-rangeSlider.js"></script>
+    <script src="~/Plugins/select2/select2.js"></script>
+
+    <script src="~/Plugins/sweetalert2/sweetalert2.js"></script>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+
+        var rzp1;
+        var options;
+        var form = $('form')[0];
+
+        $(document).ready(function () {
+            // Initializing select2
+            $('.select2').select2();
+
+            $("#Ads_NoOfDays").ionRangeSlider({
+                grid: true,
+                from: 6,
+                min: 2,
+                max: 30,
+                postfix: " days",
+                onStart: function () {
+                    calAmount();
+                },
+                onChange: function () {
+                    calAmount();
+                },
+                onFinish: function () {
+                    calAmount();
+                }
+            });
+            function calAmount() {
+                var Input = $("#Ads_NoOfDays").val();
+                var Charges = Input * 10;
+                Amount = Charges * 100;
+
+                $("#Pay_Amount").val(Charges);
+
+                $("#Charges").text(Charges);
+
+                options = {
+                    "key": "@Model.Pay.Razor_Key",
+                    "amount": Amount,
+                    "currency": "INR",
+                    "name": "@ViewBag.SoftwareName",
+                    "description": "You are paying to place advertisement",
+                    "image": "/Images/logo-solid.jpg",
+                    "prefill": {
+                        "name": "@Model.Pay.UserName",
+                        "email": "@Model.Pay.Email",
+                        "contact": "@Model.Pay.Mobile"
+                    },
+                    "theme": {
+                        "color": "#5f0a87"
+                    },
+                    "handler": function (response) {
+                        //Success Callback
+                        PaymentCallBack(response);
+                    },
+                };
+            }
+
+            // Display the image to upload
+            var loadFile = function (event) {
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var output = document.getElementById('outputImg');
+                    output.src = reader.result;
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            };
+
+            // Label name change on file select
+            $('.custom-file-input').on("change", function () {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).next('.custom-file-label').html(fileName);
+                loadFile(event);
+            });
+
+            document.getElementById('btn-submit').onclick = function (e) {
+
+                if ($(form).valid()) {
+                    rzp1 = new Razorpay(options);
+                    rzp1.open();
+
+                    //var response = {razorpay_payment_id:"testing66556165"};
+                    //PaymentCallBack(response);
+                }
+                e.preventDefault();
+            };
+
+            function PaymentCallBack(response) {
+                
+                if (response.razorpay_payment_id) {
+                    $("#Pay_Razor_payment_id").val(response.razorpay_payment_id);
+                    var formData = new FormData(form);
+                     $.ajax({
+                        type: 'post',
+                        url: form.action,
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        cache: false,
+                        beforeSend: function () {
+                            $("form :input").prop("disabled", true);
+                            $('#btn-submit').addClass('hidden');
+                            $('#spinner').removeClass('hidden');
+                        },
+                        success: function (data) {
+                            $('#spinner').addClass('hidden');
+                            $('#btn-submit').removeClass('hidden');
+
+                            if (data.status) {
+                                Swal.fire({
+                                    position: 'top-end',
+                                    icon: 'success',
+                                    title: '',
+                                    text: 'Advertisement Added Successfully!',
+                                    showConfirmButton: false,
+                                });
+                                setTimeout(function () {
+                                    window.location.replace('/Creator/Advertisements/');
+                                }, 1000);
+
+                            } else {
+                                // unknown error
+                                $("form :input").prop("disabled", false);
+                                Swal.fire({
+                                    position: 'top-end',
+                                    icon: 'error',
+                                    title: '',
+                                    text: 'An unknown error has occured. Please try again later!',
+                                    showConfirmButton: true,
+                                });
+                            }
+                            return false;
+                        }
+                    });
+                }
+                return false;
+            }
+        });
+    </script>
+}

@@ -30,12 +30,13 @@ namespace Blogging.Controllers
                 ViewBag.Name = accountModel.Name;
                 ViewBag.UserName = accountModel.UserName;
                 ViewBag.ImgUrl = accountModel.ImgUrl;
-                ViewBag.Followers = 0;
-                ViewBag.Blogs = 0;
+                CommonUtil commonUtil = new CommonUtil();
+                ViewBag.Followers = commonUtil.CountByArgs("Followers", $"Follow_userID = {userID}");
+                ViewBag.Blogs = commonUtil.CountByArgs("blog", $"userID = {userID}");
             }            
         }
 
-        internal void CatList(int CatId = 0)
+        internal void CatList(long CatId = 0)
         {
             IndexUtil indexUtil = new IndexUtil();
             ViewBag.Sidenav_CatList = indexUtil.PersonalizedCats(CatId);
@@ -89,9 +90,7 @@ namespace Blogging.Controllers
             bool MoreData = true;
             long CurrentDataCount = Convert.ToInt64(formCollection["CurrentDataCount"]);
             long ActualCount = commonUtil.Count("categories");
-
-            //bool MoreData = (CurrentCount < Count);
-
+            
             List<CategoryModel> CategoriesList = indexUtil.AllCategories(CurrentDataCount);
             CurrentDataCount += CategoriesList.Count;
 
@@ -110,13 +109,11 @@ namespace Blogging.Controllers
                     Icon = item.Icon ?? "list-alt";
 
                     Content.AppendFormat(@"
-                        <div class=""col-6 col-sm-6 col-md-3"">
-                            <div class=""info-box elevation-3"">
+                        <div class=""col-6 col-sm-6 col-md-3 div-wrapper-category"" id=""{3}"">
+                            <div class=""info-box elevation-2"" onclick=""Redirect('/categories/{0}',{3})"">
                                 <span class=""info-box-icon ""><i class=""fas fa-{2}""></i></span>
                                 <div class=""info-box-content"">
-                                    <a href=""#"" class=""muted-link"">
-                                        <span class=""info-box-text"">{0}</span>
-                                    </a>
+                                    <span class=""info-box-text"">{0}</span>
                                     <span class=""info-box-number"">
                                         {1}
                                         <small>Blogs</small>
@@ -124,18 +121,60 @@ namespace Blogging.Controllers
                                 </div>
                             </div>
                         </div>
-                    ",item.Name, item.FormatedCount, Icon);
+                    ", item.Name, item.FormatedCount, Icon, item.CatID);
                 }
             }
 
             return Json(new { status, content = Content.ToString(), MoreData, CurrentDataCount });
         }
         
+        [HttpGet]
         [Route("categories/{CatName}")]
         public ActionResult SingleCategory(string CatName)
         {
             GetUserDetails();
+            
+            IndexUtil indexUtil = new IndexUtil();
+
+            CategoryModel categoryModel = indexUtil.SingleCategory(CatName);
+
+            List<AllBlogsModel> blogBundles = indexUtil.AllBlogs(0, categoryModel.CatID);
+
+            CatList(categoryModel.CatID);
+
+            ViewBag.CategoryDetails_CatID = categoryModel.CatID;
+            ViewBag.CategoryDetails_Name = categoryModel.Name;
+            ViewBag.CategoryDetails_Icon = categoryModel.Icon ?? "list-alt";
+            ViewBag.CategoryDetails_Count = categoryModel.Count;
+            ViewBag.CategoryDetails_FormatedCount = categoryModel.FormatedCount;
+
+            return View(blogBundles);
+        }
+        
+        [SessionAuthorize]
+        [Route("bookmarks")]
+        public ActionResult Bookmarks()
+        {
+            GetUserDetails();
             CatList();
+
+            IndexUtil indexUtil = new IndexUtil();
+
+            //List<AllBlogsModel> blogBundles = indexUtil.AllBlogs(0, categoryModel.CatID);
+
+            return View();
+        }
+        
+        [SessionAuthorize]
+        [Route("liked")]
+        public ActionResult Liked()
+        {
+            GetUserDetails();
+            CatList();
+
+            IndexUtil indexUtil = new IndexUtil();
+
+            //List<AllBlogsModel> blogBundles = indexUtil.AllBlogs(0, categoryModel.CatID);
 
             return View();
         }

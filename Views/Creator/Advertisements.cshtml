@@ -1,18 +1,26 @@
-﻿@model IEnumerable<Blogging.Models.BlogModel>
+﻿@model IEnumerable<Blogging.Models.AdsModel>
 @{
-    ViewBag.Title = "My Blogs";
-    ViewData["My_Blogs"] = "active";
+    ViewBag.Title = "My Advertisements";
+    ViewData["My_Advertisements"] = "active";
     Layout = "~/Views/Creator/CreatorLayout.cshtml";
 }
 @section head{
-    @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/r-2.2.3/sc-2.0.1/datatables.min.css" />*@
+
     <link rel="stylesheet" type="text/css" href="~/Plugins/datatables/datatables.css" />
 }
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">All Blogs</h3>
+                <div class="row">
+                    <div class="col-10">
+                        <h3 class="card-title">@ViewBag.Title</h3>
+                    </div>
+                    <div class="col-2">
+                        <a href="@Url.Action("AddAdvertisements", "Creator")" class="btn btn-info btn-block">Add Advertisements</a>
+                    </div>
+                </div>
+                
             </div>
             <!-- /.card-header -->
             <div class="card-body">
@@ -20,11 +28,11 @@
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Title</th>
+                            <th scope="col">Image</th>
                             <th scope="col">Created Date</th>
-                            <th scope="col">URL</th>
-                            <th scope="col">View Count</th>
-                            <th scope="col">View Time</th>
+                            <th scope="col">Views</th>
+                            <th scope="col">Clicks</th>
+                            <th scope="col">Status</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
@@ -37,25 +45,31 @@
                                     @i
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Title)
+                                    <img class="img-sm" src="~/Images/Ads/@item.ImgUrl" height="200" />
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.DateTime)
+                                    @Html.DisplayFor(modelItem => item.FromDate)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.URL)
+                                    @Html.DisplayFor(modelItem => item.FormatedViews)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.FormatViewCount)
+                                    @Html.DisplayFor(modelItem => item.FormatedClicks)
                                 </td>
                                 <td>
                                     @{
-                                        var timespan = TimeSpan.FromSeconds(item.ViewTime);
-                                        @timespan.ToString(@"mm\:ss")
+                                        if (item.ToDate >= DateTime.Now)
+                                        {
+                                            <span class="text-success text-bold">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-danger text-bold">Expired</span>
+                                        }
                                     }
                                 </td>
                                 <td>
-                                    <a class="btn btn-app" href="@Url.Action("ViewBlog", "Creator",  new { blogid = item.BlogID })">
+                                    <a class="btn btn-app" href="">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
                                 </td>
@@ -73,7 +87,6 @@
 </div>
 
 @section scripts{
-    @*<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/r-2.2.3/sc-2.0.1/datatables.min.js"></script>*@
     
     <script type="text/javascript" src="~/Plugins/datatables/datatables.js"></script>
     <script>

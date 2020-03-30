@@ -29,6 +29,19 @@
             height: 400px;
         }
     }
+
+    .LikeBlog {
+        font-size: 1.8em;
+    }
+
+    .LikedBlog {
+        font-size: 2em;
+        color: #5f0a87;
+    }
+
+    .DisabledLikeBlog {
+        font-size: 1.8em;
+    }
 </style>
 
 <div class="card elevation-3">
@@ -36,13 +49,15 @@
     <div class="card-body">
         <div class="container">
             <h1 class="text-center">
-                <span class="cyan-gradient-text">
+                <span class="purple-gradient-text">
                     @Model.Blog.Title
                 </span>
-                <i class="far fa-bookmark text-info Bookmark" style="cursor:pointer" id=""></i>
+
+                <i class="@ViewData["BookmarkIcon"] fa-bookmark text-info @ViewData["Bookmark"]" style="cursor:pointer" id="" title="Bookmark"></i>
+
             </h1>
 
-            <div class="row text-gray" style="line-height:2.5rem;margin-bottom:1rem">
+            <div class="row text-gray" style=" line-height: 2.5rem; margin-bottom: 1rem">
                 <div class="col-10">
                     <span>
                         Published on: @Model.Blog.PublishDate
@@ -55,11 +70,13 @@
                 </div>
 
                 <div class="col-2">
-                    <i class="fas fa-eye text-lg"></i>  @Model.Blog.Views
+                    <i class="fas fa-eye text-lg" title="Views"></i>  @Model.Blog.Views
                     &nbsp;
-                    <i class="fas fa-comments text-lg"></i>  @Model.CommentsCount
+                    <i class="fas fa-comments text-lg" title="Comments"></i>  @Model.CommentsCount
                     &nbsp;
-                    <i class="fas fa-thumbs-up text-lg"></i>  @Model.Blog.Likes
+
+                    <i class="fas fa-thumbs-up @ViewData["Like"]" title="Like" style="cursor:pointer"></i>
+                    <span id="likesCount">@Model.Blog.Likes</span>
                 </div>
             </div>
         </div>
@@ -80,6 +97,7 @@
                         </div>
 
                         <h3 class="profile-username text-center"> @Model.Profile.Name</h3>
+                        <input type="hidden" id="CurrentUserName" value="@Model.Profile.Name" />
 
                         <p class="text-muted text-center">
                             <a href="@Url.Action("ViewProfile","Account", new { Username = Model.Profile.Uname })">
@@ -91,15 +109,15 @@
                         <ul class="list-group list-group-unbordered mb-3">
                             <li class="list-group-item">
                                 <b>Followers</b>
-                                <a class="float-right"> @Model.Profile.Followers</a>
+                                <span class="float-right" id="FollowersCount"> @Model.Profile.Followers</span>
                             </li>
                             <li class="list-group-item">
                                 <b>Following</b>
-                                <a class="float-right"> @Model.Profile.Following</a>
+                                <span class="float-right"> @Model.Profile.Following</span>
                             </li>
                             <li class="list-group-item">
                                 <b>Blogs</b>
-                                <a class="float-right"> @Model.Profile.BlogsCount</a>
+                                <span class="float-right"> @Model.Profile.BlogsCount</span>
                             </li>
                         </ul>
 
@@ -109,11 +127,13 @@
                         }
                         else if (Model.Profile.UserID != Convert.ToDouble(Session["userID"]))
                         {
-                            <button href="#" class="btn btn-info btn-block FollowUser" id="@Model.Profile.UserID"><b>Follow</b></button>
+                            <button type="button" class="btn btn-info btn-block @ViewData["Follow"]" id="@Model.Profile.UserID">
+                                @ViewData["Follow"]
+                            </button>
                         }
                         else
                         {
-                            <button href="#" class="btn btn-info btn-block" disabled="disabled"><b>Follow</b></button>
+                            <button href="#" class="btn btn-info btn-block" disabled="disabled" title="You cannot follow your own ID"><b>Follow</b></button>
                         }
 
                     </div>
@@ -133,7 +153,7 @@
                             {
                                 ColorListIndex = random.Next(ColorList.Count);
                                 <li class="nav-item">
-                                    <a href="#" class="nav-link">
+                                    <a href="@Url.Action("SingleCategory", "Home", new { CatName = CatList.Name })" class="nav-link">
                                         @CatList.Name <span class="float-right badge @ColorList[ColorListIndex]"> @CatList.Count</span>
                                     </a>
                                 </li>
@@ -185,7 +205,7 @@
                         <div class="card-body">
                             <input type="hidden" name="TotalComments" value="@Model.CommentsCount" />
                             <div class="direct-chat-messages" style="height: 350px;">
-                                
+
                                 <div id="direct-chat-messages">
                                     @foreach (var Commentitem in Model.CommentsList)
                                     {
@@ -210,7 +230,7 @@
                                             else
                                             {
                                                 <a href="@Url.Action("ViewProfile","Account", new { Username = Commentitem.UserName })" class="text-dark">
-                                                    <img class="direct-chat-img lazy"  src="/Images/img-spinner.svg" data-src="/Images/UserProfiles/@Commentitem.ImgURL" alt="@Commentitem.UserName">
+                                                    <img class="direct-chat-img lazy" src="/Images/img-spinner.svg" data-src="/Images/UserProfiles/@Commentitem.ImgURL" alt="@Commentitem.UserName">
                                                 </a>
 
                                             }
@@ -335,12 +355,14 @@
             @* Adds section *@
             <div class="col-md-2 col-lg-2">
                 <div class="card sticky-top-t1">
+                    <span class="text-center text-black-50">Advertisements</span>
+
                     @if (Model.AdsList.Count > 0)
                     {
                         foreach (var Ads in Model.AdsList)
                         {
                             <a href="@Ads.Target">
-                                <img class="img-fluid lazy" src="~/Images/img-spinner.svg" data-src="/Images/AdsImg/@Ads.ImgUrl" />
+                                <img class="img-fluid lazy" src="~/Images/img-spinner.svg" data-src="/Images/Ads/@Ads.ImgUrl" />
                             </a>
                             <br />
                         }
@@ -362,8 +384,16 @@
     @Scripts.Render("~/js/jquery-ui")
     @Scripts.Render("~/js/sweetalert2")
 
+    @if (Session["userID"] != null)
+    {
+        <script src="~/Scripts/FollowController.js"></script>
+    }
     <script src="~/Plugins/flickity/flickity.js" type="text/javascript"></script>
     <script>
+        //$.widget.bridge('uibutton', $.ui.button);
+        $.widget.bridge('uibutton', $.ui.button);
+        $.widget.bridge('uitooltip', $.ui.tooltip);
+
         var $carousel = $('.carousel').flickity({
             imagesLoaded: true,
             percentPosition: false,
@@ -426,7 +456,7 @@
                                     $("#direct-chat-messages").append(data.content);
                                     Lazzzy();
                                 }, 2000);
-                                
+
                             } else {
                                 $('#Loader').addClass('hidden');
                                 // unknown error
@@ -459,6 +489,7 @@
                 if (FormValid) {
                     var form = $('#form')[0];
                     var formData = new FormData(form);
+                    formData.append('BlogID', $('#BlogID').val());
                     $.ajax({
                         type: 'post',
                         url: form.action,
@@ -524,6 +555,158 @@
                     return false;
                 }
                 return false;
+            });
+
+            $(document).on('click', '.Bookmark', function () {
+                var formData = new FormData();
+                formData.append('State', '1');
+                formData.append('BlogID', $('#BlogID').val());
+                $.ajax({
+                    type: 'post',
+                    url: 'AjaxBookmark',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if (data.status) {
+                            $('.Bookmark').removeClass('far Bookmark').addClass('fas Bookmarked').attr('title', 'Bookmarked');
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: '',
+                                text: 'Blog bookmarked successfully',
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+                        } else {
+                            // unknown error
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'error',
+                                title: '',
+                                text: 'An unknown error has occured. Please try again later!',
+                                showConfirmButton: false,
+                            });
+                        }
+                    }
+                });
+
+            });
+
+            $(document).on('click', '.Bookmarked', function () {
+
+                var formData = new FormData();
+                formData.append('State', '2');
+                formData.append('BlogID', $('#BlogID').val());
+                $.ajax({
+                    type: 'post',
+                    url: 'AjaxBookmark',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if (data.status) {
+                            $('.Bookmarked').removeClass('fas Bookmarked').addClass('far Bookmark').attr('title', 'Bookmark');
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: '',
+                                text: 'Blog removed from book successfully!',
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+                        } else {
+                            // unknown error
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'error',
+                                title: '',
+                                text: 'An unknown error has occured. Please try again later!',
+                                showConfirmButton: false,
+                            });
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', '.LikeBlog', function () {
+
+                var formData = new FormData();
+                formData.append('State', '1');
+                formData.append('BlogID', $('#BlogID').val());
+                $.ajax({
+                    type: 'post',
+                    url: 'AjaxLike',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if (data.status) {
+                            $('.LikeBlog').removeClass('LikeBlog').addClass('LikedBlog').attr('title', 'Liked');
+                            var Before = $('#likesCount').text();
+                            $('#likesCount').text(+Before + 1);
+                        } else {
+                            // unknown error
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'error',
+                                title: '',
+                                text: 'An unknown error has occured. Please try again later!',
+                                showConfirmButton: false,
+                            });
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', '.LikedBlog', function () {
+
+                var formData = new FormData();
+                formData.append('State', '2');
+                formData.append('BlogID', $('#BlogID').val());
+                $.ajax({
+                    type: 'post',
+                    url: 'AjaxLike',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if (data.status) {
+                            $('.LikedBlog').removeClass('LikedBlog').addClass('LikeBlog').attr('title', 'Like');
+                            var Before = $('#likesCount').text();
+                            $('#likesCount').text(+Before - 1);
+                        } else {
+                            // unknown error
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'error',
+                                title: '',
+                                text: 'An unknown error has occured. Please try again later!',
+                                showConfirmButton: false,
+                            });
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', '.DisabledLikeBlog', function () {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: '',
+                    text: 'Kindly login to like blog',
+                    showConfirmButton: false,
+                });
+            });
+
+            $(document).on('click', '.DisabledBookmark', function () {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: '',
+                    text: 'Kindly login to bookmark blog',
+                    showConfirmButton: false,
+                });
             });
 
         });

@@ -1,22 +1,33 @@
 ﻿@model IEnumerable<Blogging.Models.CategoryModel>
 @{
     ViewBag.Title = "Categories";
+    ViewData["Active_Cats_Menu_Open"] = "menu-open";
+    ViewData["Active_Cats_Open_Last"] = "active";
     string Icon;
     long i = 0;
 }
+
+@section head{ 
+    <style>
+        .info-box:hover {
+            box-shadow: 0 20px 50px rgba(0,0,0,.19),0 6px 6px rgba(0,0,0,.23) !important;
+            color: #5f0a87;
+            cursor: pointer;
+        }
+    </style>
+}
+
 <h2>All Categories</h2>
 
 <div class="row" id="Content">
     @foreach (var item in Model)
     {
         Icon = item.Icon ?? "list-alt";
-        <div class="col-6 col-sm-6 col-md-3">
-            <div class="info-box elevation-3">
+        <div class="col-6 col-sm-6 col-md-3 div-wrapper-category" id="@item.CatID">
+            <div class="info-box elevation-2" onclick="Redirect('@Url.Action("SingleCategory", "Home", new { CatName = item.Name })', @item.CatID);">
                 <span class="info-box-icon "><i class="fas fa-@Icon "></i></span>
                 <div class="info-box-content">
-                    <a href="" class="muted-link">
-                        <span class="info-box-text">@item.Name</span>
-                    </a>
+                    <span class="info-box-text">@item.Name</span>
                     <span class="info-box-number">
                         @item.FormatedCount
                         <small>Blogs</small>
@@ -50,6 +61,8 @@
 <div id="LoadMoreData-div"></div>
 
 @section scripts{
+
+    @Scripts.Render("~/js/jquery-ui")
     <script>
         var $wait = false;
         var $CurrentDataCount = @i;
@@ -99,7 +112,7 @@
                                 setTimeout(function () {
 
                                     if (!$MoreData) {
-                                        $('#LoadMoreData-div').html('<p class="text-black-50 text-center">No More Comments To Load!</p>');
+                                        $('#LoadMoreData-div').html('<p class="text-black-50 text-center">No More Categories To Load!</p>');
                                     }
 
                                     $('#Loader').addClass('hidden');
@@ -112,7 +125,7 @@
 
                                     $MoreData = false;
                                 $('#Loader').addClass('hidden');
-                                $('#LoadMoreData-div').html('<p class="text-black-50 text-center">No More Comments To Load!</p>');
+                                $('#LoadMoreData-div').html('<p class="text-black-50 text-center">No More Categories To Load!</p>');
 
                                 }, 2000);
 
@@ -120,6 +133,26 @@
                         }
                     });
             }
+        }
+
+        function Redirect(URL, ID) {
+            $MoreData = false;
+
+            var ThisDiv = '.div-wrapper-category#' + ID;
+
+            //$('.div-wrapper-category').not(ThisDiv).fadeOut('slow');
+            $('.div-wrapper-category').fadeOut('slow');
+
+
+
+            $(ThisDiv).removeClass('col-6 col-sm-6 col-md-3').addClass('col-12');
+            //$(ThisDiv).animate({ opacity: '0.4' }, "slow");
+            //$(ThisDiv).addClass('col-12');
+            //$(ThisDiv).animate({ opacity: '1' }, "slow");
+            $(ThisDiv).show("clip", { direction: "horizontal" }, 1000, function () {
+                location.href = URL;
+            });
+
         }
     </script>
 }

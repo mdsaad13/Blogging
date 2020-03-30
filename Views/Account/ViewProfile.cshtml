@@ -23,21 +23,22 @@
                 </div>
 
                 <h3 class="profile-username text-center">@Model.Name</h3>
+                <input type="hidden" id="CurrentUserName" value="@Model.Name" />
 
                 <p class="text-muted text-center">@@@Model.Uname</p>
 
                 <ul class="list-group list-group-unbordered mb-3">
                     <li class="list-group-item">
                         <b>Followers</b>
-                        <a class="float-right">@Model.Followers</a>
+                        <span class="float-right" id="FollowersCount">@Model.Followers</span>
                     </li>
                     <li class="list-group-item">
                         <b>Following</b>
-                        <a class="float-right">@Model.Following</a>
+                        <span class="float-right">@Model.Following</span>
                     </li>
                     <li class="list-group-item">
                         <b>Blogs</b>
-                        <a class="float-right">@Model.BlogsCount</a>
+                        <span class="float-right">@Model.BlogsCount</span>
                     </li>
                 </ul>
                 @if (Session["userID"] == null)
@@ -46,11 +47,13 @@
                 }
                 else if (Model.UserID != Convert.ToDouble(Session["userID"]))
                 {
-                    <button href="#" class="btn btn-info btn-block FollowUser" id="@Model.UserID"><b>Follow</b></button>
+                    <button type="button" class="btn btn-info btn-block @ViewData["Follow"]" id="@Model.UserID" title="">
+                        @ViewData["Follow"]
+                    </button>
                 }
                 else
                 {
-                    <button href="#" class="btn btn-info btn-block" disabled="disabled"><b>Follow</b></button>
+                    <button type="button" class="btn btn-info btn-block" disabled="disabled" title="You cannot follow your own ID"><b>Follow</b></button>
                 }
             </div>
             <!-- /.card-body -->
@@ -296,6 +299,12 @@
 
 </div>
 @section scripts{
+    @Scripts.Render("~/js/sweetalert2")
+    @if (Session["userID"] != null)
+    {
+        <script src="~/Scripts/FollowController.js"></script>
+    }
+
     <script>
         $(document).ready(function () {
 
@@ -306,7 +315,7 @@
             $('#btn-RecentBlogs').click(function () {
                 RecentBlogs();
             });
-           
+
             function RecentBlogs() {
 
                 var formData = new FormData();
@@ -325,22 +334,22 @@
                     },
                     success: function (data) {
                         if (data.status) {
-                             setTimeout(function () {
-                                $('#post-loader-recents').hide();
-                                 $('#RecentsContent').html(data.content);
-                                 Lazzzy();
                             setTimeout(function () {
-                                     Lazzzy();
-                                 }, 500);
+                                $('#post-loader-recents').hide();
+                                $('#RecentsContent').html(data.content);
+                                Lazzzy();
+                                setTimeout(function () {
+                                    Lazzzy();
+                                }, 500);
                             }, 500);
                         } else {
                             setTimeout(function () {
                                 $('#post-loader-recents').hide();
                                 $('#RecentsContent').html(`
-                                    <div class="alert alert-default-danger alert-dismissible fade show text-center" role="alert">
-                                        <strong>No Blogs Found!<br />Please try again later</strong>
-                                    </div>
-                                `);
+                                        <div class="alert alert-default-danger alert-dismissible fade show text-center" role="alert">
+                                            <strong>No Blogs Found!<br />Please try again later</strong>
+                                        </div>
+                                    `);
                             }, 1000);
                         }
                     },
@@ -348,10 +357,10 @@
                         setTimeout(function () {
                             $('#post-loader-recents').hide();
                             $('#RecentsContent').html(`
-                                    <div class="alert alert-default-danger alert-dismissible fade show text-center" role="alert">
-                                        <strong>An error occured!<br />Please try again later</strong>
-                                    </div>
-                                `);
+                                        <div class="alert alert-default-danger alert-dismissible fade show text-center" role="alert">
+                                            <strong>An error occured!<br />Please try again later</strong>
+                                        </div>
+                                    `);
                         }, 1000);
                     },
                 });
@@ -386,21 +395,21 @@
                     },
                     success: function (data) {
                         if (data.status) {
-                             setTimeout(function () {
+                            setTimeout(function () {
                                 $('#post-loader-allblogs').hide();
-                                 $('#AllBlogsContent').html(data.content);
-                                 setTimeout(function () {
-                                     Lazzzy();
-                                 }, 500);
+                                $('#AllBlogsContent').html(data.content);
+                                setTimeout(function () {
+                                    Lazzzy();
+                                }, 500);
                             }, 500);
                         } else {
                             setTimeout(function () {
                                 $('#post-loader-allblogs').hide();
                                 $('#AllBlogsContent').html(`
-                                    <div class="alert alert-default-danger alert-dismissible fade show text-center" role="alert">
-                                        <strong>No Blogs Found!<br />Please try again later</strong>
-                                    </div>
-                                `);
+                                        <div class="alert alert-default-danger alert-dismissible fade show text-center" role="alert">
+                                            <strong>No Blogs Found!<br />Please try again later</strong>
+                                        </div>
+                                    `);
                             }, 1000);
                         }
                     },
@@ -408,10 +417,10 @@
                         setTimeout(function () {
                             $('#post-loader-allblogs').hide();
                             $('#AllBlogsContent').html(`
-                                    <div class="alert alert-default-danger alert-dismissible fade show text-center" role="alert">
-                                        <strong>An error occured!<br />Please try again later</strong>
-                                    </div>
-                                `);
+                                        <div class="alert alert-default-danger alert-dismissible fade show text-center" role="alert">
+                                            <strong>An error occured!<br />Please try again later</strong>
+                                        </div>
+                                    `);
                         }, 1000);
                     },
                 });

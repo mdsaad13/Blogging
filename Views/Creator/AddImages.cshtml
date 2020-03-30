@@ -1,5 +1,9 @@
 ﻿@{
+    ViewBag.Title = "Add Blog Images";
+    ViewData["My_Blogs"] = "active";
     Layout = "~/Views/Creator/CreatorLayout.cshtml";
+
+    ViewBag.BreadCrums = $"<li class=\"breadcrumb-item\"><a href=\"{ Url.Action("MyBlogs","Creator") }\">My Blogs</a></li>";
 }
 @section head{
     <link rel="stylesheet" href="~/Plugins/ekko-lightbox/ekko-lightbox.css" />

@@ -17,17 +17,29 @@ namespace Blogging.DAL
          */
         private readonly SqlConnection Conn = new SqlConnection("Data Source=localhost;Initial Catalog=Blogging;Integrated Security=True");
 
-        internal List<AllBlogsModel> AllBlogs ()
+        internal List<AllBlogsModel> AllBlogs (long Offset = 0, long CatID = 0)
         {
             DataTable td = new DataTable();
             List<AllBlogsModel> list = new List<AllBlogsModel>();
             CommonUtil commonUtil = new CommonUtil();
 
-            string sqlquery = "SELECT * FROM blog";
+            string sqlquery;
+            if (CatID != 0)
+            {
+                sqlquery = "SELECT * FROM blog WHERE catid = "+ CatID;
+            }
+            else
+            {
+                sqlquery = "SELECT * FROM blog ";
+            }
 
+            sqlquery += " ORDER BY datetime,viewcount DESC OFFSET @offset ROWS FETCH NEXT 9 ROWS ONLY";
+            
             try
             {
                 SqlCommand cmd = new SqlCommand(sqlquery, Conn);
+                cmd.Parameters.Add(new SqlParameter("offset", Offset));
+
                 SqlDataAdapter adp = new SqlDataAdapter(cmd);
                 Conn.Open();
                 adp.Fill(td);
@@ -99,7 +111,7 @@ namespace Blogging.DAL
         /// <param name="UserID"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        internal List<AllBlogsModel> AllBlogs (double userID, int type)
+        internal List<AllBlogsModel> UsersBlogs (double userID, int type)
         {
             DataTable td = new DataTable();
             List<AllBlogsModel> list = new List<AllBlogsModel>();
@@ -228,7 +240,79 @@ namespace Blogging.DAL
             }
             return result;
         }
+         
+        internal bool InsertBookmarkOrLike(string Table, long UserID, int BlogID)
+        {
+            DateTime dateTime = DateTime.Now;
+            bool result = false;
+            try
+            {
+                string query = $"INSERT INTO {Table} (userID, blogid, datetime)" +
+                        " VALUES(@userID, @blogid, @datetime)";
+                SqlCommand cmd = new SqlCommand(query, Conn);
 
+                cmd.Parameters.Add(new SqlParameter("Table", Table));
+                cmd.Parameters.Add(new SqlParameter("userID", UserID));
+                cmd.Parameters.Add(new SqlParameter("blogid", BlogID));
+                cmd.Parameters.Add(new SqlParameter("datetime", dateTime));
+
+                Conn.Open();
+
+                int rows = cmd.ExecuteNonQuery();
+
+                if (rows > 0)
+                {
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            catch(Exception Ex)
+            {
+                result = false;
+            }
+            finally
+            {
+                Conn.Close();
+            }
+            return result;
+        }
+        
+        internal bool DeleteBookmarkOrLike(string Table, long UserID, int BlogID)
+        {
+            bool result = false;
+            try
+            {
+                string query = $"DELETE FROM {Table} WHERE userID = @userID AND blogid = @blogid";
+                SqlCommand cmd = new SqlCommand(query, Conn);
+
+                cmd.Parameters.Add(new SqlParameter("Table", Table));
+                cmd.Parameters.Add(new SqlParameter("userID", UserID));
+                cmd.Parameters.Add(new SqlParameter("blogid", BlogID));
+
+                Conn.Open();
+                int rows = cmd.ExecuteNonQuery();
+
+                if(rows > 0)
+                {
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            catch
+            { }
+            finally
+            {
+                Conn.Close();
+            }
+            return result;
+        }
+        
         internal SingleBlog FetchSingleBlog(string URL)
         {
             SingleBlog singleBlog = new SingleBlog();
@@ -296,7 +380,7 @@ namespace Blogging.DAL
             }
             catch
             { }
-
+            IncrBlog(singleBlog.Blog.BlogID);
             return singleBlog;
         }
 
@@ -444,31 +528,30 @@ namespace Blogging.DAL
             var dateTime = DateTime.Now;
             try
             {
-                string query = "SELECT TOP 2 * FROM ads WHERE catid = @catid AND fromDate > @fromDate AND toDate > @toDate ORDER BY NEWID()";
+                string query = "SELECT TOP 2 * FROM ads WHERE catid = @catid AND toDate >= @toDate ORDER BY NEWID()";
                 SqlCommand cmd = new SqlCommand(query, Conn);
                 cmd.Parameters.Add(new SqlParameter("catid", CatID));
-                cmd.Parameters.Add(new SqlParameter("fromDate", dateTime));
                 cmd.Parameters.Add(new SqlParameter("toDate", dateTime));
                 SqlDataAdapter adp = new SqlDataAdapter(cmd);
                 adp.Fill(dataTable);
 
                 if (dataTable.Rows.Count == 0)
                 {
-                    string query1 = "SELECT TOP 2 * FROM ads WHERE fromDate > @fromDate AND toDate > @toDate ORDER BY NEWID()";
+                    string query1 = "SELECT TOP 2 * FROM ads WHERE toDate >= @toDate ORDER BY NEWID()";
                     SqlCommand cmd1 = new SqlCommand(query1, Conn);
                     cmd1.Parameters.Add(new SqlParameter("catid", CatID));
-                    cmd1.Parameters.Add(new SqlParameter("fromDate", dateTime));
                     cmd1.Parameters.Add(new SqlParameter("toDate", dateTime));
                     SqlDataAdapter adp1 = new SqlDataAdapter(cmd1);
                     adp1.Fill(dataTable);
                 }
                 else if (dataTable.Rows.Count == 1)
                 {
-                    string query2 = "SELECT TOP 1 * FROM ads WHERE fromDate > @fromDate AND toDate > @toDate ORDER BY NEWID()";
+                    long CurrentAdID = Convert.ToInt64(dataTable.Rows[0]["id"]);
+                    string query2 = "SELECT TOP 1 * FROM ads WHERE id != @adID AND toDate >= @toDate";
                     SqlCommand cmd2 = new SqlCommand(query2, Conn);
-                    cmd2.Parameters.Add(new SqlParameter("fromDate", dateTime));
+                    cmd2.Parameters.Add(new SqlParameter("adID", CurrentAdID));
                     cmd2.Parameters.Add(new SqlParameter("toDate", dateTime));
-                    SqlDataAdapter adp2 = new SqlDataAdapter(cmd);
+                    SqlDataAdapter adp2 = new SqlDataAdapter(cmd2);
                     adp2.Fill(dataTable);
                 }
 
@@ -476,13 +559,15 @@ namespace Blogging.DAL
                 {
                     AdsModel adsModel = new AdsModel()
                     {
+                        ID = Convert.ToDouble(row["id"]),
                         ImgUrl = Convert.ToString(row["img"]),
                         Target = Convert.ToString(row["target"]),
                     };
+                    IncrAd(adsModel.ID);
                     AdsList.Add(adsModel);
                 }
             }
-            catch
+            catch (Exception ex)
             { }
             return AdsList;
         }
@@ -579,6 +664,98 @@ namespace Blogging.DAL
                 Conn.Close();
             }
             return CategoriesList;
+        }
+
+        internal CategoryModel SingleCategory(string CatName = "", long CatID = 0)
+        {
+            CategoryModel categoryModel = new CategoryModel();
+            CommonUtil commonUtil = new CommonUtil();
+
+            DataTable td = new DataTable();
+            try
+            {
+                string sqlquery;
+                SqlCommand cmd = null;
+
+                if (CatID == 0)
+                {
+                    sqlquery = "SELECT * FROM categories WHERE name = @CatName";
+                    cmd = new SqlCommand(sqlquery, Conn);
+                    cmd.Parameters.Add(new SqlParameter("CatName", CatName));
+                }
+                else
+                {
+                    sqlquery = "SELECT * FROM categories WHERE catid = @CatID";
+                    cmd = new SqlCommand(sqlquery, Conn);
+                    cmd.Parameters.Add(new SqlParameter("CatID", CatID));
+                }
+
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+
+                adp.Fill(td);
+
+                categoryModel.CatID =  Convert.ToInt64(td.Rows[0]["catid"]);
+                categoryModel.Name =  Convert.ToString(td.Rows[0]["name"]);
+
+                if (!DBNull.Value.Equals(td.Rows[0]["icon"]))
+                    categoryModel.Icon = Convert.ToString(td.Rows[0]["icon"]);
+
+                categoryModel.Count = commonUtil.CountByArgs("blog", "catid = " + categoryModel.CatID);
+                categoryModel.FormatedCount = GeneralFns.FormatNumber(categoryModel.Count);
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return categoryModel;
+        }
+
+        internal void IncrBlog(int BlogID)
+        {
+            //viewcount
+
+            DataTable dataTable = new DataTable();
+
+            string query = "SELECT * FROM blog WHERE blogid = @BlogID";
+
+            SqlCommand cmd = new SqlCommand(query, Conn);
+            cmd.Parameters.Add(new SqlParameter("BlogID", BlogID));
+            SqlDataAdapter adp = new SqlDataAdapter(cmd);
+            adp.Fill(dataTable);
+
+            double Views = Convert.ToDouble(dataTable.Rows[0]["viewcount"]) + 1;
+
+            string query1 = "UPDATE blog SET viewcount = @Views WHERE blogid = @BlogID";
+            SqlCommand cmd1 = new SqlCommand(query1, Conn);
+            cmd1.Parameters.Add(new SqlParameter("Views", Views));
+            cmd1.Parameters.Add(new SqlParameter("BlogID", BlogID));
+            Conn.Open();
+            cmd1.ExecuteNonQuery();
+            Conn.Close();
+        }
+
+        internal void IncrAd(double AdID)
+        {
+            DataTable dataTable = new DataTable();
+
+            string query = "SELECT * FROM ads WHERE id = @adID";
+
+            SqlCommand cmd = new SqlCommand(query, Conn);
+            cmd.Parameters.Add(new SqlParameter("adID", AdID));
+            SqlDataAdapter adp = new SqlDataAdapter(cmd);
+            adp.Fill(dataTable);
+
+            double Views = Convert.ToDouble(dataTable.Rows[0]["views"]) + 1;
+
+            string query1 = "UPDATE ads SET views = @Views WHERE id = @adID";
+            SqlCommand cmd1 = new SqlCommand(query1, Conn);
+            cmd1.Parameters.Add(new SqlParameter("Views", Views));
+            cmd1.Parameters.Add(new SqlParameter("adID", AdID));
+
+            cmd1.ExecuteNonQuery();
+
         }
     }
 }

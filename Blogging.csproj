@@ -155,6 +155,8 @@
     <Content Include="Images\default_user.png" />
     <Content Include="Images\logo-solid.jpg" />
     <Content Include="Images\logo-transparent.png" />
+    <Content Include="Plugins\datatables\datatables.css" />
+    <Content Include="Plugins\datatables\datatables.js" />
     <Content Include="Plugins\daterangepicker\daterangepicker.css" />
     <Content Include="Plugins\daterangepicker\daterangepicker.js" />
     <Content Include="Plugins\daterangepicker\moment.js" />
@@ -163,6 +165,8 @@
     <Content Include="Plugins\flickity\flickity.css" />
     <Content Include="Plugins\flickity\flickity.js" />
     <Content Include="Plugins\icheck-bootstrap\icheck-bootstrap.css" />
+    <Content Include="Plugins\ion-rangeSlider\ion-rangeSlider.css" />
+    <Content Include="Plugins\ion-rangeSlider\ion-rangeSlider.js" />
     <Content Include="Plugins\Jcropper\Jcropper.css" />
     <Content Include="Plugins\Jcropper\Jcropper.js" />
     <Content Include="Plugins\pace-progress\pace-progress.css" />
@@ -172,6 +176,7 @@
     <Content Include="Plugins\summernote-bs4\summernote-bs4.css" />
     <Content Include="Plugins\summernote-bs4\summernote-bs4.js" />
     <Content Include="Plugins\sweetalert2\sweetalert2.js" />
+    <Content Include="Plugins\tilt.js\tilt.js" />
     <Content Include="Plugins\wow\animate.css" />
     <Content Include="Plugins\wow\wow.js" />
     <Content Include="Scripts\adminlte.js" />
@@ -184,6 +189,7 @@
     <Content Include="Scripts\bootstrap.bundle.min.js.map" />
     <Content Include="Scripts\bootstrap.bundle.js.map" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\FollowController.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
@@ -226,6 +232,10 @@
     <Content Include="Views\Blog\Error.cshtml" />
     <Content Include="Views\Home\AllCategories.cshtml" />
     <Content Include="Views\Home\SingleCategory.cshtml" />
+    <Content Include="Views\Creator\Advertisements.cshtml" />
+    <Content Include="Views\Creator\AddAdvertisements.cshtml" />
+    <Content Include="Views\Home\Bookmarks.cshtml" />
+    <Content Include="Views\Home\Liked.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

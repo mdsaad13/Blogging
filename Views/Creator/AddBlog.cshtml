@@ -1,6 +1,9 @@
 ﻿@{
     ViewBag.Title = "Add Blog";
+    ViewData["My_Blogs"] = "active";
     Layout = "~/Views/Creator/CreatorLayout.cshtml";
+
+    ViewBag.BreadCrums = $"<li class=\"breadcrumb-item\"><a href=\"{ Url.Action("MyBlogs","Creator") }\">My Blogs</a></li>";
 }
 @section head{
     @Styles.Render("~/css/select2")

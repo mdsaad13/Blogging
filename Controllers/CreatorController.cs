@@ -29,15 +29,15 @@ namespace Blogging.Controllers
             AccountUtil accountUtil = new AccountUtil();
 
             long userID = Convert.ToInt64(Session["userID"]);
-            if (userID != 0)
-            {
-                AccountModel accountModel = accountUtil.GetUserById(userID);
-                ViewBag.Name = accountModel.Name;
-                ViewBag.UserName = accountModel.UserName;
-                ViewBag.ImgUrl = accountModel.ImgUrl;
-                ViewBag.Followers = 0;
-                ViewBag.Blogs = 0;
-            }
+            AccountModel accountModel = accountUtil.GetUserById(userID);
+            ViewBag.Name = accountModel.Name;
+            ViewBag.UserName = accountModel.UserName;
+            ViewBag.ImgUrl = accountModel.ImgUrl;
+            ViewBag.Mobile = accountModel.Mobile;
+            ViewBag.Email = accountModel.Email;
+            CommonUtil commonUtil = new CommonUtil();
+            ViewBag.Followers = commonUtil.CountByArgs("Followers", $"Follow_userID = {userID}");
+            ViewBag.Blogs = commonUtil.CountByArgs("blog", $"userID = {userID}");
         }
 
         // GET: Creator
@@ -263,6 +263,71 @@ namespace Blogging.Controllers
             GetUserDetails();
 
             return View();
+        }
+        
+        public ActionResult Advertisements()
+        {
+            GetUserDetails();
+            CreatorUtil creatorUtil = new CreatorUtil();
+            List<AdsModel> list = creatorUtil.GetAllAds();
+            return View(list);
+        }
+
+        [Route("Creator/Advertisements/Add")]
+        public ActionResult AddAdvertisements()
+        {
+            GetUserDetails();
+            CommonUtil commonUtil = new CommonUtil();
+
+            ViewBag.AllCat = new SelectList(commonUtil.GetAllCat(), "catid", "name");
+
+            AdsAndPaymentBundle adsAndPaymentBundle = new AdsAndPaymentBundle();
+            
+            PaymentDetails paymentDetails = new PaymentDetails();
+
+            paymentDetails.Razor_Key = "rzp_test_EBkjUStLj7vtVd";
+            //paymentDetails.Razor_Key = "rzp_live_jXtNPqJpRdTw2w";
+            paymentDetails.UserName = ViewBag.Name;
+            paymentDetails.Email = ViewBag.Email;
+            paymentDetails.Mobile = ViewBag.Mobile;
+
+            adsAndPaymentBundle.Pay = paymentDetails;
+
+            return View(adsAndPaymentBundle);
+        }
+
+        public JsonResult AddAdvertisementsAjax(AdsAndPaymentBundle adsAndPaymentBundle)
+        {
+            bool status = false;
+
+            adsAndPaymentBundle.Ads.ID = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            adsAndPaymentBundle.Ads.FromDate = DateTime.Now;
+            adsAndPaymentBundle.Ads.ToDate = DateTime.Now.AddDays(adsAndPaymentBundle.Ads.NoOfDays);
+            adsAndPaymentBundle.Ads.UserID = Convert.ToInt64(Session["userID"]);
+            adsAndPaymentBundle.Ads.Views = 0;
+            adsAndPaymentBundle.Ads.Clicks = 0;
+
+            if (adsAndPaymentBundle.Ads.Image != null)
+            {
+                string uniqueFileName = Guid.NewGuid().ToString();
+                string extension = Path.GetExtension(adsAndPaymentBundle.Ads.Image.FileName);
+                uniqueFileName += extension;
+
+                string path = Server.MapPath("~/Images/Ads/");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                adsAndPaymentBundle.Ads.Image.SaveAs(path + uniqueFileName);
+                adsAndPaymentBundle.Ads.ImgUrl = uniqueFileName;
+
+                CreatorUtil creatorUtil = new CreatorUtil();
+
+                status = creatorUtil.InsertAd(adsAndPaymentBundle);
+            }
+
+            return Json(new { status });
         }
 
         public ActionResult Error()
