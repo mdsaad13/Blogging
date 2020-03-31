@@ -1,0 +1,74 @@
+﻿<div class="col-lg-4 col-12 wow @ViewBag.Animation">
+    <div class="card card-outline elevation-3" style="margin-top: 26px;border-bottom: 3px solid #97428a;">
+        <div class="card-body">
+            @if (Model.HasImages)
+            {
+                <img src="~/Images/Blog/@Model.BlogImg" class="img-fluid img-rounded elevation-3 card-img-top js-tilt" style="margin-top: -42px;" />
+                <hr />
+            }
+
+            @if (Model.Freatured)
+            {
+                <span class="badge bg-gradient-gray-dark float-left">
+                    <i class="fas fa-star"></i>&nbsp;
+                    FEATURED
+                </span>
+            }
+            <span class="badge text-dark float-right">
+                <i class="fas fa-tags"></i>&nbsp;
+                <a class="muted-link" href="@Url.Action("SingleCategory", "Home", new { CatName = Model.CatName })">
+                    @Model.CatName
+                </a>
+            </span>
+            <div class="clearfix"></div>
+            <h4>
+                <a class="muted-link" href="@Url.Action("Index","Blog", new { Url = Model.URL })">
+                    @Model.Title
+                </a>
+            </h4>
+
+            <div class="text-gray text-sm row">
+                <div class="col-12">
+                    <a class="muted-link" href="@Url.Action("ViewProfile","Account", new { Username = Model.UniqueUserName })">
+                        @if (Model.UserImg != null)
+                        {
+                            <img src="~/Images/UserProfiles/@Model.UserImg" class="img-circle" style="height:2rem" alt="@Model.UniqueUserName" />
+                        }
+                        else
+                        {
+                            <img src="~/Images/default_user.png" class="img-circle" style="height:2rem" />
+                        }
+
+                        @Model.UserName
+                    </a>
+                </div>
+                <div class="col-12">
+                    <br />
+                    <i class="fas fa-clock"></i>
+                    Published on: @Model.PublishDate
+                </div>
+            </div>
+            <hr />
+            <div class="row text-center text-sm">
+                <div class="col">
+                    <i class="fas fa-thumbs-up"></i> @Model.Likes
+                </div>
+                <div class="col">
+                    <i class="fas fa-eye"></i> @Model.Views
+                </div>
+                <div class="col">
+                    <i class="fas fa-comments"></i> @Model.Comments
+                </div>
+            </div>
+            <hr />
+            <p class="card-text text-sm">
+                @Model.Content&hellip;
+            </p>
+        </div>
+        <a href="@Url.Action("Index","Blog", new { Url = Model.URL })">
+            <div class="card-footer text-center">
+                View Full Blog
+            </div>
+        </a>
+    </div>
+</div>

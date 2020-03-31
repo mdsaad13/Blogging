@@ -1,8 +1,32 @@
-﻿
+﻿@model IEnumerable<Blogging.Models.AllBlogsModel>
 @{
     ViewBag.Title = "Liked";
     ViewData["Active_Liked"] = "active";
 }
 
-<h2>Liked</h2>
+<h2>Liked Blogs</h2>
 
+<div class="row">
+    @{
+        List<string> AnimationsList = new List<string> { "bounceInLeft", "bounceInDown", "bounceInRight", "bounceInUp", "fadeInDown", "fadeInLeft", "fadeInRight", "fadeInUp", "flipInX", "flipInY", "lightSpeedIn", "slideInDown", "slideInLeft", "slideInUp", "slideInRight", "zoomIn", "zoomInDown", "zoomInUp", "zoomInLeft", "zoomInRight", "jackInTheBox" };
+        var random = new Random();
+        int AnimationsListIndex;
+
+        int i = 0;
+        foreach (var item in Model)
+        {
+            AnimationsListIndex = random.Next(AnimationsList.Count);
+            ViewBag.Animation = AnimationsList[AnimationsListIndex];
+            Html.RenderPartial("_SingleBlog", item);
+            ViewBag.Animation = null;
+            i++;
+        }
+    }
+
+    @if (i == 0)
+    {
+        <div class="alert alert-default-danger col-12" role="alert">
+            Oops! No Blogs found for <strong>"Kindly visit <a href="@Url.Action("Index", "Home")">Home</a> to view blogs"</strong>
+        </div>
+    }
+</div>

@@ -236,6 +236,7 @@
     <Content Include="Views\Creator\AddAdvertisements.cshtml" />
     <Content Include="Views\Home\Bookmarks.cshtml" />
     <Content Include="Views\Home\Liked.cshtml" />
+    <Content Include="Views\Shared\_SingleBlog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -43,7 +43,9 @@
                                     @Html.DisplayFor(modelItem => item.DateTime)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.URL)
+                                    <a href="@Url.Action("Index","Blog", new { Url = item.URL })" target="_blank">
+                                        @Html.DisplayFor(modelItem => item.URL)
+                                    </a>
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.FormatViewCount)
