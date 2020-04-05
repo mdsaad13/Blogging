@@ -16,4 +16,16 @@ namespace Blogging.Controllers
             }
         }
     }
+    
+    public class IsSessionAuthorized : AuthorizeAttribute
+    {
+        protected override void HandleUnauthorizedRequest(AuthorizationContext context)
+        {
+            if (context.HttpContext.Session["userID"] != null)
+            {
+                context.Result = new RedirectResult("/Home");
+            }
+        }
+    }
+
 }

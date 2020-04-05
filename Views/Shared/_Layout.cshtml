@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@{ 
+    if (ViewBag.SoftwareName == null)
+    {
+        ViewBag.SoftwareName = "Blogger";
+    }
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -240,11 +246,22 @@
                                 </li>
                             </ul>
                         </li>
+
+                        <li class="nav-item">
+                            <a href="@Url.Action("AllUsers", "Account")" class="nav-link @ViewData["Active_AllUsers"]">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>
+                                    All Bloggers
+                                </p>
+                            </a>
+                        </li>
+
                         @if (Session["userID"] != null)
                         {
+
                             <li class="nav-header">PEOPLE YOU FOLLOW</li>
 
-                            <li class="nav-item has-treeview">
+                            <li class="nav-item has-treeview @ViewData["Active_Subs_Menu_Open"]">
                                 <a href="#" class="nav-link">
                                     <i class="nav-icon fas fa-users"></i>
                                     <p>
@@ -254,15 +271,40 @@
                                 </a>
                                 <ul class="nav nav-treeview">
                                     @{
-                                        for (int i = 1; i <= 20; i++)
+                                        int SubsListCount = 1;
+
+                                        foreach (var Sidenav_SubsList in ViewBag.Sidenav_SubsList)
                                         {
+                                            if (ViewData["Active_Subs_Menu_Open"] != null)
+                                            {
+                                                if (ViewData["Active_Subs_Open_Last"] != null)
+                                                {
+                                                    ViewData["Active_Last_Sub"] = "active";
+                                                }
+                                                else
+                                                {
+                                                    if (SubsListCount == 1)
+                                                    {
+                                                        ViewData["Active_First_Sub"] = "active";
+                                                    }
+                                                }
+                                            }
                                             <li class="nav-item">
-                                                <a href="#" class="nav-link">
+                                                <a href="@Url.Action("ViewProfile", "Account", new { Username = Sidenav_SubsList.Uname })" class="nav-link @ViewData["Active_First_Sub"]">
                                                     <i class="far fa-circle nav-icon"></i>
-                                                    <p>Person @i</p>
+                                                    <p>
+                                                        @Sidenav_SubsList.Name
+                                                    </p>
                                                 </a>
                                             </li>
+                                            SubsListCount++;
+                                            ViewData["Active_First_Sub"] = null;
                                         }
+                                        <li class="nav-item">
+                                            <a href="@Url.Action("Following", "Account")" class="nav-link text-blue @ViewData["Active_Last_Sub"]">
+                                                <p>View All</p>
+                                            </a>
+                                        </li>
                                     }
                                 </ul>
                             </li>

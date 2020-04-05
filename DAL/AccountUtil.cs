@@ -420,5 +420,82 @@ namespace Blogging.DAL
             return result;
         }
 
+        internal List<ProfileModel> GetAllFollowing(long UserID, bool All = false, bool Shuffle = false, long FirstUser = 0)
+        {
+            List<ProfileModel> profileModels = new List<ProfileModel>();
+            DataTable dataTable = new DataTable();
+            string query;
+            string OrderBy;
+            string LimitSelect;
+
+            if (All)
+            {
+                LimitSelect = string.Empty;
+            }
+            else
+            {
+                LimitSelect = "TOP 5 ";
+            }
+
+            if (Shuffle)
+            {
+                OrderBy = "NEWID()";
+            }
+            else
+            {
+                OrderBy = "datetime DESC";
+            }
+
+            try
+            {
+                string ExcludeFirstUser = string.Empty;
+                if (FirstUser != 0)
+                {
+                    profileModels.Add(GetUserDetailsByID(Convert.ToDouble(FirstUser)));
+                    ExcludeFirstUser = $"AND Follow_userID <> {FirstUser}";
+                }
+
+                query = $"SELECT {LimitSelect}* FROM Followers WHERE userID = @userID {ExcludeFirstUser} ORDER BY {OrderBy}";
+                SqlCommand cmd = new SqlCommand(query, Conn);
+                cmd.Parameters.Add(new SqlParameter("userID", UserID));
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+                adp.Fill(dataTable);
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    profileModels.Add(GetUserDetailsByID(Convert.ToDouble(row["Follow_userID"])));
+                }
+            }
+            catch
+            { }
+            return profileModels;
+        }
+
+        internal List<ProfileModel> GetAllUsers(long UserID = 0)
+        {
+            List<ProfileModel> profileModels = new List<ProfileModel>();
+            DataTable dataTable = new DataTable();
+            try
+            {
+                string ExcludeID = string.Empty;
+                if (UserID != 0)
+                {
+                    ExcludeID = "WHERE userID <> "+ UserID;
+                }
+                string query = $"SELECT * FROM users {ExcludeID} ORDER BY NEWID()";
+                SqlCommand cmd = new SqlCommand(query, Conn);
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+                adp.Fill(dataTable);
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    profileModels.Add(GetUserDetailsByID(Convert.ToDouble(row["userID"])));
+                }
+            }
+            catch (Exception)
+            { }
+            return profileModels;
+        }
+
     }
 }

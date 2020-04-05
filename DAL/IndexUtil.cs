@@ -105,12 +105,14 @@ namespace Blogging.DAL
         /// if type = 1 // Recents 5 blogs<br></br>
         /// else if type = 2 // All blogs sorted by asc<br></br>
         /// else if type = 3 // All blogs sorted by desc<br></br>
-        /// else if type = 4 // All blogs sorted by most viewed
+        /// else if type = 4 // All blogs sorted by most viewed<br></br>
+        /// else if type = 5 // Liked blogs<br></br>
+        /// else if type = 6 // Bookmarked blogs<br></br>
         /// </c>
         /// </summary>
         /// <param name="UserID"></param>
         /// <param name="type"></param>
-        /// <returns></returns>
+        /// <returns>List</returns>
         internal List<AllBlogsModel> UsersBlogs (double userID, int type)
         {
             DataTable td = new DataTable();
@@ -138,6 +140,59 @@ namespace Blogging.DAL
             {
                 // All blogs sorted by most viewed
                 sqlquery = "SELECT * FROM blog WHERE userID = @userID ORDER BY viewcount DESC";
+            }
+            else if(type == 5)
+            {
+                // Liked blogs 
+                string likesquery = "SELECT * FROM likes WHERE userID = @userID";
+                SqlCommand likescmd = new SqlCommand(likesquery, Conn);
+                likescmd.Parameters.Add(new SqlParameter("userID", userID));
+                SqlDataAdapter likesadp = new SqlDataAdapter(likescmd);
+                Conn.Open();
+                likesadp.Fill(td);
+                Conn.Close();
+                string BlogIDsString = "";
+                foreach (DataRow row in td.Rows)
+                {
+                    BlogIDsString += $"{Convert.ToInt32(row["blogid"])}, ";
+                }
+                try
+                {
+                    BlogIDsString = BlogIDsString.Remove(BlogIDsString.Length - 2, 2);
+                }
+                catch
+                {
+                    BlogIDsString = string.Empty;
+                }
+                sqlquery = $"SELECT * FROM blog WHERE blogid in ({BlogIDsString})";
+                td.Clear();
+            }
+            else if(type == 6)
+            {
+                // Bookmarked blogs
+                string bookmarksquery = "SELECT * FROM bookmarks WHERE userID = @userID";
+                SqlCommand bookmarkscmd = new SqlCommand(bookmarksquery, Conn);
+                bookmarkscmd.Parameters.Add(new SqlParameter("userID", userID));
+                SqlDataAdapter bookmarksadp = new SqlDataAdapter(bookmarkscmd);
+                Conn.Open();
+                bookmarksadp.Fill(td);
+                Conn.Close();
+                string BlogIDsString = "";
+                foreach (DataRow row in td.Rows)
+                {
+                    BlogIDsString += $"{Convert.ToInt32(row["blogid"])}, ";
+                }
+                try
+                {
+                    BlogIDsString = BlogIDsString.Remove(BlogIDsString.Length - 2, 2);
+                }
+                catch
+                {
+                    BlogIDsString = string.Empty;
+                }
+                
+                sqlquery = $"SELECT * FROM blog WHERE blogid in ({BlogIDsString})";
+                td.Clear();
             }
 
             try
@@ -170,29 +225,29 @@ namespace Blogging.DAL
                         BlogImg = RandBlogImg(BlogID);
                     }
 
-                    AllBlogsModel SingleBlogData = new AllBlogsModel()
-                    {
-                        BlogID = BlogID,
-                        Freatured = IsFeatured(BlogID),
-                        HasImages = HasImages,
-                        BlogImg = BlogImg,
-                        Title = Convert.ToString(row["title"]),
-                        Content = Content.Substring(0, 220),
-                        PublishDate = PublishDate.ToLongDateString(),
-                        Likes = GeneralFns.FormatNumber(commonUtil.CountByArgs("likes", "blogid = " + BlogID)),
-                        Views = GeneralFns.FormatNumber(Convert.ToInt64(row["viewcount"])),
-                        Comments = GeneralFns.FormatNumber(commonUtil.CountByArgs("comments", "blogid = " + BlogID)),
-                        URL = Convert.ToString(row["url"]),
+                    AllBlogsModel SingleBlogData = new AllBlogsModel();
+                    //{
+                    SingleBlogData.BlogID = BlogID;
+                        SingleBlogData.Freatured = IsFeatured(BlogID);
+                       SingleBlogData.HasImages = HasImages;
+                        SingleBlogData.BlogImg = BlogImg;
+                        SingleBlogData.Title = Convert.ToString(row["title"]);
+                        SingleBlogData.Content = Content.Substring(0, 220);
+                        SingleBlogData.PublishDate = PublishDate.ToLongDateString();
+                        SingleBlogData.Likes = GeneralFns.FormatNumber(commonUtil.CountByArgs("likes", "blogid = " + BlogID));
+                    SingleBlogData.Views = GeneralFns.FormatNumber(Convert.ToInt64(row["viewcount"]));
+                        SingleBlogData.Comments = GeneralFns.FormatNumber(commonUtil.CountByArgs("comments", "blogid = " + BlogID));
+                        SingleBlogData.URL = Convert.ToString(row["url"]);
 
-                        CatName = CategoryName(Convert.ToInt32(row["catid"])),
-                        UniqueUserName = UserDetails[0],
-                        UserName = UserDetails[1],
-                        UserImg = UserDetails[2],
-                    };
+                        SingleBlogData.CatName = CategoryName(Convert.ToInt32(row["catid"]));
+                        SingleBlogData.UniqueUserName = UserDetails[0];
+                        SingleBlogData.UserName = UserDetails[1];
+                        SingleBlogData.UserImg = UserDetails[2];
+                    //};
                     list.Add(SingleBlogData);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             { }
             finally
             {
@@ -757,5 +812,30 @@ namespace Blogging.DAL
             cmd1.ExecuteNonQuery();
 
         }
+
+        internal void IncrBlogViews(int BlogID)
+        {
+            //viewcount
+
+            DataTable dataTable = new DataTable();
+
+            string query = "SELECT * FROM blog WHERE blogid = @BlogID";
+
+            SqlCommand cmd = new SqlCommand(query, Conn);
+            cmd.Parameters.Add(new SqlParameter("BlogID", BlogID));
+            SqlDataAdapter adp = new SqlDataAdapter(cmd);
+            adp.Fill(dataTable);
+
+            double ViewsTime = Convert.ToDouble(dataTable.Rows[0]["viewtime"]) + 1;
+
+            string query1 = "UPDATE blog SET viewtime = @viewtime WHERE blogid = @BlogID";
+            SqlCommand cmd1 = new SqlCommand(query1, Conn);
+            cmd1.Parameters.Add(new SqlParameter("viewtime", ViewsTime));
+            cmd1.Parameters.Add(new SqlParameter("BlogID", BlogID));
+            Conn.Open();
+            cmd1.ExecuteNonQuery();
+            Conn.Close();
+        }
+
     }
 }

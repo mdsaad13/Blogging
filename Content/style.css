@@ -3,13 +3,21 @@
     color: white;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    scroll-behavior: smooth;
+}
+
 .purple-gradient {
-    background-color: #a4508b;
-    background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
+    background-color: #E91E63;
+    background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%);
 }
 .purple-gradient-text {
     /*background: -webkit-linear-gradient(#3F51B5, #17a2b8);*/
-    background: -webkit-linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
+    background: -webkit-linear-gradient(326deg, #E91E63 0%, #5f0a87 74%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -113,9 +121,9 @@ body {
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
     color: #fff;
-    background-color: #a4508b;
-    background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
-    border-color: #a4508b;
+    background-color: #E91E63;
+    background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%);
+    border-color: #E91E63;
 }
 
 .nav-pills .nav-link:not(.active):hover {
@@ -136,29 +144,29 @@ body {
     }
 
 .navbar-cyan {
-    background-color: #a4508b;
-    background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
+    background-color: #E91E63;
+    background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%);
 }
 
 .sidebar-dark-info .nav-sidebar > .nav-item > .nav-link.active, 
 .sidebar-light-info .nav-sidebar > .nav-item > .nav-link.active {
-    background-color: #a4508b;
-    background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
+    background-color: #E91E63;
+    background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%);
 }
 
 .navbar-nav > .user-menu > .dropdown-menu > li.user-header {
     color:white;
-    background-color: #a4508b;
-    background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
+    background-color: #E91E63;
+    background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%);
 }
 .page-item.active .page-link {
-    border-color: #a4508b !important;
-    background-color: #a4508b !important;
-    background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%) !important;
+    border-color: #E91E63 !important;
+    background-color: #E91E63 !important;
+    background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%) !important;
 }
 
 a {
-    color: #a4508b;
+    color: #E91E63;
     text-decoration: none;
     background-color: transparent;
 }
@@ -168,16 +176,16 @@ a {
     }
 table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before,
 table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
-    background-color: #a4508b !important;
+    background-color: #E91E63 !important;
 }
 
 .btn-info {
-    border-color: #a4508b;
-    background-color: #a4508b;
-    background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
+    border-color: #E91E63;
+    background-color: #E91E63;
+    background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%);
 }
     .btn-info:hover {
-        background-color: #a4508b;
+        background-color: #E91E63;
         border-color: #5f0a87;
         -webkit-box-shadow: -2px 3px 20px 0px rgba(95,10,135,1);
         -moz-box-shadow: -2px 3px 20px 0px rgba(95,10,135,1);
@@ -186,17 +194,17 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:b
 
 .select2-container--default .select2-results__option--highlighted[aria-selected], 
 .select2-container--default .select2-results__option--highlighted[aria-selected]:hover {
-    background-color: #a4508b !important;
-    background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%) !important;
+    background-color: #E91E63 !important;
+    background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%) !important;
 }
 
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
-    background-color: #a4508b !important;
+    background-color: #E91E63 !important;
 }
 
     .badge-info {
-        background-color: #a4508b;
-        background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
+        background-color: #E91E63;
+        background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%);
     }
 
 .card-info.card-outline {
@@ -204,8 +212,8 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:b
 }
 
 .card-info:not(.card-outline) .card-header {
-    background-color: #a4508b;
-    background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
+    background-color: #E91E63;
+    background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%);
 }
 
 .btn-outline-info {
@@ -214,23 +222,23 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:b
 }
 
     .btn-outline-info:hover {
-        background-color: #a4508b;
-        background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
-        border-color: #a4508b;
+        background-color: #E91E63;
+        background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%);
+        border-color: #E91E63;
     }
 
     .btn-outline-info:not(:disabled):not(.disabled).active,
     .btn-outline-info:not(:disabled):not(.disabled):active, .show >
     .btn-outline-info.dropdown-toggle {
-        background-color: #a4508b;
-        background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
-        border-color: #a4508b;
+        background-color: #E91E63;
+        background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%);
+        border-color: #E91E63;
     }
 
 .btn-info.disabled, .btn-info:disabled {
-    border-color: #a4508b;
-    background-color: #a4508b;
-    background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
+    border-color: #E91E63;
+    background-color: #E91E63;
+    background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%);
 }
 .btn.disabled, .btn:disabled:hover {
     box-shadow: none;
@@ -243,7 +251,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:b
 .input-group .form-control:focus ~ .input-group-append .input-group-text {
     border-color: #5f0a87 !important;
     color: #5f0a87;
-    background: -webkit-linear-gradient(326deg, #a4508b 0%, #5f0a87 74%);
+    background: -webkit-linear-gradient(326deg, #E91E63 0%, #5f0a87 74%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -253,17 +261,17 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:b
 }
 
 .irs--flat .irs-bar {
-    background-color: #a4508b !important;
-    background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%) !important;
+    background-color: #E91E63 !important;
+    background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%) !important;
 }
 
 .irs--flat .irs-from, .irs--flat .irs-to, .irs--flat .irs-single {
-    background-color: #a4508b !important;
-    background-image: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%) !important;
+    background-color: #E91E63 !important;
+    background-image: linear-gradient(326deg, #E91E63 0%, #5f0a87 74%) !important;
 }
 
     .irs--flat .irs-from:before, .irs--flat .irs-to:before, .irs--flat .irs-single:before {
-        border-top-color: #a4508b !important;
+        border-top-color: #E91E63 !important;
     }
 .irs--flat .irs-handle > i:first-child {
     width: 3px !important;
@@ -277,3 +285,48 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:b
 [class*=sidebar-light-] .nav-treeview > .nav-item > .nav-link.active, [class*=sidebar-light-] .nav-treeview > .nav-item > .nav-link.active:hover {
     color: white !important;
 }
+
+.alert a {
+    color: #E91E63;
+}
+
+.js-tilt {
+    transform-style: preserve-3d;
+}
+
+    /* Selecting all child elements for parallax effect */
+    .js-tilt > * {
+        transform: translateZ(20px);
+    }
+
+.singleUserBox {
+    box-shadow: 0px 0 16px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    background: #fff;
+    margin-bottom: 30px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 230px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: white;
+    border-radius: 20px;
+}
+
+    .singleUserBox p {
+        padding: 0;
+        margin: auto;
+        font-size: 25px;
+        text-shadow: 5px 0px 18px rgb(255, 255, 255);
+    }
+
+    .singleUserBox span {
+        font-size: 14px;
+    }
+
+    .singleUserBox table {
+        width: 100%;
+        margin-top: 4px;
+    }

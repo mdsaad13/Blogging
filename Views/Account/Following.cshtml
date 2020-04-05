@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Blogging.Models.ProfileModel>
+@{
+    ViewBag.Title = "Following";
+    ViewData["Active_Subs_Menu_Open"] = "menu-open";
+    ViewData["Active_Subs_Open_Last"] = "active";
+}
+
+<h2>Following</h2>
+
+<div class="row mt-3">
+        @{
+            int i = 0;
+            foreach (var item in Model)
+            {
+                Html.RenderPartial("_SingleUser", item);
+                i++;
+            }
+        }
+</div>
+@if (i == 0)
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-default-danger col-12" role="alert">
+                Oops :) you are not following any one yet!<br />
+                View <strong><a href="@Url.Action("AllUsers", "Account")">All Users</a></strong> to follow
+            </div>
+        </div>
+    </div>
+   
+}
+
+@section scripts{
+    <script type="text/javascript" src="~/Plugins/tilt.js/tilt.js"></script>
+    <script>
+        $('.js-tilt').tilt({
+            glare: true,
+            maxGlare: .4,
+        });
+    </script>
+}

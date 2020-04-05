@@ -13,7 +13,7 @@ namespace Blogging.Controllers
     {
         public HomeController()
         {
-            ViewBag.SoftwareName = "Blogger";
+            ViewBag.SoftwareName = SoftwareConfig.AppName;
         }
 
         /// <summary>
@@ -33,6 +33,7 @@ namespace Blogging.Controllers
                 CommonUtil commonUtil = new CommonUtil();
                 ViewBag.Followers = commonUtil.CountByArgs("Followers", $"Follow_userID = {userID}");
                 ViewBag.Blogs = commonUtil.CountByArgs("blog", $"userID = {userID}");
+                ViewBag.Sidenav_SubsList = accountUtil.GetAllFollowing(userID, false, true);
             }            
         }
 
@@ -55,7 +56,6 @@ namespace Blogging.Controllers
         }
         
         [HttpGet]
-        //[Route("Search/AddBlog/{blogid}/AddImages")]
         public ActionResult Search(string query)
         {
             GetUserDetails();
@@ -159,10 +159,10 @@ namespace Blogging.Controllers
             CatList();
 
             IndexUtil indexUtil = new IndexUtil();
+            long userID = Convert.ToInt64(Session["userID"]);
+            List<AllBlogsModel> blogs = indexUtil.UsersBlogs(userID, 6);
 
-            //List<AllBlogsModel> blogBundles = indexUtil.AllBlogs(0, categoryModel.CatID);
-
-            return View();
+            return View(blogs);
         }
         
         [SessionAuthorize]
@@ -173,11 +173,11 @@ namespace Blogging.Controllers
             CatList();
 
             IndexUtil indexUtil = new IndexUtil();
+            long userID = Convert.ToInt64(Session["userID"]);
+            List<AllBlogsModel> blogs = indexUtil.UsersBlogs(userID, 5);
 
-            //List<AllBlogsModel> blogBundles = indexUtil.AllBlogs(0, categoryModel.CatID);
-
-            return View();
+            return View(blogs);
         }
-
+        
     }
 }

@@ -15,7 +15,7 @@ namespace Blogging.Controllers
         public BlogController()
         {
             // Constructor
-            ViewBag.SoftwareName = "Blogger";
+            ViewBag.SoftwareName = SoftwareConfig.AppName;
         }
 
         /// <summary>
@@ -35,6 +35,7 @@ namespace Blogging.Controllers
                 CommonUtil commonUtil = new CommonUtil();
                 ViewBag.Followers = commonUtil.CountByArgs("Followers", $"Follow_userID = {userID}");
                 ViewBag.Blogs = commonUtil.CountByArgs("blog", $"userID = {userID}");
+                ViewBag.Sidenav_SubsList = accountUtil.GetAllFollowing(userID, false, true);
             }
 
             IndexUtil indexUtil = new IndexUtil();
@@ -322,6 +323,17 @@ namespace Blogging.Controllers
                 status = indexUtil.DeleteBookmarkOrLike("likes", userID, BlogID);
             }
             return Json(new { status });
+        }
+
+        [HttpPost]
+        [Route("AjaxIncrBlogViews")]
+        public JsonResult AjaxIncrBlogViews(FormCollection formCollection)
+        {
+            IndexUtil indexUtil = new IndexUtil();
+
+            int BlogID = Convert.ToInt32(formCollection["BlogID"]);
+            indexUtil.IncrBlogViews(BlogID);
+            return Json(new { status = true });
         }
 
         public ActionResult Error()

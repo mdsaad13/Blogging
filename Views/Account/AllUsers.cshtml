@@ -1,0 +1,25 @@
+﻿@model IEnumerable<Blogging.Models.ProfileModel>
+@{
+    ViewBag.Title = "All Users";
+    ViewData["Active_AllUsers"] = "active";
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="row mt-3">
+        @{ 
+            foreach (var item in Model)
+            {
+                Html.RenderPartial("_SingleUser", item);
+            }
+        }
+</div>
+@section scripts{
+    <script type="text/javascript" src="~/Plugins/tilt.js/tilt.js"></script>
+    <script>
+        $('.js-tilt').tilt({
+            glare: true,
+            maxGlare: .4,
+        });
+    </script>
+}
+

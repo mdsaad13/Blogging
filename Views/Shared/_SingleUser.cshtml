@@ -1,0 +1,46 @@
+﻿<div class="col-lg-3 col-md-6">
+    <a href="@Url.Action("ViewProfile", "Account", new { Username = Model.Uname })" title="@Model.Uname">
+        @{
+            string UserProfilePic;
+            if (Model.ImgURL != null)
+            {
+                UserProfilePic = "Images/UserProfiles/" + Model.ImgURL;
+            }
+            else
+            {
+                UserProfilePic = "Images/default_user.png";
+            }
+        }
+
+        <div class="singleUserBox js-tilt" style="background-image: linear-gradient(135deg, rgba(7, 7, 7, 0.74), rgba(60, 60, 60, 0.63)), url(@UserProfilePic);">
+            <div class="container">
+                <p>@Model.Name</p>
+                <span>@@@Model.Uname</span>
+                <table>
+                    <tr>
+                        <td>
+                            Followers
+                        </td>
+                        <td>
+                            Following
+                        </td>
+                        <td>
+                            Blogs
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Model.Followers
+                        </th>
+                        <th>
+                            @Model.Following
+                        </th>
+                        <th>
+                            @Model.BlogsCount
+                        </th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </a>
+</div>

@@ -13,10 +13,10 @@ namespace Blogging.Controllers
     {
         public AccountController()
         {
-            ViewBag.SoftwareName = "Blogger";
+            ViewBag.SoftwareName = SoftwareConfig.AppName;
         }
 
-        internal void GetUserDetails()
+        internal void GetUserDetails(long TopFollower = 0)
         {
             AccountUtil accountUtil = new AccountUtil();
 
@@ -30,6 +30,14 @@ namespace Blogging.Controllers
                 CommonUtil commonUtil = new CommonUtil();
                 ViewBag.Followers = commonUtil.CountByArgs("Followers", $"Follow_userID = {userID}");
                 ViewBag.Blogs = commonUtil.CountByArgs("blog", $"userID = {userID}");
+                if (TopFollower != 0)
+                {
+                    ViewBag.Sidenav_SubsList = accountUtil.GetAllFollowing(userID, false, true, TopFollower);
+                }
+                else
+                {
+                    ViewBag.Sidenav_SubsList = accountUtil.GetAllFollowing(userID, false, true);
+                }
             }
 
             IndexUtil indexUtil = new IndexUtil();
@@ -114,12 +122,14 @@ namespace Blogging.Controllers
             }
         }
 
+        [IsSessionAuthorized]
         [Route("login")]
         public ActionResult Login()
         {
             return View();
         }
 
+        [IsSessionAuthorized]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public JsonResult LoginAjax(AccountModel accountModel)
@@ -151,10 +161,9 @@ namespace Blogging.Controllers
         [Route("user/{Username}")]
         public ActionResult ViewProfile(string Username)
         {
-            GetUserDetails();
-
             AccountUtil accountUtil = new AccountUtil();
             CommonUtil commonUtil = new CommonUtil();
+
             if (commonUtil.Validate("users", "username", Username))
             {
                 ProfileModel profileModel = accountUtil.GetUserByUname(Username);
@@ -162,16 +171,35 @@ namespace Blogging.Controllers
                 long CurrentUserID = Convert.ToInt64(Session["userID"]);
 
                 string query = $"userID = {CurrentUserID} AND Follow_userID = {profileModel.UserID}";
-                ViewData["Follow"] = commonUtil.RawValidate("Followers", query) ? "Unfollow" : "Follow";
+                bool Following = commonUtil.RawValidate("Followers", query);
 
+                ViewData["Follow"] = Following ? "Unfollow" : "Follow";
+
+                GetUserDetails(Convert.ToInt64(Following ? profileModel.UserID : 0));
+                if (Following)
+                {
+                    ViewData["Active_Subs_Menu_Open"] = "menu-open";
+                }
                 return View(profileModel);
             }
             else
             {
+                GetUserDetails();
                 string Info = "User not found :(";
                 ViewBag.Info = Info;
                 return View("Error");
             }
+        }
+
+        [Route("user")]
+        public ActionResult AllUsers()
+        {
+            GetUserDetails();
+
+            AccountUtil accountUtil = new AccountUtil();
+            long userID = Convert.ToInt64(Session["userID"]);
+            
+            return View(accountUtil.GetAllUsers(userID));
         }
 
         [SessionAuthorize]
@@ -203,6 +231,18 @@ namespace Blogging.Controllers
             return RedirectToAction("Login", "Account");
         }
 
+        [SessionAuthorize]
+        [Route("following")]
+        public ActionResult Following()
+        {
+            GetUserDetails();
+
+            AccountUtil accountUtil = new AccountUtil();
+            long userID = Convert.ToInt64(Session["userID"]);
+
+            return View(accountUtil.GetAllFollowing(userID, true, true));
+        }
+        
         public ActionResult Error()
         {
             return View();

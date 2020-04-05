@@ -1,6 +1,6 @@
 ﻿@model Blogging.Models.SingleBlog
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = Model.Blog.Title;
     ViewBag.sidebar_collapse = "sidebar-collapse";
 }
 <link rel="stylesheet" href="~/Plugins/flickity/flickity.css" />
@@ -31,52 +31,60 @@
     }
 
     .LikeBlog {
-        font-size: 1.8em;
+        font-size: 1.25rem !important;
     }
 
     .LikedBlog {
-        font-size: 2em;
+        font-size: 1.25rem !important;
         color: #5f0a87;
     }
 
     .DisabledLikeBlog {
-        font-size: 1.8em;
+        font-size: 1.25rem !important;
     }
 </style>
 
 <div class="card elevation-3">
     <!-- /.card-header -->
     <div class="card-body">
-        <div class="container">
+        <div class="">
             <h1 class="text-center">
                 <span class="purple-gradient-text">
                     @Model.Blog.Title
                 </span>
 
-                <i class="@ViewData["BookmarkIcon"] fa-bookmark text-info @ViewData["Bookmark"]" style="cursor:pointer" id="" title="Bookmark"></i>
+                <i class="@ViewData["BookmarkIcon"] fa-bookmark text-info @ViewData["Bookmark"]" style="        cursor: pointer
+" id="" title="Bookmark"></i>
 
             </h1>
 
             <div class="row text-gray" style=" line-height: 2.5rem; margin-bottom: 1rem">
-                <div class="col-10">
-                    <span>
-                        Published on: @Model.Blog.PublishDate
-                        @if (Model.Blog.UpdateDate != null)
-                        {
-                            string UpdateDate = "(Updated on: " + Model.Blog.UpdateDate + ")";
-                        }
-                    </span>
+                <div class="col-8" style="margin:auto">
+                    <div class="float-left">
+                        <span>
+                            Published on: @Model.Blog.PublishDate
+                            @if (Model.Blog.UpdateDate != null)
+                            {
+                                string UpdateDate = "(Updated on: " + Model.Blog.UpdateDate + ")";
+                            }
+                        </span>
 
-                </div>
+                    </div>
 
-                <div class="col-2">
-                    <i class="fas fa-eye text-lg" title="Views"></i>  @Model.Blog.Views
-                    &nbsp;
-                    <i class="fas fa-comments text-lg" title="Comments"></i>  @Model.CommentsCount
-                    &nbsp;
-
-                    <i class="fas fa-thumbs-up @ViewData["Like"]" title="Like" style="cursor:pointer"></i>
-                    <span id="likesCount">@Model.Blog.Likes</span>
+                    <div class="float-right">
+                        <span class="ml-3">
+                            <i class="fas fa-eye text-lg" title="Views"></i>&nbsp;
+                            <span>@Model.Blog.Views</span>
+                        </span>
+                        <span class="ml-3">
+                            <i class="fas fa-comments text-lg" title="Comments"></i>&nbsp;
+                            <span>@Model.CommentsCount</span>
+                        </span>
+                        <span class="ml-3">
+                            <i class="fas fa-thumbs-up @ViewData["Like"]" title="Like" style="cursor:pointer"></i>
+                            <span id="likesCount">@Model.Blog.Likes</span>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -394,6 +402,13 @@
         $.widget.bridge('uibutton', $.ui.button);
         $.widget.bridge('uitooltip', $.ui.tooltip);
 
+        $('.direct-chat-messages').overlayScrollbars({
+            resize: "vertical",
+            scrollbars: {
+                autoHide: 'leave',
+            }
+        }); 
+
         var $carousel = $('.carousel').flickity({
             imagesLoaded: true,
             percentPosition: false,
@@ -422,6 +437,19 @@
         var $MoreData = @if (Model.CommentsCount > 5) { @("true") } else { @("false") };
 
         $(document).ready(function () {
+
+            setInterval(function () {
+                $.ajax({
+                    type: 'post',
+                    url: '/blog/AjaxIncrBlogViews/',
+                    data: {
+                       BlogID : $('#BlogID').val(),
+                    },
+                    success: function (data) {
+
+                    }
+                });
+            }, 1000);
 
             $('#btn-LoadMoreData').click(function () {
                 if ($MoreData) {

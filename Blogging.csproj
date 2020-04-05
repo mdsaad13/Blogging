@@ -145,6 +145,7 @@
     <Compile Include="Models\CategoryModel.cs" />
     <Compile Include="Models\CommentsModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SoftwareConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\adminlte.css" />
@@ -237,6 +238,9 @@
     <Content Include="Views\Home\Bookmarks.cshtml" />
     <Content Include="Views\Home\Liked.cshtml" />
     <Content Include="Views\Shared\_SingleBlog.cshtml" />
+    <Content Include="Views\Account\Following.cshtml" />
+    <Content Include="Views\Shared\_SingleUser.cshtml" />
+    <Content Include="Views\Account\AllUsers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
