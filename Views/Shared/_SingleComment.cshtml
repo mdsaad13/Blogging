@@ -1,0 +1,30 @@
+﻿<div class="direct-chat-msg" id="@Model.CommentID">
+    <div class="direct-chat-infos clearfix">
+        <span class="direct-chat-name float-left">
+            <a href="@Url.Action("ViewProfile","Account", new { Username = Model.UserName })" class="text-dark">
+                @Model.Name
+            </a>
+
+        </span>
+        <span class="direct-chat-timestamp float-right">@Model.FormatDateTime</span>
+    </div>
+    @if (Model.ImgURL == null)
+    {
+        <a href="@Url.Action("ViewProfile","Account", new { Username = Model.UserName })" class="text-dark">
+            <img class="direct-chat-img" src="~/Images/default_user.png" alt="Message User Image">
+        </a>
+
+    }
+    else
+    {
+        <a href="@Url.Action("ViewProfile","Account", new { Username = Model.UserName })" class="text-dark">
+            <img class="direct-chat-img lazy" src="/Images/img-spinner.svg" data-src="/Images/UserProfiles/@Model.ImgURL" alt="@Model.UserName">
+        </a>
+
+    }
+
+    <!-- /.direct-chat-img -->
+    <div class="direct-chat-text">
+        @Model.Text
+    </div>
+</div>

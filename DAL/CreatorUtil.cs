@@ -12,6 +12,51 @@ namespace Blogging.DAL
     public class CreatorUtil
     {
         private readonly SqlConnection Conn = new SqlConnection("Data Source=localhost;Initial Catalog=Blogging;Integrated Security=True");
+
+        internal BlogModel GetBlogByID(long ID)
+        {
+            BlogModel singleBlog = new BlogModel();
+            DataTable td = new DataTable();
+            CommonUtil commonUtil = new CommonUtil();
+
+            string sqlquery = "SELECT * FROM blog WHERE blogid = @blogid";
+
+            try
+            {
+                SqlCommand cmd = new SqlCommand(sqlquery, Conn);
+                cmd.Parameters.Add(new SqlParameter("blogid", ID));
+                SqlDataAdapter adp = new SqlDataAdapter(cmd);
+                Conn.Open();
+                adp.Fill(td);
+
+                double UserID = Convert.ToDouble(td.Rows[0]["userID"]);
+                int BlogID = Convert.ToInt32(td.Rows[0]["blogid"]);
+
+                singleBlog.BlogID = Convert.ToInt32(td.Rows[0]["blogid"]);
+                singleBlog.Title = Convert.ToString(td.Rows[0]["title"]);
+                singleBlog.Content = Convert.ToString(td.Rows[0]["blogContent"]);
+                singleBlog.CatID = Convert.ToInt32(td.Rows[0]["catid"]);
+
+                singleBlog.DateTime = Convert.ToDateTime(td.Rows[0]["datetime"]);
+
+                if (!DBNull.Value.Equals(td.Rows[0]["updatedate"]))
+                {
+                    singleBlog.UpdateDateTime  = Convert.ToDateTime(td.Rows[0]["updatedate"]);
+                }
+
+                singleBlog.Likes = commonUtil.CountByArgs("likes", "blogid = " + BlogID);
+                singleBlog.ViewCount = Convert.ToInt64(td.Rows[0]["viewcount"]);
+                singleBlog.ViewTime = Convert.ToInt64(td.Rows[0]["viewtime"]);
+                singleBlog.Comments = commonUtil.CountByArgs("comments", "blogid = " + BlogID);
+                singleBlog.URL = Convert.ToString(td.Rows[0]["url"]);
+
+                Conn.Close();
+            }
+            catch
+            { }
+            return singleBlog;
+        }
+
         internal bool CreatBlog(BlogModel blogModel)
         {
             bool status;
@@ -332,5 +377,6 @@ namespace Blogging.DAL
             }
             return status;
         }
+
     }
 }

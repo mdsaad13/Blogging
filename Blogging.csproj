@@ -156,6 +156,7 @@
     <Content Include="Images\default_user.png" />
     <Content Include="Images\logo-solid.jpg" />
     <Content Include="Images\logo-transparent.png" />
+    <Content Include="Plugins\Chart.js\Chart.js" />
     <Content Include="Plugins\datatables\datatables.css" />
     <Content Include="Plugins\datatables\datatables.js" />
     <Content Include="Plugins\daterangepicker\daterangepicker.css" />
@@ -241,6 +242,7 @@
     <Content Include="Views\Account\Following.cshtml" />
     <Content Include="Views\Shared\_SingleUser.cshtml" />
     <Content Include="Views\Account\AllUsers.cshtml" />
+    <Content Include="Views\Shared\_SingleComment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

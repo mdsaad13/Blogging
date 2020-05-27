@@ -77,8 +77,10 @@
                             <span>@Model.Blog.Views</span>
                         </span>
                         <span class="ml-3">
-                            <i class="fas fa-comments text-lg" title="Comments"></i>&nbsp;
-                            <span>@Model.CommentsCount</span>
+                            <a href="#FocusOnCommentsDiv" class="muted-link">
+                                <i class="fas fa-comments text-lg" title="Comments"></i>&nbsp;
+                                <span>@Model.CommentsCount</span>
+                            </a>
                         </span>
                         <span class="ml-3">
                             <i class="fas fa-thumbs-up @ViewData["Like"]" title="Like" style="cursor:pointer"></i>
@@ -210,61 +212,14 @@
                             </div>
                         </div>
                         <!-- /.card-header -->
-                        <div class="card-body">
+                        <div class="card-body" id="FocusOnCommentsDiv">
                             <input type="hidden" name="TotalComments" value="@Model.CommentsCount" />
                             <div class="direct-chat-messages" style="height: 350px;">
 
                                 <div id="direct-chat-messages">
                                     @foreach (var Commentitem in Model.CommentsList)
                                     {
-                                        <!-- Message. Default to the left -->
-                                        <div class="direct-chat-msg" id="@Commentitem.CommentID">
-                                            <div class="direct-chat-infos clearfix">
-                                                <span class="direct-chat-name float-left">
-                                                    <a href="@Url.Action("ViewProfile","Account", new { Username = Commentitem.UserName })" class="text-dark">
-                                                        @Commentitem.Name
-                                                    </a>
-
-                                                </span>
-                                                <span class="direct-chat-timestamp float-right">@Commentitem.FormatDateTime</span>
-                                            </div>
-                                            @if (Commentitem.ImgURL == null)
-                                            {
-                                                <a href="@Url.Action("ViewProfile","Account", new { Username = Commentitem.UserName })" class="text-dark">
-                                                    <img class="direct-chat-img" src="~/Images/default_user.png" alt="Message User Image">
-                                                </a>
-
-                                            }
-                                            else
-                                            {
-                                                <a href="@Url.Action("ViewProfile","Account", new { Username = Commentitem.UserName })" class="text-dark">
-                                                    <img class="direct-chat-img lazy" src="/Images/img-spinner.svg" data-src="/Images/UserProfiles/@Commentitem.ImgURL" alt="@Commentitem.UserName">
-                                                </a>
-
-                                            }
-
-                                            <!-- /.direct-chat-img -->
-                                            <div class="direct-chat-text">
-                                                @Commentitem.Text
-                                            </div>
-                                            @if (Commentitem.RepliesCount > 0)
-                                            {
-                                                <span class="text-sm">
-                                                    <button type="button" class="btn btn-tool" data-toggle="tooltip" title="Contacts">
-                                                        <i class="fas fa-comments"></i>
-                                                        @if (Commentitem.RepliesCount == 1)
-                                                        {
-                                                            <span>@Commentitem.RepliesCount</span><span> Reply</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span>@Commentitem.RepliesCount</span><span> Replies</span>
-                                                        }
-
-                                                    </button>
-                                                </span>
-                                            }
-                                        </div>
+                                        Html.RenderPartial("_SingleComment", Commentitem);
                                     }
                                 </div>
 

@@ -227,33 +227,34 @@ namespace Blogging.Controllers
             {
                 foreach (var Commentitem in CommentsList)
                 {
-                    if (Commentitem.ImgURL == null)
-                    {
-                        Image = "/Images/default_user.png";
-                    }
-                    else
-                    {
-                        Image = "/Images/UserProfiles/"+Commentitem.ImgURL;
-                    }
+                    Content.Append(ControllerContext.RenderPartialToString("_SingleComment", Commentitem));
+                    //if (Commentitem.ImgURL == null)
+                    //{
+                    //    Image = "/Images/default_user.png";
+                    //}
+                    //else
+                    //{
+                    //    Image = "/Images/UserProfiles/"+Commentitem.ImgURL;
+                    //}
                     
-                    Content.AppendFormat(@"
-                        <div class=""direct-chat-msg"" id=""{0}"">
-                            <div class=""direct-chat-infos clearfix"">
-                                <span class=""direct-chat-name float-left"">
-                                     <a href=""/user/{3}"" class=""text-dark"">
-                                         {4}
-                                      </a>
-                                 </span>
-                                <span class=""direct-chat-timestamp float-right"">{2}</span>
-                             </div>
-                             <a href=""/user/{3}"" class=""text-dark"">
-                                 <img class=""direct-chat-img lazy"" src=""/Images/img-spinner.svg"" data-src=""{5}"" alt=""{3}"">
-                             </a>
-                             <div class=""direct-chat-text"">
-                                {1}
-                             </div>
-                        </div>
-                    ", Commentitem.CommentID, Commentitem.Text, Commentitem.FormatDateTime, Commentitem.UserName, Commentitem.Name, Image);
+                    //Content.AppendFormat(@"
+                    //    <div class=""direct-chat-msg"" id=""{0}"">
+                    //        <div class=""direct-chat-infos clearfix"">
+                    //            <span class=""direct-chat-name float-left"">
+                    //                 <a href=""/user/{3}"" class=""text-dark"">
+                    //                     {4}
+                    //                  </a>
+                    //             </span>
+                    //            <span class=""direct-chat-timestamp float-right"">{2}</span>
+                    //         </div>
+                    //         <a href=""/user/{3}"" class=""text-dark"">
+                    //             <img class=""direct-chat-img lazy"" src=""/Images/img-spinner.svg"" data-src=""{5}"" alt=""{3}"">
+                    //         </a>
+                    //         <div class=""direct-chat-text"">
+                    //            {1}
+                    //         </div>
+                    //    </div>
+                    //", Commentitem.CommentID, Commentitem.Text, Commentitem.FormatDateTime, Commentitem.UserName, Commentitem.Name, Image);
                 }
             }
 

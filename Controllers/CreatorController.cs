@@ -44,6 +44,19 @@ namespace Blogging.Controllers
         public ActionResult Index()
         {
             GetUserDetails();
+            CommonUtil commonUtil = new CommonUtil();
+            CreatorUtil creatorUtil = new CreatorUtil();
+            long userID = Convert.ToInt64(Session["userID"]);
+            string Arg = "userID = " + userID;
+
+            var timespan = TimeSpan.FromSeconds(commonUtil.SumByArgs("blog", "viewtime", Arg));
+
+            ViewBag.TotalViewTime = timespan.ToString(@"mm\:ss");
+            ViewBag.TotalLikes = commonUtil.CountByArgs("likes", Arg);
+            ViewBag.Following = commonUtil.CountByArgs("Followers", Arg); ;
+
+            ViewBag.AllBlogs = creatorUtil.GetAllBlogs();
+
             return View();
         }
 
@@ -261,8 +274,17 @@ namespace Blogging.Controllers
         public ActionResult ViewBlog(int blogid)
         {
             GetUserDetails();
+            CommonUtil commonUtil = new CommonUtil();
+            CreatorUtil creatorUtil = new CreatorUtil();
+            IndexUtil indexUtil = new IndexUtil();
 
-            return View();
+            ViewBag.AllCat = new SelectList(commonUtil.GetAllCat(), "catid", "name");
+            BlogBundle blogBundle = new BlogBundle();
+            blogBundle.Blog = creatorUtil.GetBlogByID(blogid);
+            blogBundle.BlogImages = creatorUtil.GetImgsByBlog(blogid);
+            blogBundle.Comments = indexUtil.BlogComments(0, blogid);
+
+            return View(blogBundle);
         }
         
         public ActionResult Advertisements()

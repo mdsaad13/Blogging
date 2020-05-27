@@ -51,6 +51,9 @@ namespace Blogging.Models
 
         [Display(Name = "Add images to blog")]
         public bool NextStep { get; set; }
+
+        public long Likes { get; set; }
+        public long Comments { get; set; }
     }
 
     public class BlogImages
@@ -63,5 +66,12 @@ namespace Blogging.Models
 
         public string Alt { get; set; }
 
+    }
+
+    public class BlogBundle
+    {
+        public BlogModel Blog { get; set; }
+        public List<BlogImages> BlogImages { get; set; }
+        public List<CommentsModel> Comments { get; set; }
     }
 }
